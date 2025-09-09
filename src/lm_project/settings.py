@@ -53,7 +53,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'luchtmans.urls'
+ROOT_URLCONF = 'lm_project.urls'
 
 TEMPLATES = [
     {
@@ -70,7 +70,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'luchtmans.wsgi.application'
+WSGI_APPLICATION = 'lm_project.wsgi.application'
 
 
 # Database
