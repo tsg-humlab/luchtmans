@@ -119,6 +119,9 @@ class Person(models.Model):
     bibliography_sources = models.TextField(blank=True)
     wikidata_id = models.CharField(max_length=256)
 
+    def __str__(self):
+        return self.short_name
+
 
 class RelationType(models.Model):
     text = models.CharField(max_length=255, unique=True)
