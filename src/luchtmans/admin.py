@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Country, Place, Street, Address, Person, PersonPersonRelation, RelationType
+from .models import Country, Place, Street, Address, Person, PersonPersonRelation, RelationType, PeriodOfResidence
 
 
 @admin.register(Country)
@@ -35,4 +35,9 @@ class PersonPersonRelationAdmin(admin.ModelAdmin):
 
 @admin.register(RelationType)
 class RelationTypeAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(PeriodOfResidence)
+class PeriodOfResidenceAdmin(admin.ModelAdmin):
     pass

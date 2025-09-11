@@ -161,3 +161,19 @@ class PersonPersonRelation(models.Model):
 
 post_save_personpersonrelation = post_save_relation_creator(PersonPersonRelation, ('from_person', 'to_person'))
 post_delete_personpersonrelation = post_delete_relation_creator(PersonPersonRelation, ('from_person', 'to_person'))
+
+
+class PeriodOfResidence(models.Model):
+    """Model linking Person to Place over a period of time."""
+    person = models.ForeignKey(Person, on_delete=models.CASCADE)
+    address = models.ForeignKey(Address, on_delete=models.PROTECT)
+    start_year = models.IntegerField(blank=True, null=True)
+    end_year = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        verbose_name_plural = "periods of residence"
+
+    def __str__(self):
+        from_string = f"from {self.start_year}" if self.start_year else ""
+        until_string = f" until {self.end_year}" if self.end_year else ""
+        return f"{self.person} lived at {self.address}{from_string}{until_string}"
