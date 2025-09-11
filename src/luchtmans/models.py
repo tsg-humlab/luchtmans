@@ -23,7 +23,7 @@ class Country(Location):
 
 class Place(Location):
     name = models.CharField(max_length=256)
-    country = models.ForeignKey(Country)
+    country = models.ForeignKey(Country, models.PROTECT)
 
     class Meta:
         ordering = ['name']
@@ -35,7 +35,7 @@ class Place(Location):
 class Street(models.Model):
     new_name = models.CharField(max_length=1024)
     old_name = models.TextField()
-    place = models.ForeignKey(Place)
+    place = models.ForeignKey(Place, models.PROTECT)
 
     def __str__(self):
         return f'{self.new_name} [old: {self.old_name}]'
@@ -43,7 +43,7 @@ class Street(models.Model):
 
 class Address(Location):
     house_number = models.CharField(max_length=256)
-    street = models.ForeignKey(Street)
+    street = models.ForeignKey(Street, models.PROTECT)
 
     def __str__(self):
         return f'{self.street} {self.house_number}, {self.street.place}'
