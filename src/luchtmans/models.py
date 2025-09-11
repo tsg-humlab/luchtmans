@@ -44,19 +44,25 @@ def post_delete_relation_creator(sender, relation_fields):
     return post_delete_relation
 
 
-# # # END Helper classes and functions # # #
-
-
-class Location(models.Model):
-    wikidata_id = models.CharField(max_length=256)
-    latitude = models.DecimalField(max_digits=9, decimal_places=6)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6)
+class Wikidata(models.Model):
+    wikidata_id = models.CharField(max_length=256, blank=True)
 
     class Meta:
         abstract = True
 
 
-class Country(Location):
+class GeoLocation(models.Model):
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True, editable=False)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True, editable=False)
+
+    class Meta:
+        abstract = True
+
+
+# # # END Helper classes and functions # # #
+
+
+class Country(Wikidata, GeoLocation):
     name = models.CharField(max_length=256)
 
     class Meta:
@@ -67,7 +73,7 @@ class Country(Location):
         return self.name
 
 
-class Place(Location):
+class Place(Wikidata, GeoLocation):
     name = models.CharField(max_length=256)
     country = models.ForeignKey(Country, models.PROTECT)
 
@@ -87,7 +93,7 @@ class Street(models.Model):
         return f'{self.new_name} [old: {self.old_name}]'
 
 
-class Address(Location):
+class Address(Wikidata, GeoLocation):
     house_number = models.CharField(max_length=256)
     street = models.ForeignKey(Street, models.PROTECT)
 
@@ -95,7 +101,7 @@ class Address(Location):
         return f'{self.street} {self.house_number}, {self.street.place}'
 
 
-class Person(models.Model):
+class Person(Wikidata):
     """Represents a person."""
 
     class GenderChoices(models.TextChoices):
@@ -117,7 +123,6 @@ class Person(models.Model):
                                         through_fields=('from_person', 'to_person'))
     notes = models.TextField(blank=True)
     bibliography_sources = models.TextField(blank=True)
-    wikidata_id = models.CharField(max_length=256)
 
     def __str__(self):
         return self.short_name
