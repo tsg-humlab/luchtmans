@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'luchtmans',
+
+    'django_extensions',
 ]
 
 MIDDLEWARE = [
