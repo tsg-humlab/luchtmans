@@ -1,6 +1,8 @@
 from django.contrib import admin
+from django.utils.translation import gettext_lazy as _
 
-from .models import Country, Place, Street, Address, Person, PersonPersonRelation, RelationType, PeriodOfResidence
+from .models import (Country, Place, Street, Address, Person, PersonPersonRelation, RelationType, PeriodOfResidence,
+                     Religion, PersonReligion)
 
 
 @admin.register(Country)
@@ -23,9 +25,15 @@ class AddressAdmin(admin.ModelAdmin):
     pass
 
 
+class ReligionInline(admin.TabularInline):
+    model = PersonReligion
+    extra = 0
+    verbose_name = _("Religious affiliation")
+
+
 @admin.register(Person)
 class PersonAdmin(admin.ModelAdmin):
-    pass
+    inlines = [ReligionInline]
 
 
 @admin.register(PersonPersonRelation)
@@ -40,4 +48,9 @@ class RelationTypeAdmin(admin.ModelAdmin):
 
 @admin.register(PeriodOfResidence)
 class PeriodOfResidenceAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(Religion)
+class ReligionAdmin(admin.ModelAdmin):
     pass

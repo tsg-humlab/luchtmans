@@ -101,6 +101,16 @@ class Address(Wikidata, GeoLocation):
         return f'{self.street} {self.house_number}, {self.street.place}'
 
 
+class Religion(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+
+    class Meta:
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
+
+
 class Person(Wikidata):
     """Represents a person."""
 
@@ -123,6 +133,12 @@ class Person(Wikidata):
                                         through_fields=('from_person', 'to_person'))
     notes = models.TextField(blank=True)
     bibliography_sources = models.TextField(blank=True)
+    religious_affiliation = models.ManyToManyField(
+        Religion,
+        blank=True,
+        through="PersonReligion",
+        through_fields=('person', 'religion')
+    )
 
     def __str__(self):
         return self.short_name
@@ -177,3 +193,14 @@ class PeriodOfResidence(models.Model):
         from_string = f" from {self.start_year}" if self.start_year else ""
         until_string = f" until {self.end_year}" if self.end_year else ""
         return f"{self.person} lived at {self.address}{from_string}{until_string}"
+
+
+class PersonReligion(models.Model):
+    """Model linking a Person to a Religion during a period of time."""
+    person = models.ForeignKey(Person, on_delete=models.CASCADE)
+    religion = models.ForeignKey(Religion, models.PROTECT)
+    start_year = models.IntegerField(blank=True, null=True)
+    end_year = models.IntegerField(blank=True, null=True)
+
+    def __str__(self):
+        return f'{self.person.short_name} was {self.religion.name.lower()}'
