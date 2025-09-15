@@ -63,10 +63,11 @@ class GeoLocation(models.Model):
 
 
 class Country(Wikidata, GeoLocation):
-    name = models.CharField(max_length=256)
+    name = models.CharField(_("name"), max_length=256)
 
     class Meta:
-        verbose_name_plural = 'countries'
+        verbose_name = _("country")
+        verbose_name_plural = _("countries")
         ordering = ['name']
 
     def __str__(self):
@@ -74,10 +75,12 @@ class Country(Wikidata, GeoLocation):
 
 
 class Place(Wikidata, GeoLocation):
-    name = models.CharField(max_length=256)
+    name = models.CharField(_("name"), max_length=256)
     country = models.ForeignKey(Country, models.PROTECT)
 
     class Meta:
+        verbose_name = _("place")
+        verbose_name_plural = _("places")
         ordering = ['name']
 
     def __str__(self):
@@ -85,26 +88,36 @@ class Place(Wikidata, GeoLocation):
 
 
 class Street(models.Model):
-    new_name = models.CharField(max_length=1024)
-    old_name = models.TextField()
+    new_name = models.CharField(_("new name"), max_length=1024)
+    old_name = models.TextField(_("old name"))
     place = models.ForeignKey(Place, models.PROTECT)
+
+    class Meta:
+        verbose_name = _("street")
+        verbose_name_plural = _("streets")
 
     def __str__(self):
         return f'{self.new_name} [old: {self.old_name}]'
 
 
 class Address(Wikidata, GeoLocation):
-    house_number = models.CharField(max_length=256)
+    house_number = models.CharField(_("house_number"), max_length=256)
     street = models.ForeignKey(Street, models.PROTECT)
+
+    class Meta:
+        verbose_name = _("address")
+        verbose_name_plural = _("addresses")
 
     def __str__(self):
         return f'{self.street} {self.house_number}, {self.street.place}'
 
 
 class Religion(models.Model):
-    name = models.CharField(max_length=255, unique=True)
+    name = models.CharField(_("name"), max_length=255, unique=True)
 
     class Meta:
+        verbose_name = _("religion")
+        verbose_name_plural = _("religions")
         ordering = ['name']
 
     def __str__(self):
@@ -121,34 +134,42 @@ class Person(Wikidata):
         UNKNOWN = "U", _("Unknown")
         CORPORATE = "C", _("Corporate")
 
-    short_name = models.CharField(max_length=256)
-    surname = models.CharField(max_length=256, blank=True)
-    first_names = models.CharField(max_length=256, blank=True)
-    date_of_birth = models.CharField(max_length=50, blank=True)
-    date_of_death = models.CharField(max_length=50, blank=True)
-    sex = models.CharField(max_length=1, choices=GenderChoices.choices, blank=True)
+    short_name = models.CharField(_("short name"), max_length=256)
+    surname = models.CharField(_("surname"), max_length=256, blank=True)
+    first_names = models.CharField(_("first names"), max_length=256, blank=True)
+    date_of_birth = models.CharField(_("date of birth"), max_length=50, blank=True)
+    date_of_death = models.CharField(_("date of death"), max_length=50, blank=True)
+    sex = models.CharField(_("sex"), max_length=1, choices=GenderChoices.choices, blank=True)
     place_of_birth = models.ForeignKey(Place, models.PROTECT, blank=True, null=True, related_name="birthplace_of")
     place_of_death = models.ForeignKey(Place, models.PROTECT, blank=True, null=True, related_name="deathplace_of")
     related_to = models.ManyToManyField("self", blank=True, through="PersonPersonRelation",
-                                        through_fields=('from_person', 'to_person'))
-    notes = models.TextField(blank=True)
-    bibliography_sources = models.TextField(blank=True)
+                                        through_fields=('from_person', 'to_person'),
+                                        verbose_name=_("related to"))
+    notes = models.TextField(_("notes"), blank=True)
+    bibliography_sources = models.TextField(_("bibliography sources"), blank=True)
     religious_affiliation = models.ManyToManyField(
         Religion,
         blank=True,
         through="PersonReligion",
-        through_fields=('person', 'religion')
+        through_fields=('person', 'religion'),
+        verbose_name=_("religious affiliation")
     )
+
+    class Meta:
+        verbose_name = _("person")
+        verbose_name_plural = _("persons")
 
     def __str__(self):
         return self.short_name
 
 
 class RelationType(models.Model):
-    text = models.CharField(max_length=255, unique=True)
-    reverse = models.ForeignKey('self', blank=True, null=True, on_delete=models.SET_NULL)
+    text = models.CharField(_("text"), max_length=255, unique=True)
+    reverse = models.ForeignKey("self", blank=True, null=True, on_delete=models.SET_NULL)
 
     class Meta:
+        verbose_name = _("relation type")
+        verbose_name_plural = _("relation types")
         ordering = ['text']
 
     def __str__(self):
@@ -169,6 +190,8 @@ class PersonPersonRelation(models.Model):
     types = models.ManyToManyField(RelationType, blank=True)
 
     class Meta:
+        verbose_name = _('person person relation')
+        verbose_name_plural = _('person person relations')
         unique_together = ['from_person', 'to_person']
 
     def __str__(self):
@@ -183,11 +206,12 @@ class PeriodOfResidence(models.Model):
     """Model linking Person to Address over a period of time."""
     person = models.ForeignKey(Person, on_delete=models.CASCADE)
     address = models.ForeignKey(Address, on_delete=models.PROTECT)
-    start_year = models.IntegerField(blank=True, null=True)
-    end_year = models.IntegerField(blank=True, null=True)
+    start_year = models.IntegerField(_("start year"), blank=True, null=True)
+    end_year = models.IntegerField(_("end year"), blank=True, null=True)
 
     class Meta:
-        verbose_name_plural = "periods of residence"
+        verbose_name = _("period of residence")
+        verbose_name_plural = _("periods of residence")
 
     def __str__(self):
         from_string = f" from {self.start_year}" if self.start_year else ""
@@ -199,8 +223,8 @@ class PersonReligion(models.Model):
     """Model linking a Person to a Religion during a period of time."""
     person = models.ForeignKey(Person, on_delete=models.CASCADE)
     religion = models.ForeignKey(Religion, models.PROTECT)
-    start_year = models.IntegerField(blank=True, null=True)
-    end_year = models.IntegerField(blank=True, null=True)
+    start_year = models.IntegerField(_("start year"), blank=True, null=True)
+    end_year = models.IntegerField(_("end year"), blank=True, null=True)
 
     def __str__(self):
         return f'{self.person.short_name} was {self.religion.name.lower()}'
