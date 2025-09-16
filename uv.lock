@@ -89,6 +89,18 @@ wheels = [
 ]
 
 [[package]]
+name = "django-modeltranslation"
+version = "0.19.17"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/a7/32/34f33d0a375087197e1e7b6e27a87332c3dfaa970cb38ec353b6198b855b/django_modeltranslation-0.19.17.tar.gz", hash = "sha256:13bd9cab4e4aed0bef5624c17a7da2ac8c5538f0650adbd89ce8c878cbef02fd", size = 77741, upload-time = "2025-09-14T10:14:36.05Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/83/87/f8cf0626e502fd6fd996b8dc590985ed5002b63dfb4442f954670bd101b7/django_modeltranslation-0.19.17-py3-none-any.whl", hash = "sha256:fda198c08b4ede0c2fd09b795ab420a04c7b5a868315fdf4aade0d0a526c269f", size = 93423, upload-time = "2025-09-14T10:14:34.536Z" },
+]
+
+[[package]]
 name = "django-rosetta"
 version = "0.10.2"
 source = { registry = "https://pypi.org/simple" }
@@ -158,6 +170,7 @@ source = { virtual = "." }
 dependencies = [
     { name = "django" },
     { name = "django-extensions" },
+    { name = "django-modeltranslation" },
     { name = "django-rosetta" },
     { name = "environs" },
 ]
@@ -166,6 +179,7 @@ dependencies = [
 requires-dist = [
     { name = "django", specifier = ">=5.2.6" },
     { name = "django-extensions", specifier = ">=4.1" },
+    { name = "django-modeltranslation", specifier = ">=0.19.17" },
     { name = "django-rosetta", specifier = ">=0.10.2" },
     { name = "environs", specifier = ">=14.3.0" },
 ]

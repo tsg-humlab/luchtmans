@@ -1,17 +1,19 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 
+from modeltranslation.admin import TranslationAdmin
+
 from .models import (Country, Place, Street, Address, Person, PersonPersonRelation, RelationType, PeriodOfResidence,
                      Religion, PersonReligion)
 
 
 @admin.register(Country)
-class CountryAdmin(admin.ModelAdmin):
+class CountryAdmin(TranslationAdmin):
     pass
 
 
 @admin.register(Place)
-class PlaceAdmin(admin.ModelAdmin):
+class PlaceAdmin(TranslationAdmin):
     pass
 
 
@@ -52,5 +54,5 @@ class PeriodOfResidenceAdmin(admin.ModelAdmin):
 
 
 @admin.register(Religion)
-class ReligionAdmin(admin.ModelAdmin):
+class ReligionAdmin(TranslationAdmin):
     pass
