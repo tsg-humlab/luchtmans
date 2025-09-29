@@ -2,8 +2,8 @@ services:
   web:
     image: ${DOCKER_IMAGE}
     volumes:
-      - static_volume:/home/app/staticfiles
-      - writable_volume:/home/app/  writable
+      - static_volume:/app/staticfiles
+      - writable_volume:/app/writable
     env_file:
       - ./.env
     depends_on:
@@ -35,8 +35,8 @@ services:
   nginx:
     image: nginx:latest
     volumes:
-      - static_volume:/home/app/staticfiles
-      - writable_volume:/home/app/writable
+      - static_volume:/app/staticfiles
+      - writable_volume:/app/writable
       - ./nginx.conf.template:/etc/nginx/templates/default.conf.template
     env_file:
       - ./.env

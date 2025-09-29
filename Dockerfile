@@ -2,48 +2,44 @@
 # BUILDER #
 ###########
 
-# An image is based on another image, choose from e.g. https://hub.docker.com/
 FROM python:3.13-slim-trixie AS builder
 
-# System dependencies
-RUN apt-get update -y && apt-get upgrade -y
-RUN apt-get install -y --no-install-recommends gcc git
+# Copy uv bin to image
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
 
-# environment variables
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
+ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy
 
-# Work directory
-WORKDIR /django_app/
+# Install dependencies
+WORKDIR /app
+COPY uv.lock pyproject.toml /app/
+RUN --mount=type=cache,target=/root/.cache/uv \
+  uv sync --frozen --no-install-project --no-dev
 
-# install python dependencies
-COPY src/requirements.txt .
-RUN pip wheel --no-cache-dir --no-deps --wheel-dir /django_app/wheels -r requirements.txt
+# Install our app
+COPY src/ /app/
+RUN --mount=type=cache,target=/root/.cache/uv \
+  uv sync --frozen --no-dev
 
 #########
 # FINAL #
 #########
 
 FROM python:3.13-slim-trixie
-RUN apt-get update -y && apt-get upgrade -y
 
 # Copy the compiled Python packages from 'builder'
-COPY --from=builder /django_app/wheels /wheels
-RUN pip install --no-cache /wheels/*
-
-# Create the 'app' user
-RUN adduser --system --group --home /home/app app
-USER app
+COPY --from=builder /app /app
+ENV PATH="/app/.venv/bin:$PATH"
 
 # Create the necessary directories
-RUN mkdir /home/app/writable /home/app/staticfiles
-WORKDIR /home/app/
-COPY src/ /home/app/
+WORKDIR /app/
+RUN mkdir /app/writable /app/staticfiles
 
 # Prepare 'entrypoint.sh'
-USER root
 COPY ./entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
+
+# Create the 'app' user
+RUN adduser --system --group app && chown -R app:app /app
 USER app
 
 # RUN IT!

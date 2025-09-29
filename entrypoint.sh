@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Creating diretories here instead of in Dockerfile for backwards compatibility
-mkdir /home/app/web/writable/media
-mkdir /home/app/web/writable/log
+mkdir /app/writable/media
+mkdir /app/writable/log
 
 if [ "$RUN_MIGRATE" != "no" ]; then
     python manage.py migrate --noinput;
