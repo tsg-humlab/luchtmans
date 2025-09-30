@@ -15,10 +15,10 @@ server {
     }
 
     location /static/ {
-        alias /home/app/staticfiles/;
+        alias /app/staticfiles/;
     }
 
     location /media/ {
-        alias /home/app/writable/media/;
+        alias /app/writable/media/;
     }
 }
