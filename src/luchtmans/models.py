@@ -88,8 +88,7 @@ class Place(Wikidata, GeoLocation):
 
 
 class Street(models.Model):
-    new_name = models.CharField(_("new name"), max_length=1024)
-    old_name = models.TextField(_("old name"))
+    name = models.CharField(_("name"), max_length=1024)
     place = models.ForeignKey(Place, models.PROTECT)
 
     class Meta:
@@ -97,10 +96,12 @@ class Street(models.Model):
         verbose_name_plural = _("streets")
 
     def __str__(self):
-        return f'{self.new_name} [old: {self.old_name}]'
+        return f'{self.name}'
 
 
 class Address(Wikidata, GeoLocation):
+    description = models.CharField(_("description"), max_length=256, default='')
+    streetname_old = models.CharField(_("old street name"), max_length=256, blank=True)
     house_number = models.CharField(_("house_number"), max_length=256)
     street = models.ForeignKey(Street, models.PROTECT)
 
