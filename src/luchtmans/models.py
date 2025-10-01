@@ -59,6 +59,16 @@ class GeoLocation(models.Model):
         abstract = True
 
 
+class UniqueNameModel(models.Model):
+    name = models.CharField(_("name"), max_length=256, unique=True)
+
+    class Meta:
+        abstract = True
+
+    def __str__(self):
+        return self.name
+
+
 # # # END Helper classes and functions # # #
 
 
@@ -229,3 +239,140 @@ class PersonReligion(models.Model):
 
     def __str__(self):
         return f'{self.person.short_name} was {self.religion.name.lower()}'
+
+
+class Language(UniqueNameModel):
+    pass
+
+
+class GenreParisianCategory(UniqueNameModel):
+    pass
+
+
+class Work(Wikidata, models.Model):
+    authors = models.ManyToManyField(
+        Person,
+        through="PersonWorkRelation",
+        through_fields=('work', 'person'),
+        verbose_name=_("authors")
+    )
+    title = models.CharField(_("title"), max_length=256)
+    uncertain = models.BooleanField(_("uncertain"))
+    languages = models.ManyToManyField(
+        Language,
+        blank=True,
+        verbose_name=_("languages"),
+    )
+    viaf_id = models.CharField(_("VIAF identifier"), max_length=256, blank=True)
+    genre_parisian_category = models.ForeignKey(GenreParisianCategory, null=True, blank=True, on_delete=models.PROTECT)
+    notes = models.TextField(_("notes"), blank=True)
+
+
+class PersonWorkRelationRole(UniqueNameModel):
+    pass
+
+
+class PersonWorkRelation(models.Model):
+    person = models.ForeignKey(Person, on_delete=models.CASCADE)
+    work = models.ForeignKey(Work, on_delete=models.CASCADE)
+    role = models.ForeignKey(PersonWorkRelationRole, on_delete=models.PROTECT)
+
+
+class Format(UniqueNameModel):
+    pass
+
+
+class STCNGenre(UniqueNameModel):
+    pass
+
+
+class Edition(models.Model):
+    stcn_id = models.CharField(_("STCN identifier"), max_length=256, blank=True)
+    persons = models.ManyToManyField(
+        Person,
+        blank=True,
+        through="PersonEditionRelation",
+        through_fields=('edition', 'person'),
+        verbose_name=_("authors")
+    )
+    title = models.CharField(_("title"), max_length=256)
+    edition_uncertain = models.BooleanField(_("edition is uncertain"))
+    year_of_publication_start = models.IntegerField(_("year of publication start"), null=True, blank=True)
+    year_of_publication_end = models.IntegerField(_("year of publication end"), null=True, blank=True)
+    places_of_publication = models.ManyToManyField(
+        Place,
+        blank=True,
+        verbose_name=_("places of publication")
+    )
+    volumes = models.CharField(_("volumes"), blank=True)
+    languages = models.ManyToManyField(
+        Language,
+        blank=True,
+        verbose_name=_("languages")
+    )
+    stcn_genres = models.ManyToManyField(
+        STCNGenre,
+        blank=True,
+        verbose_name=_("STCN genres")
+    )
+    notes = models.TextField(_("notes"), blank=True)
+    short_title = models.CharField(_("short title"), max_length=256)
+    work = models.ForeignKey(Work, on_delete=models.PROTECT)
+
+
+class PersonEditionRelationRole(UniqueNameModel):
+    pass
+
+
+class PersonEditionRelation(models.Model):
+    person = models.ForeignKey(Person, on_delete=models.CASCADE)
+    edition = models.ForeignKey(Edition, on_delete=models.CASCADE)
+    role = models.ForeignKey(PersonEditionRelationRole, on_delete=models.PROTECT)
+
+
+class Collection(models.Model):
+    short_title = models.CharField(_("short title"), max_length=256)
+    all_headers = models.TextField(_("all headers"), blank=True)
+    client = models.OneToOneField(Person, related_name="collection", on_delete=models.PROTECT)
+    notes = models.TextField(_("notes"), blank=True)
+
+
+class ItemType(UniqueNameModel):
+    pass
+
+
+class Page(models.Model):
+    RECTO = 'R'
+    VERSO = 'V'
+    RECTO_VERSO_CHOICES = {
+        RECTO: 'Recto',
+        VERSO: 'Verso'
+    }
+    volume = models.IntegerField(_("volume"))
+    folio = models.CharField(_("folio"), max_length=256)
+    recto_verso = models.CharField(_("recto or verso"), max_length=1, choices=RECTO_VERSO_CHOICES)
+
+
+class Binding(UniqueNameModel):
+    pass
+
+
+class Item(models.Model):
+    collection = models.ForeignKey(Collection, on_delete=models.PROTECT)
+    transcription_full = models.CharField(_("full transcription"), max_length=256)
+    type = models.ForeignKey(ItemType, on_delete=models.PROTECT)
+    non_book = models.BooleanField(_("non book"))
+    transcription_incomplete = models.BooleanField(_("transcription is incomplete"))
+    page = models.ForeignKey(Page, on_delete=models.PROTECT)
+    date = models.DateField(_("date"), null=True, blank=True)
+    date_paid = models.DateField(_("date_paid"), null=True, blank=True)
+    editions = models.ManyToManyField(Edition, verbose_name=_("editions"))
+    edition_uncertain = models.BooleanField(_("edition is uncertain"))
+    volumes = models.CharField(_("volumes"), max_length=10, default='1')
+    number_of_copies = models.CharField(_("number of copies"), max_length=10, default='1')
+    binding = models.ManyToManyField(Binding, blank=True, verbose_name=_("bindings"))
+    languages = models.ManyToManyField(Language, blank=True, verbose_name=_("languages"))
+    price = models.CharField(_("price"), max_length=20, blank=True)
+    price_decimal = models.DecimalField(_("decimal price"), max_digits=20, decimal_places=2, blank=True)
+    notes = models.TextField(_("notes"), blank=True)
+    work_in_progress = models.BooleanField(_("work in progress"))
