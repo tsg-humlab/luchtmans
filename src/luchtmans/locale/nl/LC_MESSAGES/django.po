@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-15 11:03+0000\n"
-"PO-Revision-Date: 2025-09-15 11:04+0000\n"
+"POT-Creation-Date: 2025-10-01 14:23+0000\n"
+"PO-Revision-Date: 2025-10-01 14:23+0000\n"
 "Last-Translator:   <micha.hulsbosch@ru.nl>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -19,167 +19,420 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Translated-Using: django-rosetta 0.10.2\n"
 
-#: src/luchtmans/admin.py:31
+#: src/luchtmans/admin.py:35
 msgid "Religious affiliation"
 msgstr "religieuze gezindheid"
 
-#: src/luchtmans/models.py:66 src/luchtmans/models.py:78
-#: src/luchtmans/models.py:116
+#: src/luchtmans/models.py:63 src/luchtmans/models.py:76
+#: src/luchtmans/models.py:88 src/luchtmans/models.py:101
+#: src/luchtmans/models.py:127
 msgid "name"
 msgstr "naam"
 
-#: src/luchtmans/models.py:69
+#: src/luchtmans/models.py:79
 msgid "country"
 msgstr "land"
 
-#: src/luchtmans/models.py:70
+#: src/luchtmans/models.py:80
 msgid "countries"
 msgstr "landen"
 
-#: src/luchtmans/models.py:82
+#: src/luchtmans/models.py:92
 msgid "place"
 msgstr "plaats"
 
-#: src/luchtmans/models.py:83
+#: src/luchtmans/models.py:93
 msgid "places"
 msgstr "plaatsen"
 
-#: src/luchtmans/models.py:91
-msgid "new name"
-msgstr "nieuwe naam"
-
-#: src/luchtmans/models.py:92
-msgid "old name"
-msgstr "oude naam"
-
-#: src/luchtmans/models.py:96
+#: src/luchtmans/models.py:105
 msgid "street"
 msgstr "straat"
 
-#: src/luchtmans/models.py:97
+#: src/luchtmans/models.py:106
 msgid "streets"
 msgstr "straten"
 
-#: src/luchtmans/models.py:104
+#: src/luchtmans/models.py:113
+msgid "description"
+msgstr "beschrijving"
+
+#: src/luchtmans/models.py:114
+#, fuzzy
+#| msgid "old name"
+msgid "old street name"
+msgstr "oude naam"
+
+#: src/luchtmans/models.py:115
 msgid "house_number"
 msgstr "huisnummer"
 
-#: src/luchtmans/models.py:108
+#: src/luchtmans/models.py:119
 msgid "address"
 msgstr "adres"
 
-#: src/luchtmans/models.py:109
+#: src/luchtmans/models.py:120
 msgid "addresses"
 msgstr "adressen"
 
-#: src/luchtmans/models.py:119
+#: src/luchtmans/models.py:130
 msgid "religion"
 msgstr "religie"
 
-#: src/luchtmans/models.py:120
+#: src/luchtmans/models.py:131
 msgid "religions"
 msgstr "religies"
 
-#: src/luchtmans/models.py:131
+#: src/luchtmans/models.py:142
 msgid "Female"
 msgstr "vrouw"
 
-#: src/luchtmans/models.py:132
+#: src/luchtmans/models.py:143
 msgid "Male"
 msgstr "man"
 
-#: src/luchtmans/models.py:133
+#: src/luchtmans/models.py:144
 msgid "Other"
 msgstr "anders"
 
-#: src/luchtmans/models.py:134
+#: src/luchtmans/models.py:145
 msgid "Unknown"
 msgstr "onbekend"
 
-#: src/luchtmans/models.py:135
+#: src/luchtmans/models.py:146
 msgid "Corporate"
 msgstr "bedrijf"
 
-#: src/luchtmans/models.py:137
+#: src/luchtmans/models.py:148
 msgid "short name"
 msgstr "korte naam"
 
-#: src/luchtmans/models.py:138
+#: src/luchtmans/models.py:149
 msgid "surname"
 msgstr "achternaam"
 
-#: src/luchtmans/models.py:139
+#: src/luchtmans/models.py:150
 msgid "first names"
 msgstr "voornamen"
 
-#: src/luchtmans/models.py:140
+#: src/luchtmans/models.py:151
 msgid "date of birth"
 msgstr "geboortedatum"
 
-#: src/luchtmans/models.py:141
+#: src/luchtmans/models.py:152
 msgid "date of death"
 msgstr "datum van overlijden"
 
-#: src/luchtmans/models.py:142
+#: src/luchtmans/models.py:153
 msgid "sex"
 msgstr "sekse"
 
-#: src/luchtmans/models.py:147
+#: src/luchtmans/models.py:158
 msgid "related to"
 msgstr "verwant aan"
 
-#: src/luchtmans/models.py:148
+#: src/luchtmans/models.py:159 src/luchtmans/models.py:275
+#: src/luchtmans/models.py:342 src/luchtmans/models.py:372
+#: src/luchtmans/models.py:426
 msgid "notes"
 msgstr "notities"
 
-#: src/luchtmans/models.py:149
+#: src/luchtmans/models.py:160
 msgid "bibliography sources"
 msgstr "bibliografische bronnen"
 
-#: src/luchtmans/models.py:155
+#: src/luchtmans/models.py:166
 msgid "religious affiliation"
 msgstr "religieuze gezindheid"
 
-#: src/luchtmans/models.py:159
+#: src/luchtmans/models.py:170 src/luchtmans/models.py:290
+#: src/luchtmans/models.py:359
 msgid "person"
 msgstr "persoon"
 
-#: src/luchtmans/models.py:160
+#: src/luchtmans/models.py:171
 msgid "persons"
 msgstr "personen"
 
-#: src/luchtmans/models.py:167
+#: src/luchtmans/models.py:178
 msgid "text"
 msgstr "tekst"
 
-#: src/luchtmans/models.py:171
+#: src/luchtmans/models.py:182
 msgid "relation type"
 msgstr "relatietype"
 
-#: src/luchtmans/models.py:172
+#: src/luchtmans/models.py:183
 msgid "relation types"
 msgstr "relatietypen"
 
-#: src/luchtmans/models.py:193
+#: src/luchtmans/models.py:204
 msgid "person person relation"
 msgstr "persoon-persoonrelatie"
 
-#: src/luchtmans/models.py:194
+#: src/luchtmans/models.py:205
 msgid "person person relations"
 msgstr "persoon-persoonrelaties"
 
-#: src/luchtmans/models.py:209 src/luchtmans/models.py:226
+#: src/luchtmans/models.py:220 src/luchtmans/models.py:237
 msgid "start year"
 msgstr "startjaar"
 
-#: src/luchtmans/models.py:210 src/luchtmans/models.py:227
+#: src/luchtmans/models.py:221 src/luchtmans/models.py:238
 msgid "end year"
 msgstr "eindjaar"
 
-#: src/luchtmans/models.py:213
+#: src/luchtmans/models.py:224
 msgid "period of residence"
 msgstr "woonperiode"
 
-#: src/luchtmans/models.py:214
+#: src/luchtmans/models.py:225
 msgid "periods of residence"
 msgstr "woonperiodes"
+
+#: src/luchtmans/models.py:247
+msgid "language"
+msgstr "taal"
+
+#: src/luchtmans/models.py:248 src/luchtmans/models.py:270
+#: src/luchtmans/models.py:335 src/luchtmans/models.py:423
+msgid "languages"
+msgstr "talen"
+
+#: src/luchtmans/models.py:254 src/luchtmans/models.py:274
+msgid "genre Parisian category"
+msgstr "genre Parijse categorie"
+
+#: src/luchtmans/models.py:255
+msgid "genre Parisian categories"
+msgstr "genre Parijse categorieën"
+
+#: src/luchtmans/models.py:263 src/luchtmans/models.py:320
+msgid "authors"
+msgstr "auteurs"
+
+#: src/luchtmans/models.py:265 src/luchtmans/models.py:322
+msgid "title"
+msgstr "titel"
+
+#: src/luchtmans/models.py:266
+msgid "uncertain"
+msgstr "onzeker"
+
+#: src/luchtmans/models.py:272
+msgid "VIAF identifier"
+msgstr "VIAF-identificator"
+
+#: src/luchtmans/models.py:278 src/luchtmans/models.py:291
+#: src/luchtmans/models.py:344
+msgid "work"
+msgstr "werk"
+
+#: src/luchtmans/models.py:279
+msgid "works"
+msgstr "werken"
+
+#: src/luchtmans/models.py:285
+#, fuzzy
+#| msgid "person person relation"
+msgid "person work relation role"
+msgstr "persoon-persoonrelatie"
+
+#: src/luchtmans/models.py:286
+#, fuzzy
+#| msgid "person person relations"
+msgid "person work relation roles"
+msgstr "persoon-persoonrelaties"
+
+#: src/luchtmans/models.py:292 src/luchtmans/models.py:361
+msgid "role"
+msgstr "rol"
+
+#: src/luchtmans/models.py:295
+#, fuzzy
+#| msgid "person person relation"
+msgid "person work relation"
+msgstr "persoon-persoonrelatie"
+
+#: src/luchtmans/models.py:296
+#, fuzzy
+#| msgid "person person relations"
+msgid "person work relations"
+msgstr "persoon-persoonrelaties"
+
+#: src/luchtmans/models.py:302
+msgid "format"
+msgstr "formaat"
+
+#: src/luchtmans/models.py:303
+msgid "formats"
+msgstr "formaten"
+
+#: src/luchtmans/models.py:309
+msgid "STCN genre"
+msgstr "STCN-genre"
+
+#: src/luchtmans/models.py:310 src/luchtmans/models.py:340
+msgid "STCN genres"
+msgstr "STCN-genres"
+
+#: src/luchtmans/models.py:314
+msgid "STCN identifier"
+msgstr "STCN-dentificator"
+
+#: src/luchtmans/models.py:323 src/luchtmans/models.py:419
+msgid "edition is uncertain"
+msgstr "editie is onzeker"
+
+#: src/luchtmans/models.py:324
+msgid "year of publication start"
+msgstr "publicatiejaar start"
+
+#: src/luchtmans/models.py:325
+msgid "year of publication end"
+msgstr "publicatiejaar eind"
+
+#: src/luchtmans/models.py:329
+msgid "places of publication"
+msgstr "publicatieplaatsen"
+
+#: src/luchtmans/models.py:331 src/luchtmans/models.py:420
+msgid "volumes"
+msgstr "volumes"
+
+#: src/luchtmans/models.py:343 src/luchtmans/models.py:369
+msgid "short title"
+msgstr "korte naam"
+
+#: src/luchtmans/models.py:347 src/luchtmans/models.py:360
+msgid "edition"
+msgstr "editie"
+
+#: src/luchtmans/models.py:348 src/luchtmans/models.py:418
+msgid "editions"
+msgstr "edities"
+
+#: src/luchtmans/models.py:354
+#, fuzzy
+#| msgid "person person relation"
+msgid "person edition relation role"
+msgstr "persoon-persoonrelatie"
+
+#: src/luchtmans/models.py:355
+#, fuzzy
+#| msgid "person person relations"
+msgid "person edition relation roles"
+msgstr "persoon-persoonrelaties"
+
+#: src/luchtmans/models.py:364
+#, fuzzy
+#| msgid "person person relation"
+msgid "person edition relation"
+msgstr "persoon-persoonrelatie"
+
+#: src/luchtmans/models.py:365
+#, fuzzy
+#| msgid "person person relations"
+msgid "person edition relations"
+msgstr "persoon-persoonrelaties"
+
+#: src/luchtmans/models.py:370
+msgid "all headers"
+msgstr "alle koppen"
+
+#: src/luchtmans/models.py:371
+msgid "client"
+msgstr "klant"
+
+#: src/luchtmans/models.py:375 src/luchtmans/models.py:410
+msgid "collection"
+msgstr "collectie"
+
+#: src/luchtmans/models.py:376
+msgid "collections"
+msgstr "collecties"
+
+#: src/luchtmans/models.py:382 src/luchtmans/models.py:383
+msgid "item type"
+msgstr "item type"
+
+#: src/luchtmans/models.py:393
+msgid "volume"
+msgstr "volume"
+
+#: src/luchtmans/models.py:394
+msgid "folio"
+msgstr "folio"
+
+#: src/luchtmans/models.py:395
+msgid "recto or verso"
+msgstr "recto of verso"
+
+#: src/luchtmans/models.py:398 src/luchtmans/models.py:415
+msgid "page"
+msgstr "pagina"
+
+#: src/luchtmans/models.py:399
+msgid "pages"
+msgstr "pagina's"
+
+#: src/luchtmans/models.py:405
+msgid "binding"
+msgstr "binding"
+
+#: src/luchtmans/models.py:406 src/luchtmans/models.py:422
+msgid "bindings"
+msgstr "bindingen"
+
+#: src/luchtmans/models.py:411
+msgid "full transcription"
+msgstr "volledige transcriptie"
+
+#: src/luchtmans/models.py:412
+#, fuzzy
+#| msgid "item type"
+msgid "type"
+msgstr "item type"
+
+#: src/luchtmans/models.py:413
+msgid "non book"
+msgstr "geen boek"
+
+#: src/luchtmans/models.py:414
+msgid "transcription is incomplete"
+msgstr "transcriptie is incompleet"
+
+#: src/luchtmans/models.py:416
+msgid "date"
+msgstr "datum"
+
+#: src/luchtmans/models.py:417
+msgid "date_paid"
+msgstr "datum betaald"
+
+#: src/luchtmans/models.py:421
+msgid "number of copies"
+msgstr "aantal exemplaren"
+
+#: src/luchtmans/models.py:424
+msgid "price"
+msgstr "prijs"
+
+#: src/luchtmans/models.py:425
+msgid "decimal price"
+msgstr "decimale prijs"
+
+#: src/luchtmans/models.py:427
+msgid "work in progress"
+msgstr "werk in uitvoering"
+
+#: src/luchtmans/models.py:430
+msgid "item"
+msgstr "item"
+
+#: src/luchtmans/models.py:431
+msgid "items"
+msgstr "items"
+
+#~ msgid "new name"
+#~ msgstr "nieuwe naam"

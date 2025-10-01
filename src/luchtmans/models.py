@@ -242,11 +242,17 @@ class PersonReligion(models.Model):
 
 
 class Language(UniqueNameModel):
-    pass
+
+    class Meta:
+        verbose_name = _("language")
+        verbose_name_plural = _("languages")
 
 
 class GenreParisianCategory(UniqueNameModel):
-    pass
+
+    class Meta:
+        verbose_name = _("genre Parisian category")
+        verbose_name_plural = _("genre Parisian categories")
 
 
 class Work(Wikidata, models.Model):
@@ -264,26 +270,44 @@ class Work(Wikidata, models.Model):
         verbose_name=_("languages"),
     )
     viaf_id = models.CharField(_("VIAF identifier"), max_length=256, blank=True)
-    genre_parisian_category = models.ForeignKey(GenreParisianCategory, null=True, blank=True, on_delete=models.PROTECT)
+    genre_parisian_category = models.ForeignKey(GenreParisianCategory, null=True, blank=True, on_delete=models.PROTECT,
+                                                verbose_name=_("genre Parisian category"))
     notes = models.TextField(_("notes"), blank=True)
+
+    class Meta:
+        verbose_name = _("work")
+        verbose_name_plural = _("works")
 
 
 class PersonWorkRelationRole(UniqueNameModel):
-    pass
+
+    class Meta:
+        verbose_name = _("person work relation role")
+        verbose_name_plural = _("person work relation roles")
 
 
 class PersonWorkRelation(models.Model):
-    person = models.ForeignKey(Person, on_delete=models.CASCADE)
-    work = models.ForeignKey(Work, on_delete=models.CASCADE)
-    role = models.ForeignKey(PersonWorkRelationRole, on_delete=models.PROTECT)
+    person = models.ForeignKey(Person, on_delete=models.CASCADE, verbose_name=_("person"))
+    work = models.ForeignKey(Work, on_delete=models.CASCADE, verbose_name=_("work"))
+    role = models.ForeignKey(PersonWorkRelationRole, on_delete=models.PROTECT, verbose_name=_("role"))
+
+    class Meta:
+        verbose_name = _("person work relation")
+        verbose_name_plural = _("person work relations")
 
 
 class Format(UniqueNameModel):
-    pass
+
+    class Meta:
+        verbose_name = _("format")
+        verbose_name_plural = _("formats")
 
 
 class STCNGenre(UniqueNameModel):
-    pass
+
+    class Meta:
+        verbose_name = _("STCN genre")
+        verbose_name_plural = _("STCN genres")
 
 
 class Edition(models.Model):
@@ -317,28 +341,46 @@ class Edition(models.Model):
     )
     notes = models.TextField(_("notes"), blank=True)
     short_title = models.CharField(_("short title"), max_length=256)
-    work = models.ForeignKey(Work, on_delete=models.PROTECT)
+    work = models.ForeignKey(Work, on_delete=models.PROTECT, verbose_name=_("work"))
+
+    class Meta:
+        verbose_name = _("edition")
+        verbose_name_plural = _("editions")
 
 
 class PersonEditionRelationRole(UniqueNameModel):
-    pass
+
+    class Meta:
+        verbose_name = _("person edition relation role")
+        verbose_name_plural = _("person edition relation roles")
 
 
 class PersonEditionRelation(models.Model):
-    person = models.ForeignKey(Person, on_delete=models.CASCADE)
-    edition = models.ForeignKey(Edition, on_delete=models.CASCADE)
-    role = models.ForeignKey(PersonEditionRelationRole, on_delete=models.PROTECT)
+    person = models.ForeignKey(Person, on_delete=models.CASCADE, verbose_name=_("person"))
+    edition = models.ForeignKey(Edition, on_delete=models.CASCADE, verbose_name=_("edition"))
+    role = models.ForeignKey(PersonEditionRelationRole, on_delete=models.PROTECT, verbose_name=_("role"))
+
+    class Meta:
+        verbose_name = _("person edition relation")
+        verbose_name_plural = _("person edition relations")
 
 
 class Collection(models.Model):
     short_title = models.CharField(_("short title"), max_length=256)
     all_headers = models.TextField(_("all headers"), blank=True)
-    client = models.OneToOneField(Person, related_name="collection", on_delete=models.PROTECT)
+    client = models.OneToOneField(Person, related_name="collection", on_delete=models.PROTECT, verbose_name=_("client"))
     notes = models.TextField(_("notes"), blank=True)
+
+    class Meta:
+        verbose_name = _("collection")
+        verbose_name_plural = _("collections")
 
 
 class ItemType(UniqueNameModel):
-    pass
+
+    class Meta:
+        verbose_name = _("item type")
+        verbose_name_plural = _("item type")
 
 
 class Page(models.Model):
@@ -352,18 +394,25 @@ class Page(models.Model):
     folio = models.CharField(_("folio"), max_length=256)
     recto_verso = models.CharField(_("recto or verso"), max_length=1, choices=RECTO_VERSO_CHOICES)
 
+    class Meta:
+        verbose_name = _("page")
+        verbose_name_plural = _("pages")
+
 
 class Binding(UniqueNameModel):
-    pass
+
+    class Meta:
+        verbose_name = _("binding")
+        verbose_name_plural = _("bindings")
 
 
 class Item(models.Model):
-    collection = models.ForeignKey(Collection, on_delete=models.PROTECT)
+    collection = models.ForeignKey(Collection, on_delete=models.PROTECT, verbose_name=_("collection"))
     transcription_full = models.CharField(_("full transcription"), max_length=256)
-    type = models.ForeignKey(ItemType, on_delete=models.PROTECT)
+    type = models.ForeignKey(ItemType, on_delete=models.PROTECT, verbose_name=_("type"))
     non_book = models.BooleanField(_("non book"))
     transcription_incomplete = models.BooleanField(_("transcription is incomplete"))
-    page = models.ForeignKey(Page, on_delete=models.PROTECT)
+    page = models.ForeignKey(Page, on_delete=models.PROTECT, verbose_name=_("page"))
     date = models.DateField(_("date"), null=True, blank=True)
     date_paid = models.DateField(_("date_paid"), null=True, blank=True)
     editions = models.ManyToManyField(Edition, verbose_name=_("editions"))
@@ -376,3 +425,7 @@ class Item(models.Model):
     price_decimal = models.DecimalField(_("decimal price"), max_digits=20, decimal_places=2, blank=True)
     notes = models.TextField(_("notes"), blank=True)
     work_in_progress = models.BooleanField(_("work in progress"))
+
+    class Meta:
+        verbose_name = _("item")
+        verbose_name_plural = _("items")
