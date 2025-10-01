@@ -4,7 +4,9 @@ from django.utils.translation import gettext_lazy as _
 from modeltranslation.admin import TranslationAdmin
 
 from .models import (Country, Place, Street, Address, Person, PersonPersonRelation, RelationType, PeriodOfResidence,
-                     Religion, PersonReligion)
+                     Religion, PersonReligion, UniqueNameModel, Language, GenreParisianCategory, Work,
+                     PersonWorkRelationRole, PersonWorkRelation, Format, STCNGenre, Edition, PersonEditionRelationRole,
+                     PersonEditionRelation, Collection, ItemType, Page, Binding, Item)
 
 
 @admin.register(Country)
@@ -56,3 +58,10 @@ class PeriodOfResidenceAdmin(admin.ModelAdmin):
 @admin.register(Religion)
 class ReligionAdmin(TranslationAdmin):
     pass
+
+# Register empty admin classes in one go
+for model in [Language, GenreParisianCategory, Work, PersonWorkRelationRole, PersonWorkRelation, Format, STCNGenre,
+              Edition, PersonEditionRelationRole, PersonEditionRelation, Collection, ItemType, Page, Binding, Item]:
+    base_class = TranslationAdmin if model.__base__ == UniqueNameModel else admin.ModelAdmin
+    admin_class = type(model.__name__+'Admin', (base_class,), {})
+    admin.site.register(model, admin_class)
