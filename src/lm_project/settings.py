@@ -99,6 +99,29 @@ DATABASES = {
 }
 
 
+LOG_LEVEL = env('LOG_LEVEL', 'INFO')
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "file": {
+            "level": LOG_LEVEL,
+            "class": "logging.handlers.TimedRotatingFileHandler",
+            "filename": WRITABLE_DIR / 'log' / 'django.log',
+            "when": "midnight",
+            "backupCount": 100,
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["file"],
+            "level": LOG_LEVEL,
+            "propagate": True,
+        },
+    },
+}
+
+
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
