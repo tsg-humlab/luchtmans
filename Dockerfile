@@ -2,7 +2,7 @@
 # BUILDER #
 ###########
 
-FROM python:3.13-slim-trixie AS builder
+FROM python:3.13-alpine AS builder
 
 # Copy uv bin to image
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
@@ -24,10 +24,8 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 # FINAL #
 #########
 
-FROM python:3.13-slim-trixie
+FROM python:3.13-alpine
 
-# Copy the compiled Python packages from 'builder'
-COPY --from=builder /app /app
 ENV PATH="/app/.venv/bin:$PATH"
 
 # Create the necessary directories
@@ -39,8 +37,11 @@ COPY ./entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 # Create the 'app' user
-RUN adduser --system --group app && chown -R app:app /app
+RUN addgroup app && adduser -S -G app app && chown -R app:app /app
 USER app
+
+# Copy the compiled Python packages from 'builder'
+COPY --from=builder /app /app
 
 # RUN IT!
 ENTRYPOINT ["/entrypoint.sh"]

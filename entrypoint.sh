@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # Creating diretories here instead of in Dockerfile for backwards compatibility
 mkdir /app/writable/media
