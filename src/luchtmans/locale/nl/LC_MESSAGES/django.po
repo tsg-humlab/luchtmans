@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-15 11:03+0000\n"
-"PO-Revision-Date: 2025-09-15 11:04+0000\n"
+"POT-Creation-Date: 2025-10-07 08:21+0000\n"
+"PO-Revision-Date: 2025-10-07 08:22+0000\n"
 "Last-Translator:   <micha.hulsbosch@ru.nl>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -19,12 +19,30 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Translated-Using: django-rosetta 0.10.2\n"
 
-#: src/luchtmans/admin.py:31
+#: src/luchtmans/admin.py:41 src/luchtmans/models.py:109
+msgid "address"
+msgstr "adres"
+
+#: src/luchtmans/admin.py:45 src/luchtmans/models.py:82
+msgid "place"
+msgstr "plaats"
+
+#: src/luchtmans/admin.py:55
+#| msgid "related to"
+msgid "Related person"
+msgstr "gerelateerd persoon"
+
+#: src/luchtmans/admin.py:62
 msgid "Religious affiliation"
 msgstr "religieuze gezindheid"
 
+#: src/luchtmans/admin.py:91
+#, python-brace-format
+msgid "is {type} of"
+msgstr "is {type} van"
+
 #: src/luchtmans/models.py:66 src/luchtmans/models.py:78
-#: src/luchtmans/models.py:116
+#: src/luchtmans/models.py:91 src/luchtmans/models.py:117
 msgid "name"
 msgstr "naam"
 
@@ -36,150 +54,146 @@ msgstr "land"
 msgid "countries"
 msgstr "landen"
 
-#: src/luchtmans/models.py:82
-msgid "place"
-msgstr "plaats"
-
 #: src/luchtmans/models.py:83
 msgid "places"
 msgstr "plaatsen"
 
-#: src/luchtmans/models.py:91
-msgid "new name"
-msgstr "nieuwe naam"
-
-#: src/luchtmans/models.py:92
-msgid "old name"
-msgstr "oude naam"
-
-#: src/luchtmans/models.py:96
+#: src/luchtmans/models.py:95
 msgid "street"
 msgstr "straat"
 
-#: src/luchtmans/models.py:97
+#: src/luchtmans/models.py:96
 msgid "streets"
 msgstr "straten"
 
+#: src/luchtmans/models.py:103
+msgid "description"
+msgstr "beschrijving"
+
 #: src/luchtmans/models.py:104
+#| msgid "old name"
+msgid "old street name"
+msgstr "oude straatnaam"
+
+#: src/luchtmans/models.py:105
 msgid "house_number"
 msgstr "huisnummer"
 
-#: src/luchtmans/models.py:108
-msgid "address"
-msgstr "adres"
-
-#: src/luchtmans/models.py:109
+#: src/luchtmans/models.py:110
 msgid "addresses"
 msgstr "adressen"
 
-#: src/luchtmans/models.py:119
+#: src/luchtmans/models.py:120
 msgid "religion"
 msgstr "religie"
 
-#: src/luchtmans/models.py:120
+#: src/luchtmans/models.py:121
 msgid "religions"
 msgstr "religies"
 
-#: src/luchtmans/models.py:131
+#: src/luchtmans/models.py:132
 msgid "Female"
 msgstr "vrouw"
 
-#: src/luchtmans/models.py:132
+#: src/luchtmans/models.py:133
 msgid "Male"
 msgstr "man"
 
-#: src/luchtmans/models.py:133
+#: src/luchtmans/models.py:134
 msgid "Other"
 msgstr "anders"
 
-#: src/luchtmans/models.py:134
+#: src/luchtmans/models.py:135
 msgid "Unknown"
 msgstr "onbekend"
 
-#: src/luchtmans/models.py:135
+#: src/luchtmans/models.py:136
 msgid "Corporate"
 msgstr "bedrijf"
 
-#: src/luchtmans/models.py:137
+#: src/luchtmans/models.py:138
 msgid "short name"
 msgstr "korte naam"
 
-#: src/luchtmans/models.py:138
+#: src/luchtmans/models.py:139
 msgid "surname"
 msgstr "achternaam"
 
-#: src/luchtmans/models.py:139
+#: src/luchtmans/models.py:140
 msgid "first names"
 msgstr "voornamen"
 
-#: src/luchtmans/models.py:140
+#: src/luchtmans/models.py:141
 msgid "date of birth"
 msgstr "geboortedatum"
 
-#: src/luchtmans/models.py:141
+#: src/luchtmans/models.py:142
 msgid "date of death"
 msgstr "datum van overlijden"
 
-#: src/luchtmans/models.py:142
+#: src/luchtmans/models.py:143
 msgid "sex"
 msgstr "sekse"
 
-#: src/luchtmans/models.py:147
+#: src/luchtmans/models.py:148
 msgid "related to"
 msgstr "verwant aan"
 
-#: src/luchtmans/models.py:148
+#: src/luchtmans/models.py:149
 msgid "notes"
 msgstr "notities"
 
-#: src/luchtmans/models.py:149
+#: src/luchtmans/models.py:150
 msgid "bibliography sources"
 msgstr "bibliografische bronnen"
 
-#: src/luchtmans/models.py:155
+#: src/luchtmans/models.py:156
 msgid "religious affiliation"
 msgstr "religieuze gezindheid"
 
-#: src/luchtmans/models.py:159
+#: src/luchtmans/models.py:160
 msgid "person"
 msgstr "persoon"
 
-#: src/luchtmans/models.py:160
+#: src/luchtmans/models.py:161
 msgid "persons"
 msgstr "personen"
 
-#: src/luchtmans/models.py:167
+#: src/luchtmans/models.py:168
 msgid "text"
 msgstr "tekst"
 
-#: src/luchtmans/models.py:171
+#: src/luchtmans/models.py:172
 msgid "relation type"
 msgstr "relatietype"
 
-#: src/luchtmans/models.py:172
+#: src/luchtmans/models.py:173
 msgid "relation types"
 msgstr "relatietypen"
 
-#: src/luchtmans/models.py:193
+#: src/luchtmans/models.py:194
 msgid "person person relation"
 msgstr "persoon-persoonrelatie"
 
-#: src/luchtmans/models.py:194
+#: src/luchtmans/models.py:195
 msgid "person person relations"
 msgstr "persoon-persoonrelaties"
 
-#: src/luchtmans/models.py:209 src/luchtmans/models.py:226
+#: src/luchtmans/models.py:210 src/luchtmans/models.py:227
 msgid "start year"
 msgstr "startjaar"
 
-#: src/luchtmans/models.py:210 src/luchtmans/models.py:227
+#: src/luchtmans/models.py:211 src/luchtmans/models.py:228
 msgid "end year"
 msgstr "eindjaar"
 
-#: src/luchtmans/models.py:213
+#: src/luchtmans/models.py:214
 msgid "period of residence"
 msgstr "woonperiode"
 
-#: src/luchtmans/models.py:214
+#: src/luchtmans/models.py:215
 msgid "periods of residence"
 msgstr "woonperiodes"
+
+#~ msgid "new name"
+#~ msgstr "nieuwe naam"

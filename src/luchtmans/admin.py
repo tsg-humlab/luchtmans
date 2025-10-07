@@ -1,5 +1,7 @@
 from django.contrib import admin
+from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
+from django.utils import html
 
 from modeltranslation.admin import TranslationAdmin
 
@@ -14,20 +16,37 @@ class CountryAdmin(TranslationAdmin):
 
 @admin.register(Place)
 class PlaceAdmin(TranslationAdmin):
+    list_display = ["name", "country"]
     search_fields = ["name", "country__name"]
+    list_filter = ["country"]
     autocomplete_fields = ["country"]
 
 
 @admin.register(Street)
 class StreetAdmin(admin.ModelAdmin):
+    list_display = ["name", "place", "country"]
     search_fields = ["name", "place__name"]
+    list_filter = ["place"]
     autocomplete_fields = ["place"]
+
+    def country(self, obj):
+        return obj.place.country
 
 
 @admin.register(Address)
 class AddressAdmin(admin.ModelAdmin):
+    list_display = ["address", "place", "description", "streetname_old"]
     search_fields = ["description", "streetname_old", "house_number"]
+    list_filter = ["street__place__name"]
     autocomplete_fields = ["street"]
+
+    @admin.display(description=_("address"))
+    def address(self, obj):
+        return f'{obj.street} {obj.house_number}'
+
+    @admin.display(description=_("place"), ordering='street__place')
+    def place(self, obj):
+        return obj.street.place
 
 
 class RelatedPersonInline(admin.TabularInline):
@@ -47,16 +66,31 @@ class ReligionInline(admin.TabularInline):
 
 @admin.register(Person)
 class PersonAdmin(admin.ModelAdmin):
+    list_display = [
+        "short_name",
+        "sex",
+        "place_of_birth", "date_of_birth",
+        "place_of_death", "date_of_death",
+        "wikidata_link"
+    ]
     search_fields = ["short_name", "surname", "first_names"]
     autocomplete_fields = ["place_of_birth", "place_of_death"]
     list_filter = ["sex", "place_of_birth", "place_of_death", "religious_affiliation"]
     inlines = [RelatedPersonInline, ReligionInline]
 
+    def wikidata_link(self, obj):
+        wikidata_id = html.escape(obj.wikidata_id)
+        return mark_safe(f'<a href="https://www.wikidata.org/wiki/{wikidata_id}">{wikidata_id}</a>')
+
 
 @admin.register(PersonPersonRelation)
 class PersonPersonRelationAdmin(TranslationAdmin):
+    list_display = ["from_person", "type", "to_person"]
     search_fields = ["from_person__short_name", "to_person__short_name", "types__text"]
     autocomplete_fields = ["from_person", "to_person", "types"]
+
+    def type(self, obj):
+        return ", ".join([_('is {type} of').format(type=type.text) for type in obj.types.all()])
 
 
 @admin.register(RelationType)
