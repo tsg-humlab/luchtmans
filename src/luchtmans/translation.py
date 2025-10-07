@@ -1,5 +1,5 @@
 from modeltranslation.translator import register, TranslationOptions
-from luchtmans.models import Country, Place, Religion, RelationType
+from luchtmans.models import Country, Place, Religion, RelationType, PersonPersonRelation
 
 
 @register(Country)
@@ -22,3 +22,6 @@ class RelationTypeTranslationOptions(TranslationOptions):
     fields = ('text',)
 
 
+@register(PersonPersonRelation)
+class PersonPersonRelationTranslationsOptions(TranslationOptions):
+    fields = tuple()
