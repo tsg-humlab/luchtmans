@@ -102,7 +102,7 @@ class Street(models.Model):
 class Address(Wikidata, GeoLocation):
     description = models.CharField(_("description"), max_length=256, default='')
     streetname_old = models.CharField(_("old street name"), max_length=256, blank=True)
-    house_number = models.CharField(_("house_number"), max_length=256)
+    house_number = models.CharField(_("house number"), max_length=256)
     street = models.ForeignKey(Street, models.PROTECT)
 
     class Meta:
