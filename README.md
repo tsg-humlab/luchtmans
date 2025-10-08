@@ -59,3 +59,11 @@ Using `docker-compose.yml` and `nginx.conf` from this repository, run the follow
 ```commandline
 docker compose up -d
 ```
+
+### Development server
+
+```commandline
+docker compose --file docker-compose-dev.yml watch
+```
+
+`watch` makes Docker watch for changes. When it detects changes, it will sync the files in the running container (see `docker-compose-dev.yml`). This container runs `python manage.py runserver ...` which in turn restarts when it detects any changes.
