@@ -8,6 +8,8 @@ services:
       - writable_volume:/app/writable
     env_file:
       - ./.env
+    ports:
+      - 80:${DJANGO_PORT}
     depends_on:
       postgres:
         condition: service_healthy
@@ -40,19 +42,6 @@ services:
     restart: unless-stopped
   redis:
     image: redis:latest
-    restart: unless-stopped
-  nginx:
-    image: nginx:latest
-    volumes:
-      - static_volume:/app/staticfiles
-      - writable_volume:/app/writable
-      - ./nginx.conf.template:/etc/nginx/templates/default.conf.template
-    env_file:
-      - ./.env
-    ports:
-      - 80:80
-    depends_on:
-      - web
     restart: unless-stopped
 
 volumes:
