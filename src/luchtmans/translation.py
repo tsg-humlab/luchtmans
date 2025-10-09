@@ -1,5 +1,5 @@
 from modeltranslation.translator import register, TranslationOptions, translator
-from luchtmans.models import (Country, Place, Religion, RelationType, Language, GenreParisianCategory,
+from luchtmans.models import (Country, Place, Religion, PersonPersonRelation, RelationType, Language, GenreParisianCategory,
                               PersonWorkRelationRole, Format, STCNGenre, PersonEditionRelationRole, ItemType,
                               Binding)
 
@@ -24,6 +24,11 @@ class RelationTypeTranslationOptions(TranslationOptions):
     fields = ('text',)
 
 
+@register(PersonPersonRelation)
+class PersonPersonRelationTranslationsOptions(TranslationOptions):
+    fields = tuple()
+
+
 class NameModelTranslationOptions(TranslationOptions):
     fields = ('name',)
 
@@ -35,3 +40,4 @@ translator.register(STCNGenre, NameModelTranslationOptions)
 translator.register(PersonEditionRelationRole, NameModelTranslationOptions)
 translator.register(ItemType, NameModelTranslationOptions)
 translator.register(Binding, NameModelTranslationOptions)
+
