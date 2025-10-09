@@ -1,11 +1,10 @@
 services:
   web:
-    build:
-      context: .
-      dockerfile: Dockerfile-dev
+    build: .
     volumes:
       - static_volume:/app/staticfiles
       - writable_volume:/app/writable
+      - ./entrypoint-dev.sh:/entrypoint.sh
     env_file:
       - ./.env
     ports:
