@@ -112,8 +112,7 @@ class ReligionAdmin(TranslationAdmin):
     search_fields = ["name"]
 
 # Register empty admin classes in one go
-for model in [PersonWorkRelation, Format, STCNGenre,
-              PersonEditionRelationRole, PersonEditionRelation, Collection, ItemType, Page, Binding, Item]:
+for model in [PersonWorkRelation, Format, PersonEditionRelation, Collection, ItemType, Page, Binding, Item]:
     base_class = TranslationAdmin if model.__base__ == UniqueNameModel else admin.ModelAdmin
     admin_class = type(model.__name__+'Admin', (base_class,), {})
     admin.site.register(model, admin_class)
@@ -158,3 +157,52 @@ class WorkAdmin(admin.ModelAdmin):
     @admin.display(description=_("languages"))
     def language_list(self, obj):
         return ", ".join(obj.languages.values_list('name', flat=True))
+
+
+@admin.register(STCNGenre)
+class STCNGenreAdmin(TranslationAdmin):
+    search_fields = ['name']
+
+
+class PersonInline(admin.TabularInline):
+    model = PersonEditionRelation
+    fields = ["edition", "person", "role"]
+    autocomplete_fields = ["person", "role"]
+    extra = 0
+    verbose_name = _("person")
+    verbose_name_plural = _("persons")
+
+
+@admin.register(PersonEditionRelationRole)
+class PersonEditionRelationRoleAdmin(TranslationAdmin):
+    search_fields = ['name']
+
+
+@admin.register(Edition)
+class EditionAdmin(admin.ModelAdmin):
+    list_display = ['title', 'person_list', 'edition_uncertain', 'years', 'place_of_publication_list', 'language_list',
+                    'volumes', 'stcn_genre_list', 'notes']
+    search_fields = ['short_title', 'title']
+    list_filter = ['edition_uncertain', 'places_of_publication', 'languages', 'stcn_genres']
+    autocomplete_fields = ['places_of_publication', 'languages', 'stcn_genres', 'work']
+    inlines = [PersonInline]
+
+    @admin.display(description=_("persons"))
+    def person_list(self, obj):
+        return ", ".join([f'{relation.person} ({relation.role})' for relation in obj.persons.through.objects.all()])
+
+    @admin.display(description=_("years"))
+    def years(self, obj):
+        return f'{obj.year_of_publication_start} - {obj.year_of_publication_end}'
+
+    @admin.display(description=_("places"))
+    def place_of_publication_list(self, obj):
+        return ", ".join(obj.places_of_publication.values_list('name', flat=True))
+
+    @admin.display(description=_("languages"))
+    def language_list(self, obj):
+        return ", ".join(obj.languages.values_list('name', flat=True))
+
+    @admin.display(description=_("STCN genres"))
+    def stcn_genre_list(self, obj):
+        return ", ".join(obj.stcn_genres.values_list('name', flat=True))

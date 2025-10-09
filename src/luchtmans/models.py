@@ -278,6 +278,9 @@ class Work(Wikidata, models.Model):
         verbose_name = _("work")
         verbose_name_plural = _("works")
 
+    def __str__(self):
+        return self.title
+
 
 class PersonWorkRelationRole(UniqueNameModel):
 
@@ -347,6 +350,9 @@ class Edition(models.Model):
         verbose_name = _("edition")
         verbose_name_plural = _("editions")
 
+    def __str__(self):
+        return self.short_title
+
 
 class PersonEditionRelationRole(UniqueNameModel):
 
@@ -363,6 +369,9 @@ class PersonEditionRelation(models.Model):
     class Meta:
         verbose_name = _("person edition relation")
         verbose_name_plural = _("person edition relations")
+
+    def __str__(self):
+        return _('{person} is {role} of {edition}').format(person=self.person, role=self.role, edition=self.edition)
 
 
 class Collection(models.Model):
