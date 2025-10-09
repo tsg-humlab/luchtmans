@@ -4,7 +4,11 @@ services:
     volumes:
       - static_volume:/app/staticfiles
       - writable_volume:/app/writable
-      - ./entrypoint-dev.sh:/entrypoint.sh
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+          mkdir -p /app/writable/media /app/writable/log
+          python manage.py runserver 0.0.0.0:${DJANGO_PORT}
     env_file:
       - ./.env
     ports:
