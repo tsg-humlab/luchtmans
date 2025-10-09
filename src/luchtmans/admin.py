@@ -37,6 +37,7 @@ class ReligionInline(admin.TabularInline):
 
 @admin.register(Person)
 class PersonAdmin(admin.ModelAdmin):
+    search_fields = ["short_name", "surname", "first_names"]
     inlines = [ReligionInline]
 
 
@@ -60,8 +61,8 @@ class ReligionAdmin(TranslationAdmin):
     pass
 
 # Register empty admin classes in one go
-for model in [PersonWorkRelationRole, PersonWorkRelation, Format, STCNGenre,
-              Edition, PersonEditionRelationRole, PersonEditionRelation, Collection, ItemType, Page, Binding, Item]:
+for model in [PersonWorkRelation, Format, STCNGenre,
+              PersonEditionRelationRole, PersonEditionRelation, Collection, ItemType, Page, Binding, Item]:
     base_class = TranslationAdmin if model.__base__ == UniqueNameModel else admin.ModelAdmin
     admin_class = type(model.__name__+'Admin', (base_class,), {})
     admin.site.register(model, admin_class)
@@ -77,12 +78,27 @@ class GenreParisianCategoryAdmin(TranslationAdmin):
     search_fields = ['name']
 
 
+@admin.register(PersonWorkRelationRole)
+class PersonWorkRelationRoleAdmin(TranslationAdmin):
+    search_fields = ['name']
+
+
+class AuthorInline(admin.TabularInline):
+    model = PersonWorkRelation
+    fields = ["work", "person", "role"]
+    autocomplete_fields = ["person", "role"]
+    extra = 0
+    verbose_name = _("author")
+    verbose_name_plural = _("authors")
+
+
 @admin.register(Work)
 class WorkAdmin(admin.ModelAdmin):
     list_display = ['title', 'authors_list', 'uncertain', 'language_list', 'viaf_id', 'genre_parisian_category', 'notes']
     search_fields = ['title']
     list_filter = ['uncertain', 'languages', 'genre_parisian_category']
     autocomplete_fields = ['languages', 'genre_parisian_category']
+    inlines = [AuthorInline]
 
     @admin.display(description=_("authors"))
     def authors_list(self, obj):
