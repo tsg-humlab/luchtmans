@@ -67,3 +67,17 @@ docker compose --file docker-compose-dev.yml watch
 ```
 
 `watch` makes Docker watch for changes. When it detects changes, it will sync the files in the running container (see `docker-compose-dev.yml`). This container runs `python manage.py runserver ...` which in turn restarts when it detects any changes.
+
+#### Logs
+
+```commandline
+docker compose --file docker-compose-dev.yml logs --follow web
+```
+
+#### Django commands
+
+```commandline
+docker compose --file docker-compose-dev.yml exec web python manage.py shell
+```
+
+Replace `shell` with `makemigrations`, `migrate`, etc.
