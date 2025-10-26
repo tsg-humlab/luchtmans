@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models.signals import post_save, post_delete
+from django.db.models.signals import post_save, post_delete, m2m_changed
 from django.utils.translation import gettext_lazy as _
 from django.dispatch import receiver
 
@@ -42,6 +42,46 @@ def post_delete_relation_creator(sender, relation_fields):
         sender.objects.filter(**relation_fields_swapped).delete()
 
     return post_delete_relation
+
+
+def copy_reverse_many_to_many_objects(base_obj, other_obj, many_to_many_fields, reverse_field_name, calling_function):
+    """
+    Takes the many-to-many objects from base_obj en adds the reverse of those objects to the other_obj.
+    """
+    # Prevent recursively calling m2m_changed signal
+    calling_function = globals()[calling_function]
+    m2m_changed.disconnect(calling_function, sender=PersonPersonRelation.types.through)
+
+    for field in many_to_many_fields:
+        base_m2m_objects = getattr(base_obj, field).all()
+        other_m2m_relation = getattr(other_obj, field)
+        other_m2m_relation.clear()
+        for base_m2m_object in base_m2m_objects:
+            reverse_obj = getattr(base_m2m_object, reverse_field_name)
+            other_m2m_relation.add(reverse_obj)
+
+    m2m_changed.connect(calling_function, sender=PersonPersonRelation.types.through)
+
+
+def m2m_changed_relation_creator(sender, relation_fields, m2m_fields, calling_function_name, reverse_field_name='reverse'):
+    @receiver(m2m_changed, sender=sender)
+    def m2m_changed_relation(sender, **kwargs):
+        instance = kwargs.pop('instance')
+        relation_fields_swapped = {
+            relation_fields[0]: getattr(instance, relation_fields[1]),
+            relation_fields[1]: getattr(instance, relation_fields[0]),
+        }
+        opposite_objects = instance._meta.model.objects.filter(**relation_fields_swapped)
+        if not opposite_objects.exists():
+            return
+
+        copy_reverse_many_to_many_objects(instance, opposite_objects[0], m2m_fields, reverse_field_name,
+                                          calling_function_name)
+
+        # Delete superfluous objects
+        instance._meta.model.objects.filter(id__in=opposite_objects[1:].values_list('id', flat=True)).delete()
+
+    return m2m_changed_relation
 
 
 class Wikidata(models.Model):
@@ -88,8 +128,7 @@ class Place(Wikidata, GeoLocation):
 
 
 class Street(models.Model):
-    new_name = models.CharField(_("new name"), max_length=1024)
-    old_name = models.TextField(_("old name"))
+    name = models.CharField(_("name"), max_length=1024)
     place = models.ForeignKey(Place, models.PROTECT)
 
     class Meta:
@@ -97,11 +136,13 @@ class Street(models.Model):
         verbose_name_plural = _("streets")
 
     def __str__(self):
-        return f'{self.new_name} [old: {self.old_name}]'
+        return f'{self.name}'
 
 
 class Address(Wikidata, GeoLocation):
-    house_number = models.CharField(_("house_number"), max_length=256)
+    description = models.CharField(_("description"), max_length=256, default='')
+    streetname_old = models.CharField(_("old street name"), max_length=256, blank=True)
+    house_number = models.CharField(_("house number"), max_length=256)
     street = models.ForeignKey(Street, models.PROTECT)
 
     class Meta:
@@ -198,8 +239,13 @@ class PersonPersonRelation(models.Model):
         return f'{self.from_person} is related to {self.to_person}'
 
 
+# Signal receivers for handling reverse PersonPersonRelations
 post_save_personpersonrelation = post_save_relation_creator(PersonPersonRelation, ('from_person', 'to_person'))
 post_delete_personpersonrelation = post_delete_relation_creator(PersonPersonRelation, ('from_person', 'to_person'))
+m2m_changed_personpersonrelation = m2m_changed_relation_creator(PersonPersonRelation.types.through,
+                                                                ('from_person', 'to_person'),
+                                                                ['types'],
+                                                       'm2m_changed_personpersonrelation')
 
 
 class PeriodOfResidence(models.Model):

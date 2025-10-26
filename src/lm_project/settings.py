@@ -55,6 +55,7 @@ INSTALLED_APPS = [
 
     'django_extensions',
     'rosetta',
+    'easyaudit',
 ]
 
 MIDDLEWARE = [
@@ -66,6 +67,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'easyaudit.middleware.easyaudit.EasyAuditMiddleware',
 ]
 
 ROOT_URLCONF = 'lm_project.urls'
@@ -96,6 +98,29 @@ DATABASES = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': WRITABLE_DIR / 'database' / 'db.sqlite3',
     }
+}
+
+
+LOG_LEVEL = env('LOG_LEVEL', 'INFO')
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "file": {
+            "level": LOG_LEVEL,
+            "class": "logging.handlers.TimedRotatingFileHandler",
+            "filename": WRITABLE_DIR / 'log' / 'django.log',
+            "when": "midnight",
+            "backupCount": 100,
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["file"],
+            "level": LOG_LEVEL,
+            "propagate": True,
+        },
+    },
 }
 
 
