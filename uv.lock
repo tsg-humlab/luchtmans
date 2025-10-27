@@ -77,6 +77,18 @@ wheels = [
 ]
 
 [[package]]
+name = "django-appconf"
+version = "1.1.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/61/a9/dcf95ff3fa0620b6818fc02276fbbb8926e7f286039b6d015e56e8b7af39/django-appconf-1.1.0.tar.gz", hash = "sha256:9fcead372f82a0f21ee189434e7ae9c007cbb29af1118c18251720f3d06243e4", size = 15986, upload-time = "2025-02-13T16:09:40.258Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/62/9e/f3a899991e4aaae4b69c1aa187ba4a32e34742475c91eb13010ee7fbe9db/django_appconf-1.1.0-py3-none-any.whl", hash = "sha256:7abd5a163ff57557f216e84d3ce9dac36c37ffce1ab9a044d3d53b7c943dd10f", size = 6389, upload-time = "2025-02-13T16:09:39.133Z" },
+]
+
+[[package]]
 name = "django-easy-audit"
 version = "1.3.7"
 source = { registry = "https://pypi.org/simple" }
@@ -124,6 +136,19 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/ff/d0/7c5de2e1479f9a97af8d86a6173ea635ec819b3848f5c4ea852b3f22b173/django_rosetta-0.10.2.tar.gz", hash = "sha256:7e02427fe43b578dc12e02d6ce2cb4d045cc751a91b6e7f2c5ef4f706e1fb3d0", size = 262724, upload-time = "2025-04-03T13:05:36.432Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/0f/0b/0a0088fa3721c0bddbd52177b072b0e8065be9ced68f9b579c55bd01d706/django_rosetta-0.10.2-py3-none-any.whl", hash = "sha256:44bd2b9ff2b88322d1a1f0cae62d8dfd4996b465f4a22a31f016cfd64d022352", size = 122592, upload-time = "2025-04-03T13:05:34.914Z" },
+]
+
+[[package]]
+name = "django-select2"
+version = "8.4.3"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django" },
+    { name = "django-appconf" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/0c/60/70f52b66b91e525695fd34a4e030f0680aac0f3815c909ecfe0942a7b154/django_select2-8.4.3.tar.gz", hash = "sha256:49626ccea8327dde7797d42788094fd362b502a479bc84b016d5c5c5ea976344", size = 13388, upload-time = "2025-10-15T09:16:33.493Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/89/4c/ac386908efcbe348db8a702d9fbf9369fe9d8dc8c61776403d29bd32a53d/django_select2-8.4.3-py3-none-any.whl", hash = "sha256:c5910cf7c1e1d393af3e96842df8c28c1efa55e23a7c5f26494cadeb3911579f", size = 15531, upload-time = "2025-10-15T09:16:32.108Z" },
 ]
 
 [[package]]
@@ -258,6 +283,7 @@ dependencies = [
     { name = "django-extensions" },
     { name = "django-modeltranslation" },
     { name = "django-rosetta" },
+    { name = "django-select2" },
     { name = "environs" },
     { name = "gunicorn" },
     { name = "psycopg", extra = ["binary"] },
@@ -270,6 +296,7 @@ requires-dist = [
     { name = "django-extensions", specifier = ">=4.1" },
     { name = "django-modeltranslation", specifier = ">=0.19.17" },
     { name = "django-rosetta", specifier = ">=0.10.2" },
+    { name = "django-select2", specifier = ">=8.4.3" },
     { name = "environs", specifier = ">=14.3.0" },
     { name = "gunicorn", specifier = ">=23.0.0" },
     { name = "psycopg", extras = ["binary"], specifier = ">=3.2.10" },

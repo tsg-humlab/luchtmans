@@ -1,9 +1,9 @@
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
-from django.utils import html
 
 from modeltranslation.admin import TranslationAdmin
+from django_select2.forms import HeavySelect2Widget
 
 from .models import (Country, Place, Street, Address, Person, PersonPersonRelation, RelationType, PeriodOfResidence,
                      Religion, PersonReligion, UniqueNameModel, Language, GenreParisianCategory, Work,
@@ -14,6 +14,14 @@ from .models import (Country, Place, Street, Address, Person, PersonPersonRelati
 @admin.register(Country)
 class CountryAdmin(TranslationAdmin):
     search_fields = ["name"]
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        form.base_fields['wikidata_id'].widget = HeavySelect2Widget(
+            data_view='wikidata'
+        )
+        return form
+
 
 
 @admin.register(Place)

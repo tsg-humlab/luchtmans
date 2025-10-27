@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'rosetta',
     'easyaudit',
+    'django_select2',
 ]
 
 MIDDLEWARE = [

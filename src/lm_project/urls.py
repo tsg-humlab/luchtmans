@@ -20,7 +20,11 @@ from django.urls import path, re_path, include
 from django.conf.urls.i18n import i18n_patterns
 
 
-urlpatterns = i18n_patterns(
+urlpatterns = [
+    path('', include('luchtmans.urls')),
+]
+
+urlpatterns += i18n_patterns(
     path('admin/', admin.site.urls),
 )
 
