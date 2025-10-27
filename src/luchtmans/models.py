@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models.signals import post_save, post_delete
+from django.db.models.signals import post_save, post_delete, m2m_changed
 from django.utils.translation import gettext_lazy as _
 from django.dispatch import receiver
 
@@ -207,6 +207,19 @@ class PersonPersonRelation(models.Model):
 
     def __str__(self):
         return f'{self.from_person} is related to {self.to_person}'
+
+
+@receiver(m2m_changed, sender=PersonPersonRelation.types.through)
+def copy_types_to_reverse(sender, instance, **kwargs):
+    reverse = PersonPersonRelation.objects.get(from_person=instance.to_person, to_person=instance.from_person)
+    PersonPersonRelation.types.through.objects.filter(personpersonrelation=reverse).delete()
+    types_for_reverse = []
+    for type in instance.types.all():
+        if type.reverse:
+            types_for_reverse.append(PersonPersonRelation.types.through(personpersonrelation=reverse, relationtype=type.reverse))
+        else:
+            types_for_reverse.append(PersonPersonRelation.types.through(personpersonrelation=reverse, relationtype=type))
+    PersonPersonRelation.types.through.objects.bulk_create(types_for_reverse)
 
 
 post_save_personpersonrelation = post_save_relation_creator(PersonPersonRelation, ('from_person', 'to_person'))
