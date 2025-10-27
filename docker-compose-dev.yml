@@ -1,0 +1,54 @@
+services:
+  web:
+    build: .
+    volumes:
+      - static_volume:/app/staticfiles
+      - writable_volume:/app/writable
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+          mkdir -p /app/writable/media /app/writable/log
+          python manage.py runserver 0.0.0.0:${DJANGO_PORT}
+    env_file:
+      - ./.env
+    ports:
+      - 80:${DJANGO_PORT}
+    depends_on:
+      postgres:
+        condition: service_healthy
+        restart: true
+      redis:
+        condition: service_started
+    restart: unless-stopped
+    develop:
+      watch:
+        - action: sync
+          path: ./src
+          target: /app
+        - action: rebuild
+          path: ./pyproject.toml
+  postgres:
+    image: postgres:15
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${SQL_USER} -d ${SQL_DATABASE}"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+      - postgres_dumps:/postgres_dumps
+    environment:
+      - POSTGRES_USER=${SQL_USER}
+      - POSTGRES_PASSWORD=${SQL_PASSWORD}
+      - POSTGRES_DB=${SQL_DATABASE}
+    restart: unless-stopped
+  redis:
+    image: redis:latest
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  postgres_dumps:
+  static_volume:
+  writable_volume:
