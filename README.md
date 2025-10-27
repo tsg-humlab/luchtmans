@@ -17,7 +17,7 @@ uv run src/manage.py compilemessages
 # Create a fresh requirements.txt
 uv pip compile pyproject.toml -o src/requirements.txt
 
-# Build the Docker image; change the name:tag for you situation
+# Build the Docker image; change the name:tag for your situation
 docker build -t ghcr.io/tsg-humlab/luchtmans:testing .
 ```
 
