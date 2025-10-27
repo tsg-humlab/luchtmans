@@ -63,23 +63,22 @@ def copy_reverse_many_to_many_objects(base_obj, other_obj, many_to_many_fields, 
     m2m_changed.connect(calling_function, sender=PersonPersonRelation.types.through)
 
 
-def m2m_changed_relation_creator(sender, relation_fields, m2m_fields, calling_function_name, reverse_field_name='reverse'):
+def m2m_changed_relation_creator(sender, relation_fields, relation_type_fields, m2m_relation_name, reverse_field_name='reverse'):
     @receiver(m2m_changed, sender=sender)
-    def m2m_changed_relation(sender, **kwargs):
-        instance = kwargs.pop('instance')
+    def m2m_changed_relation(sender, instance, **kwargs):
         relation_fields_swapped = {
             relation_fields[0]: getattr(instance, relation_fields[1]),
             relation_fields[1]: getattr(instance, relation_fields[0]),
         }
-        opposite_objects = instance._meta.model.objects.filter(**relation_fields_swapped)
-        if not opposite_objects.exists():
-            return
-
-        copy_reverse_many_to_many_objects(instance, opposite_objects[0], m2m_fields, reverse_field_name,
-                                          calling_function_name)
-
-        # Delete superfluous objects
-        instance._meta.model.objects.filter(id__in=opposite_objects[1:].values_list('id', flat=True)).delete()
+        reverse = instance._meta.model.objects.get(**relation_fields_swapped)
+        sender.objects.filter(**{relation_type_fields[0]: reverse}).delete()
+        types_for_reverse = []
+        for type in getattr(instance, m2m_relation_name).all():
+            reverse_type = getattr(type, reverse_field_name)
+            relation_type = reverse_type if reverse_type else type
+            types_for_reverse.append(sender(**{relation_type_fields[0]: reverse,
+                                               relation_type_fields[1]: relation_type}))
+        sender.objects.bulk_create(types_for_reverse)
 
     return m2m_changed_relation
 
@@ -97,6 +96,16 @@ class GeoLocation(models.Model):
 
     class Meta:
         abstract = True
+
+
+class UniqueNameModel(models.Model):
+    name = models.CharField(_("name"), max_length=256, unique=True)
+
+    class Meta:
+        abstract = True
+
+    def __str__(self):
+        return self.name
 
 
 # # # END Helper classes and functions # # #
@@ -244,8 +253,8 @@ post_save_personpersonrelation = post_save_relation_creator(PersonPersonRelation
 post_delete_personpersonrelation = post_delete_relation_creator(PersonPersonRelation, ('from_person', 'to_person'))
 m2m_changed_personpersonrelation = m2m_changed_relation_creator(PersonPersonRelation.types.through,
                                                                 ('from_person', 'to_person'),
-                                                                ['types'],
-                                                       'm2m_changed_personpersonrelation')
+                                                                ('personpersonrelation', 'relationtype'),
+                                                                'types')
 
 
 class PeriodOfResidence(models.Model):
@@ -274,3 +283,202 @@ class PersonReligion(models.Model):
 
     def __str__(self):
         return f'{self.person.short_name} was {self.religion.name.lower()}'
+
+
+class Language(UniqueNameModel):
+
+    class Meta:
+        verbose_name = _("language")
+        verbose_name_plural = _("languages")
+
+
+class GenreParisianCategory(UniqueNameModel):
+
+    class Meta:
+        verbose_name = _("genre Parisian category")
+        verbose_name_plural = _("genre Parisian categories")
+
+
+class Work(Wikidata, models.Model):
+    authors = models.ManyToManyField(
+        Person,
+        through="PersonWorkRelation",
+        through_fields=('work', 'person'),
+        verbose_name=_("authors")
+    )
+    title = models.CharField(_("title"), max_length=256)
+    uncertain = models.BooleanField(_("uncertain"))
+    languages = models.ManyToManyField(
+        Language,
+        blank=True,
+        verbose_name=_("languages"),
+    )
+    viaf_id = models.CharField(_("VIAF identifier"), max_length=256, blank=True)
+    genre_parisian_category = models.ForeignKey(GenreParisianCategory, null=True, blank=True, on_delete=models.PROTECT,
+                                                verbose_name=_("genre Parisian category"))
+    notes = models.TextField(_("notes"), blank=True)
+
+    class Meta:
+        verbose_name = _("work")
+        verbose_name_plural = _("works")
+
+    def __str__(self):
+        return self.title
+
+
+class PersonWorkRelationRole(UniqueNameModel):
+
+    class Meta:
+        verbose_name = _("person work relation role")
+        verbose_name_plural = _("person work relation roles")
+
+
+class PersonWorkRelation(models.Model):
+    person = models.ForeignKey(Person, on_delete=models.CASCADE, verbose_name=_("person"))
+    work = models.ForeignKey(Work, on_delete=models.CASCADE, verbose_name=_("work"))
+    role = models.ForeignKey(PersonWorkRelationRole, on_delete=models.PROTECT, verbose_name=_("role"))
+
+    class Meta:
+        verbose_name = _("person work relation")
+        verbose_name_plural = _("person work relations")
+
+
+class Format(UniqueNameModel):
+
+    class Meta:
+        verbose_name = _("format")
+        verbose_name_plural = _("formats")
+
+
+class STCNGenre(UniqueNameModel):
+
+    class Meta:
+        verbose_name = _("STCN genre")
+        verbose_name_plural = _("STCN genres")
+
+
+class Edition(models.Model):
+    stcn_id = models.CharField(_("STCN identifier"), max_length=256, blank=True)
+    persons = models.ManyToManyField(
+        Person,
+        blank=True,
+        through="PersonEditionRelation",
+        through_fields=('edition', 'person'),
+        verbose_name=_("authors")
+    )
+    title = models.CharField(_("title"), max_length=256)
+    edition_uncertain = models.BooleanField(_("edition is uncertain"))
+    year_of_publication_start = models.IntegerField(_("year of publication start"), null=True, blank=True)
+    year_of_publication_end = models.IntegerField(_("year of publication end"), null=True, blank=True)
+    places_of_publication = models.ManyToManyField(
+        Place,
+        blank=True,
+        verbose_name=_("places of publication")
+    )
+    volumes = models.CharField(_("volumes"), blank=True)
+    languages = models.ManyToManyField(
+        Language,
+        blank=True,
+        verbose_name=_("languages")
+    )
+    stcn_genres = models.ManyToManyField(
+        STCNGenre,
+        blank=True,
+        verbose_name=_("STCN genres")
+    )
+    notes = models.TextField(_("notes"), blank=True)
+    short_title = models.CharField(_("short title"), max_length=256)
+    work = models.ForeignKey(Work, on_delete=models.PROTECT, verbose_name=_("work"))
+
+    class Meta:
+        verbose_name = _("edition")
+        verbose_name_plural = _("editions")
+
+    def __str__(self):
+        return self.short_title
+
+
+class PersonEditionRelationRole(UniqueNameModel):
+
+    class Meta:
+        verbose_name = _("person edition relation role")
+        verbose_name_plural = _("person edition relation roles")
+
+
+class PersonEditionRelation(models.Model):
+    person = models.ForeignKey(Person, on_delete=models.CASCADE, verbose_name=_("person"))
+    edition = models.ForeignKey(Edition, on_delete=models.CASCADE, verbose_name=_("edition"))
+    role = models.ForeignKey(PersonEditionRelationRole, on_delete=models.PROTECT, verbose_name=_("role"))
+
+    class Meta:
+        verbose_name = _("person edition relation")
+        verbose_name_plural = _("person edition relations")
+
+    def __str__(self):
+        return _('{person} is {role} of {edition}').format(person=self.person, role=self.role, edition=self.edition)
+
+
+class Collection(models.Model):
+    short_title = models.CharField(_("short title"), max_length=256)
+    all_headers = models.TextField(_("all headers"), blank=True)
+    client = models.OneToOneField(Person, related_name="collection", on_delete=models.PROTECT, verbose_name=_("client"))
+    notes = models.TextField(_("notes"), blank=True)
+
+    class Meta:
+        verbose_name = _("collection")
+        verbose_name_plural = _("collections")
+
+
+class ItemType(UniqueNameModel):
+
+    class Meta:
+        verbose_name = _("item type")
+        verbose_name_plural = _("item type")
+
+
+class Page(models.Model):
+    RECTO = 'R'
+    VERSO = 'V'
+    RECTO_VERSO_CHOICES = {
+        RECTO: 'Recto',
+        VERSO: 'Verso'
+    }
+    volume = models.IntegerField(_("volume"))
+    folio = models.CharField(_("folio"), max_length=256)
+    recto_verso = models.CharField(_("recto or verso"), max_length=1, choices=RECTO_VERSO_CHOICES)
+
+    class Meta:
+        verbose_name = _("page")
+        verbose_name_plural = _("pages")
+
+
+class Binding(UniqueNameModel):
+
+    class Meta:
+        verbose_name = _("binding")
+        verbose_name_plural = _("bindings")
+
+
+class Item(models.Model):
+    collection = models.ForeignKey(Collection, on_delete=models.PROTECT, verbose_name=_("collection"))
+    transcription_full = models.CharField(_("full transcription"), max_length=256)
+    type = models.ForeignKey(ItemType, on_delete=models.PROTECT, verbose_name=_("type"))
+    non_book = models.BooleanField(_("non book"))
+    transcription_incomplete = models.BooleanField(_("transcription is incomplete"))
+    page = models.ForeignKey(Page, on_delete=models.PROTECT, verbose_name=_("page"))
+    date = models.DateField(_("date"), null=True, blank=True)
+    date_paid = models.DateField(_("date_paid"), null=True, blank=True)
+    editions = models.ManyToManyField(Edition, verbose_name=_("editions"))
+    edition_uncertain = models.BooleanField(_("edition is uncertain"))
+    volumes = models.CharField(_("volumes"), max_length=10, default='1')
+    number_of_copies = models.CharField(_("number of copies"), max_length=10, default='1')
+    binding = models.ManyToManyField(Binding, blank=True, verbose_name=_("bindings"))
+    languages = models.ManyToManyField(Language, blank=True, verbose_name=_("languages"))
+    price = models.CharField(_("price"), max_length=20, blank=True)
+    price_decimal = models.DecimalField(_("decimal price"), max_digits=20, decimal_places=2, blank=True)
+    notes = models.TextField(_("notes"), blank=True)
+    work_in_progress = models.BooleanField(_("work in progress"))
+
+    class Meta:
+        verbose_name = _("item")
+        verbose_name_plural = _("items")
