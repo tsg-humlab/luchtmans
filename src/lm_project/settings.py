@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 from environs import env
 
@@ -32,7 +33,7 @@ SECRET_KEY = env('SECRET_KEY')
 DEBUG = env.bool('DEBUG', False)
 
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
-
+CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS')
 
 LANGUAGES = [
     ("en", _("English")),
@@ -95,8 +96,12 @@ WSGI_APPLICATION = 'lm_project.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': WRITABLE_DIR / 'database' / 'db.sqlite3',
+        "ENGINE": env("SQL_ENGINE", default="django.db.backends.sqlite3"),
+        "NAME": env("SQL_DATABASE", default=WRITABLE_DIR / 'database' / 'db.sqlite3'),
+        "USER": env("SQL_USER", default=""),
+        "PASSWORD": env("SQL_PASSWORD", default=""),
+        "HOST": env("SQL_HOST", default=""),
+        "PORT": env("SQL_PORT", default=""),
     }
 }
 
@@ -159,6 +164,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+]
+
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
