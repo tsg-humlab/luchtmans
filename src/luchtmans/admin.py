@@ -12,7 +12,7 @@ from .models import (Country, Place, Street, Address, Person, PersonPersonRelati
                      Religion, PersonReligion, UniqueNameModel, Language, GenreParisianCategory, Work,
                      PersonWorkRelationRole, PersonWorkRelation, Format, STCNGenre, Edition, PersonEditionRelationRole,
                      PersonEditionRelation, Collection, ItemType, Page, Binding, Item)
-from .forms import ApiSelectWidget
+from .forms import ApiSelectWidget, ApiInfo
 
 
 @admin.register(Country)
@@ -37,7 +37,7 @@ class CountryAdmin(TranslationAdmin):
         form.base_fields['wikidata_id'].widget = ApiSelectWidget(
             data_view='wikidata',
             choices=[(obj.wikidata_id, text)],
-            obj=obj
+            api_info=ApiInfo(obj, 'wikidata_id', settings.WIKIDATA_URL, 'Wikidata')
         )
         return form
 
