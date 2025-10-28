@@ -178,3 +178,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 WIKIDATA_API_KEY = env('WIKIDATA_API_KEY', default="")
+WIKIDATA_LABEL_URL = 'https://www.wikidata.org/w/rest.php/wikibase/v1/entities/items/{}/labels/{}'
+WIKIDATA_URL = 'https://www.wikidata.org/wiki/{}'
+WIKIDATA_SUGGEST_URL = 'https://www.wikidata.org/w/rest.php/wikibase/v0/suggest/items'

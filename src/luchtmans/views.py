@@ -7,9 +7,6 @@ from django.conf import settings
 from django.utils import translation
 
 
-WIKIDATA_SUGGEST_URL = 'https://www.wikidata.org/w/rest.php/wikibase/v0/suggest/items'
-
-
 class WikidataSuggestView(AutoResponseView):
     def get(self, request, *args, **kwargs):
         api_key = settings.WIKIDATA_API_KEY
@@ -21,7 +18,7 @@ class WikidataSuggestView(AutoResponseView):
         page = int(page) if re.match(r'^[1-9]\d*$', page) else 1
         offset = (page - 1) * limit
 
-        response = requests.get(WIKIDATA_SUGGEST_URL,
+        response = requests.get(settings.WIKIDATA_SUGGEST_URL,
                                 params={'q': term, 'language': language_code, 'limit': limit, 'offset': offset},
                                 headers={'accept': 'application/json', 'Authorization': f'Bearer {api_key}'})
 

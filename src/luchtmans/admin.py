@@ -7,15 +7,12 @@ from django.utils.translation import gettext_lazy as _
 from django.utils import translation
 
 from modeltranslation.admin import TranslationAdmin
-from django_select2.forms import HeavySelect2Widget
 
 from .models import (Country, Place, Street, Address, Person, PersonPersonRelation, RelationType, PeriodOfResidence,
                      Religion, PersonReligion, UniqueNameModel, Language, GenreParisianCategory, Work,
                      PersonWorkRelationRole, PersonWorkRelation, Format, STCNGenre, Edition, PersonEditionRelationRole,
                      PersonEditionRelation, Collection, ItemType, Page, Binding, Item)
-
-
-WIKIDATA_LABEL_URL = 'https://www.wikidata.org/w/rest.php/wikibase/v1/entities/items/{}/labels/{}'
+from .forms import ApiSelectWidget
 
 
 @admin.register(Country)
@@ -25,21 +22,24 @@ class CountryAdmin(TranslationAdmin):
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
 
+        if not obj:
+            form.base_fields['wikidata_id'].widget = ApiSelectWidget(data_view='wikidata')
+            return form
+
         language_code = translation.get_language()
         api_key = settings.WIKIDATA_API_KEY
-        response = requests.get(WIKIDATA_LABEL_URL.format(obj.wikidata_id, language_code),
+        response = requests.get(settings.WIKIDATA_LABEL_URL.format(obj.wikidata_id, language_code),
                                 headers={'accept': 'application/json', 'Authorization': f'Bearer {api_key}'})
-        if response.status_code == requests.codes.ok:
-            text = f'{str(response.json())} ({obj.wikidata_id})'
-        else:
-            text = obj.wikidata_id
+        text = f'{str(response.json())} ({obj.wikidata_id})' \
+                    if response.status_code == requests.codes.ok \
+                    else obj.wikidata_id
 
-        form.base_fields['wikidata_id'].widget = HeavySelect2Widget(
+        form.base_fields['wikidata_id'].widget = ApiSelectWidget(
             data_view='wikidata',
-            choices=[(obj.wikidata_id, text)]
+            choices=[(obj.wikidata_id, text)],
+            obj=obj
         )
         return form
-
 
 
 @admin.register(Place)
