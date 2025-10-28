@@ -1,6 +1,10 @@
+import requests
+
+from django.conf import settings
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
+from django.utils import translation
 
 from modeltranslation.admin import TranslationAdmin
 from django_select2.forms import HeavySelect2Widget
@@ -11,14 +15,28 @@ from .models import (Country, Place, Street, Address, Person, PersonPersonRelati
                      PersonEditionRelation, Collection, ItemType, Page, Binding, Item)
 
 
+WIKIDATA_LABEL_URL = 'https://www.wikidata.org/w/rest.php/wikibase/v1/entities/items/{}/labels/{}'
+
+
 @admin.register(Country)
 class CountryAdmin(TranslationAdmin):
     search_fields = ["name"]
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
+
+        language_code = translation.get_language()
+        api_key = settings.WIKIDATA_API_KEY
+        response = requests.get(WIKIDATA_LABEL_URL.format(obj.wikidata_id, language_code),
+                                headers={'accept': 'application/json', 'Authorization': f'Bearer {api_key}'})
+        if response.status_code == requests.codes.ok:
+            text = f'{str(response.json())} ({obj.wikidata_id})'
+        else:
+            text = obj.wikidata_id
+
         form.base_fields['wikidata_id'].widget = HeavySelect2Widget(
-            data_view='wikidata'
+            data_view='wikidata',
+            choices=[(obj.wikidata_id, text)]
         )
         return form
 
