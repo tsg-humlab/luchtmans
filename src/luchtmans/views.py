@@ -37,7 +37,14 @@ class WikidataSuggestView(AutoResponseView):
 
 
 class FillFieldsView(AutoResponseView):
-    def get(self, request, *args, **kwargs):
+    def get(self, request, api_type, *args, **kwargs):
+        method = f'get_{api_type}_fillfield_reponse'
+        if hasattr(self, method) and callable(getattr(self, method)):
+            return JsonResponse(getattr(self, method)(request))
+        return JsonResponse({})
+
+    @staticmethod
+    def get_wikidata_fillfield_reponse(request):
         api_id = request.GET.get('api_id', "")
         field_name = request.GET.get('field_name', "")
         languages = request.GET.get('languages', "").split(",")
@@ -51,4 +58,4 @@ class FillFieldsView(AutoResponseView):
                 continue
             field_values[f'{field_name}_{language_code}'] = response.json()
 
-        return JsonResponse(field_values)
+        return field_values

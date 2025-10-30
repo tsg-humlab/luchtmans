@@ -40,6 +40,6 @@ class ApiSelectWidget(HeavySelect2Widget):
                     Show on {api_name}
                 </a>
                 <a class="button fill-button" id="fillbutton_{model_field_name}" data-fill-field-name="{fill_field_name}" 
-                data-languages="{languages}" type="">Fill in</a>
+                data-languages="{languages}" data-api-name="{api_name.lower()}" type="">Fill in</a>
             </div>
         """)
