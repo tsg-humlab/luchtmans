@@ -15,10 +15,7 @@ from .models import (Country, Place, Street, Address, Person, PersonPersonRelati
 from .forms import ApiSelectWidget, ApiInfo
 
 
-@admin.register(Country)
-class CountryAdmin(TranslationAdmin):
-    search_fields = ["name"]
-
+class WikidataMixin:
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
 
@@ -45,8 +42,13 @@ class CountryAdmin(TranslationAdmin):
         return form
 
 
+@admin.register(Country)
+class CountryAdmin(WikidataMixin, TranslationAdmin):
+    search_fields = ["name"]
+
+
 @admin.register(Place)
-class PlaceAdmin(TranslationAdmin):
+class PlaceAdmin(WikidataMixin, TranslationAdmin):
     list_display = ["name", "country"]
     search_fields = ["name", "country__name"]
     list_filter = ["country"]
