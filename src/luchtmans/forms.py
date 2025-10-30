@@ -33,9 +33,9 @@ class ApiSelectWidget(HeavySelect2Widget):
                                 else (escape(getattr(obj, model_field_name)), "")
 
         return output + mark_safe(f"""
-            <div style="margin: 4px 0 0 10px;">
+            <div id='api_block_{model_field_name}' style="margin: 4px 0 0 10px;{display_style}">
                 <a id="apilink_{model_field_name}" href="{url_template.format(api_id)}" target="_blank"
-                 href_base="{url_template[:-2]}" style="{display_style}">
+                 href_base="{url_template[:-2]}">
                     Show on {api_name}
                 </a>
                 <a class="button fill-button" id="fillbutton_{model_field_name}" data-fill-field-name="{fill_field_name}" 
