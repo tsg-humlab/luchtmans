@@ -47,10 +47,9 @@ class FillFieldsView(AutoResponseView):
     def get_wikidata_fillfield_reponse(request):
         api_id = request.GET.get('api_id', "")
         field_name = request.GET.get('field_name', "")
-        languages = request.GET.get('languages', "").split(",")
 
         field_values = {}
-        for language_code in languages:
+        for language_code, _ in settings.LANGUAGES:
             response = requests.get(settings.WIKIDATA_LABEL_URL.format(api_id, language_code),
                                     headers={'accept': 'application/json',
                                              'Authorization': f'Bearer {settings.WIKIDATA_API_KEY}'})
