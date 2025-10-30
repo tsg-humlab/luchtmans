@@ -16,25 +16,26 @@ class ApiInfo:
 
 
 class ApiSelectWidget(HeavySelect2Widget):
+    css_class_name = 'django-select2 django-select2-apilink'
+
+    class Media:
+        js = ["apilink.js"]
+
     def __init__(self, *args, **kwargs):
         self.api_info = kwargs.pop('api_info', None)
         super().__init__(*args, **kwargs)
 
     def render(self, *args, **kwargs):
         output =  super().render(*args, **kwargs)
-
-        if not self.api_info:
-            return output
-
         obj, model_field_name, url_template, api_name = astuple(self.api_info)
+        api_id, display_style = ("", "display: none") if not obj or not getattr(obj, model_field_name, None) \
+                                else (escape(getattr(obj, model_field_name)), "")
 
-        if not obj or not getattr(obj, model_field_name, None):
-            return output
-
-        id = escape(getattr(obj, model_field_name))
-        link = mark_safe(
-            f'<div style="margin: 4px 0 0 10px">'
-            f'<a href="{url_template.format(id)}" target="_blank">Show on {api_name}</a>'
-            f'</div>'
-        )
-        return output + link
+        return output + mark_safe(f"""
+            <div style="margin: 4px 0 0 10px;">
+                <a id="apilink_{model_field_name}" href="{url_template.format(api_id)}" target="_blank"
+                 href_base="{url_template[:-2]}" style="{display_style}">
+                    Show on {api_name}
+                </a>
+            </div>
+        """)

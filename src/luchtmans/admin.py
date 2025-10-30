@@ -23,7 +23,10 @@ class CountryAdmin(TranslationAdmin):
         form = super().get_form(request, obj, **kwargs)
 
         if not obj:
-            form.base_fields['wikidata_id'].widget = ApiSelectWidget(data_view='wikidata')
+            form.base_fields['wikidata_id'].widget = ApiSelectWidget(
+                data_view='wikidata',
+                api_info=ApiInfo(obj, 'wikidata_id', settings.WIKIDATA_URL, 'Wikidata')
+            )
             return form
 
         language_code = translation.get_language()
