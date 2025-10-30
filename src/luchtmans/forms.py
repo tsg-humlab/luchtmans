@@ -31,6 +31,7 @@ class ApiSelectWidget(HeavySelect2Widget):
         obj, model_field_name, url_template, api_name, fill_field_name = astuple(self.api_info)
         api_id, display_style = ("", "display: none") if not obj or not getattr(obj, model_field_name, None) \
                                 else (escape(getattr(obj, model_field_name)), "")
+        languages = ",".join([l[0] for l in settings.LANGUAGES])
 
         return output + mark_safe(f"""
             <div id='api_block_{model_field_name}' style="margin: 4px 0 0 10px;{display_style}">
@@ -39,6 +40,6 @@ class ApiSelectWidget(HeavySelect2Widget):
                     Show on {api_name}
                 </a>
                 <a class="button fill-button" id="fillbutton_{model_field_name}" data-fill-field-name="{fill_field_name}" 
-                data-languages="en,nl" type="">Fill in</a>
+                data-languages="{languages}" type="">Fill in</a>
             </div>
         """)
