@@ -25,7 +25,7 @@ class CountryAdmin(TranslationAdmin):
         if not obj:
             form.base_fields['wikidata_id'].widget = ApiSelectWidget(
                 data_view='wikidata',
-                api_info=ApiInfo(obj, 'wikidata_id', settings.WIKIDATA_URL, 'Wikidata')
+                api_info=ApiInfo(obj, 'wikidata_id', settings.WIKIDATA_URL, 'Wikidata', fill_field_name='name'),
             )
             return form
 
@@ -40,7 +40,7 @@ class CountryAdmin(TranslationAdmin):
         form.base_fields['wikidata_id'].widget = ApiSelectWidget(
             data_view='wikidata',
             choices=[(obj.wikidata_id, text)],
-            api_info=ApiInfo(obj, 'wikidata_id', settings.WIKIDATA_URL, 'Wikidata')
+            api_info=ApiInfo(obj, 'wikidata_id', settings.WIKIDATA_URL, 'Wikidata', fill_field_name='name')
         )
         return form
 

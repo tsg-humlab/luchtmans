@@ -34,3 +34,21 @@ class WikidataSuggestView(AutoResponseView):
             'results': results,
             'more': len(results) >= limit
         })
+
+
+class FillFieldsView(AutoResponseView):
+    def get(self, request, *args, **kwargs):
+        api_id = request.GET.get('api_id', "")
+        field_name = request.GET.get('field_name', "")
+        languages = request.GET.get('languages', "").split(",")
+
+        field_values = {}
+        for language_code in languages:
+            response = requests.get(settings.WIKIDATA_LABEL_URL.format(api_id, language_code),
+                                    headers={'accept': 'application/json',
+                                             'Authorization': f'Bearer {settings.WIKIDATA_API_KEY}'})
+            if response.status_code != requests.codes.ok:
+                continue
+            field_values[f'{field_name}_{language_code}'] = response.json()
+
+        return JsonResponse(field_values)

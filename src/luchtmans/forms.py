@@ -13,6 +13,7 @@ class ApiInfo:
     model_field_name: str
     url_template: str
     api_name: str
+    fill_field_name: str
 
 
 class ApiSelectWidget(HeavySelect2Widget):
@@ -27,7 +28,7 @@ class ApiSelectWidget(HeavySelect2Widget):
 
     def render(self, *args, **kwargs):
         output =  super().render(*args, **kwargs)
-        obj, model_field_name, url_template, api_name = astuple(self.api_info)
+        obj, model_field_name, url_template, api_name, fill_field_name = astuple(self.api_info)
         api_id, display_style = ("", "display: none") if not obj or not getattr(obj, model_field_name, None) \
                                 else (escape(getattr(obj, model_field_name)), "")
 
@@ -37,5 +38,7 @@ class ApiSelectWidget(HeavySelect2Widget):
                  href_base="{url_template[:-2]}" style="{display_style}">
                     Show on {api_name}
                 </a>
+                <a class="button fill-button" id="fillbutton_{model_field_name}" data-fill-field-name="{fill_field_name}" 
+                data-languages="en,nl" type="">Fill in</a>
             </div>
         """)
