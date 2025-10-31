@@ -18,12 +18,10 @@ from .forms import ApiSelectWidget, ApiInfo
 class WikidataMixin:
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
+        api_info = ApiInfo(obj, 'wikidata_id', settings.WIKIDATA_URL, 'Wikidata', fill_field_name=self.fill_field_name)
 
         if not obj:
-            form.base_fields['wikidata_id'].widget = ApiSelectWidget(
-                data_view='wikidata',
-                api_info=ApiInfo(obj, 'wikidata_id', settings.WIKIDATA_URL, 'Wikidata', fill_field_name='name'),
-            )
+            form.base_fields['wikidata_id'].widget = ApiSelectWidget(data_view='wikidata', api_info=api_info)
             return form
 
         language_code = translation.get_language()
@@ -34,11 +32,8 @@ class WikidataMixin:
                     if response.status_code == requests.codes.ok \
                     else obj.wikidata_id
 
-        form.base_fields['wikidata_id'].widget = ApiSelectWidget(
-            data_view='wikidata',
-            choices=[(obj.wikidata_id, text)],
-            api_info=ApiInfo(obj, 'wikidata_id', settings.WIKIDATA_URL, 'Wikidata', fill_field_name='name')
-        )
+        form.base_fields['wikidata_id'].widget = ApiSelectWidget(data_view='wikidata', api_info=api_info,
+                                                                 choices=[(obj.wikidata_id, text)])
         return form
 
 
