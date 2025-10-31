@@ -39,6 +39,6 @@ class ApiSelectWidget(HeavySelect2Widget):
                     Show on {api_name}
                 </a>
                 <a class="button fill-button" id="fillbutton_{model_field_name}" data-fill-field-name="{fill_field_name}" 
-                data-api-name="{api_name.lower()}" type="">Fill in</a>
+                type="">Fill in</a>
             </div>
         """)

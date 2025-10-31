@@ -40,6 +40,7 @@ class WikidataMixin:
 @admin.register(Country)
 class CountryAdmin(WikidataMixin, TranslationAdmin):
     search_fields = ["name"]
+    fill_field_name = 'country_wikidata'
 
 
 @admin.register(Place)
@@ -48,6 +49,7 @@ class PlaceAdmin(WikidataMixin, TranslationAdmin):
     search_fields = ["name", "country__name"]
     list_filter = ["country"]
     autocomplete_fields = ["country"]
+    fill_field_name = 'place_wikidata'
 
 
 @admin.register(Street)

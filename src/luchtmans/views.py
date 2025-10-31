@@ -37,16 +37,15 @@ class WikidataSuggestView(AutoResponseView):
 
 
 class FillFieldsView(AutoResponseView):
-    def get(self, request, api_type, *args, **kwargs):
-        method = f'get_{api_type}_fillfield_reponse'
+    def get(self, request, fill_field_name, *args, **kwargs):
+        method = f'get_{fill_field_name}_fillfield_response'
         if hasattr(self, method) and callable(getattr(self, method)):
             return JsonResponse(getattr(self, method)(request))
         return JsonResponse({})
 
     @staticmethod
-    def get_wikidata_fillfield_reponse(request):
+    def get_country_wikidata_fillfield_response(request):
         api_id = request.GET.get('api_id', "")
-        field_name = request.GET.get('field_name', "")
 
         field_values = {}
         for language_code, _ in settings.LANGUAGES:
@@ -55,6 +54,11 @@ class FillFieldsView(AutoResponseView):
                                              'Authorization': f'Bearer {settings.WIKIDATA_API_KEY}'})
             if response.status_code != requests.codes.ok:
                 continue
-            field_values[f'{field_name}_{language_code}'] = response.json()
+            field_values[f'name_{language_code}'] = response.json()
 
         return field_values
+
+    @staticmethod
+    def get_place_wikidata_fillfield_response(request):
+        # This happens to be the same as for Country
+        return FillFieldsView.get_country_wikidata_fillfield_response(request)

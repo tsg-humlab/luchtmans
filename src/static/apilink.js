@@ -13,11 +13,10 @@ jQuery('ready', () => {
         const elem = e.currentTarget;
         const fieldName = elem.id.slice("fillbutton_".length);
         const fillFieldName = elem.getAttribute('data-fill-field-name');
-        const apiName = elem.getAttribute('data-api-name');
         const id =  django.jQuery('#id_'+fieldName).find(':selected')[0].value;
     
         django.jQuery.ajax({
-            url: "/fill_fields/"+apiName+"/?api_id="+id+"&field_name="+fillFieldName,
+            url: "/fill_fields/"+fillFieldName+"/?api_id="+id,
             success: function(result) {
                 django.jQuery.each(result, (fieldName, value) => {
                     django.jQuery('#id_'+fieldName).val(value);
