@@ -18,8 +18,20 @@ jQuery('ready', () => {
         django.jQuery.ajax({
             url: "/fill_fields/"+fillFieldName+"/?api_id="+id,
             success: function(result) {
-                django.jQuery.each(result, (fieldName, value) => {
-                    django.jQuery('#id_'+fieldName).val(value);
+                django.jQuery.each(result, (fieldName, data) => {
+                    const field = django.jQuery('#id_'+fieldName);
+                    if (field.hasClass("select2-hidden-accessible")) {
+                        if (field.find("option[value='" + data.id + "']").length) {
+                            field.val(data.id).trigger('change');
+                        } else {
+                            // Create a DOM Option and pre-select by default
+                            var newOption = new Option(data.text, data.id, true, true);
+                            // Append it to the select
+                            field.append(newOption).trigger('change');
+                        }
+                    } else {
+                        field.val(data);
+                    }
                 });
             }
         });

@@ -6,6 +6,8 @@ from django.http import JsonResponse
 from django.conf import settings
 from django.utils import translation
 
+from .models import Country
+
 
 class WikidataSuggestView(AutoResponseView):
     def get(self, request, *args, **kwargs):
@@ -36,6 +38,18 @@ class WikidataSuggestView(AutoResponseView):
         })
 
 
+def get_wikidata_labels(api_id, prefix):
+    field_values = {}
+    for language_code, _ in settings.LANGUAGES:
+        response = requests.get(settings.WIKIDATA_LABEL_URL.format(api_id, language_code),
+                                headers={'accept': 'application/json',
+                                         'Authorization': f'Bearer {settings.WIKIDATA_API_KEY}'})
+        if response.status_code != requests.codes.ok:
+            continue
+        field_values[f'{prefix}{language_code}'] = response.json()
+    return field_values
+
+
 class FillFieldsView(AutoResponseView):
     def get(self, request, fill_field_name, *args, **kwargs):
         method = f'get_{fill_field_name}_fillfield_response'
@@ -46,19 +60,22 @@ class FillFieldsView(AutoResponseView):
     @staticmethod
     def get_country_wikidata_fillfield_response(request):
         api_id = request.GET.get('api_id', "")
-
-        field_values = {}
-        for language_code, _ in settings.LANGUAGES:
-            response = requests.get(settings.WIKIDATA_LABEL_URL.format(api_id, language_code),
-                                    headers={'accept': 'application/json',
-                                             'Authorization': f'Bearer {settings.WIKIDATA_API_KEY}'})
-            if response.status_code != requests.codes.ok:
-                continue
-            field_values[f'name_{language_code}'] = response.json()
-
-        return field_values
+        return get_wikidata_labels(api_id, "name_")
 
     @staticmethod
     def get_place_wikidata_fillfield_response(request):
-        # This happens to be the same as for Country
-        return FillFieldsView.get_country_wikidata_fillfield_response(request)
+        api_id = request.GET.get('api_id', "")
+        field_values = get_wikidata_labels(api_id, "name_")
+
+        response = requests.get('https://www.wikidata.org/w/rest.php/wikibase/v1/entities/items/{}?_fields=statements'.format(api_id),
+                                headers={'accept': 'application/json',
+                                         'Authorization': f'Bearer {settings.WIKIDATA_API_KEY}'})
+        if response.status_code == requests.codes.ok:
+            data = response.json()
+            wikidata_id = data['statements']['P17'][0]['value']['content']
+            countries = Country.objects.filter(wikidata_id=wikidata_id)
+            if countries.exists():
+                country = countries[0]
+                field_values['country'] = {'text': country.name, 'id': country.pk}
+
+        return field_values
