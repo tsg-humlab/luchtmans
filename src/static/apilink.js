@@ -1,4 +1,8 @@
 jQuery('ready', () => {
+    // Allow HTML in options
+    django.jQuery('#id_wikidata_id').select2.defaults.defaults.templateResult = (option) => django.jQuery(option.text);
+    django.jQuery('#id_wikidata_id').select2.defaults.defaults.templateSelection = (option) => django.jQuery(option.text);
+
     // Change API link
     django.jQuery('.django-select2-apilink').on('change', (e) => {
         const fieldName = e.currentTarget.id.slice("id_".length);

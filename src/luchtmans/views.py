@@ -1,3 +1,5 @@
+import html
+
 import requests
 import re
 
@@ -28,7 +30,7 @@ class WikidataSuggestView(AutoResponseView):
             return JsonResponse({'results': {}, 'more': False})
 
         results = [
-            {'id': item['id'], 'text': f'{item['display-label']['value']} ({item['id']})'}
+            {'id': html.escape(item['id']), 'text': self.render_text(item)}
             for item in response.json().get('results', [])
         ]
 
@@ -36,6 +38,20 @@ class WikidataSuggestView(AutoResponseView):
             'results': results,
             'more': len(results) >= limit
         })
+
+    @staticmethod
+    def render_text(item):
+        id = html.escape(item['id'])
+        label = html.escape(item['display-label']['value'])
+        description = html.escape(item['description']['value'] if item['description'] else '')
+        return f"""
+            <div>
+                <b>{label}</b>
+                <span style='color: dimgray; margin-left: auto; margin-right: 0'>{id}</span>
+            <br/>
+                <small>{description}</small>
+            </div>
+        """
 
 
 def get_wikidata_labels(api_id, prefix):
