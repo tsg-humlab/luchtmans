@@ -4,7 +4,7 @@ from django.conf import settings
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
-from django.utils import translation
+from django.utils import translation, html
 
 from modeltranslation.admin import TranslationAdmin
 
@@ -28,9 +28,12 @@ class WikidataMixin:
         api_key = settings.WIKIDATA_API_KEY
         response = requests.get(settings.WIKIDATA_LABEL_URL.format(obj.wikidata_id, language_code),
                                 headers={'accept': 'application/json', 'Authorization': f'Bearer {api_key}'})
-        text = f'{str(response.json())} ({obj.wikidata_id})' \
-                    if response.status_code == requests.codes.ok \
-                    else obj.wikidata_id
+        text = f"""
+            <div>
+                <b>{str(response.json())}</b>
+                <span style='color: dimgray; margin-left: auto; margin-right: 0'>{obj.wikidata_id}</span>
+            </div>
+        """
 
         form.base_fields['wikidata_id'].widget = ApiSelectWidget(data_view='wikidata', api_info=api_info,
                                                                  choices=[(obj.wikidata_id, text)])
