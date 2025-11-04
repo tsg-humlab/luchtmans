@@ -1,7 +1,15 @@
+function defaultTemplateResult(option) {
+    const text = option.text.trim();
+    if(text.startsWith('<div>')) {
+        return django.jQuery(option.text);
+    }
+    return option.text;
+}
+
 jQuery('ready', () => {
     // Allow HTML in options
-    django.jQuery('.django-select2').select2.defaults.defaults.templateResult = (option) => django.jQuery(option.text);
-    django.jQuery('.django-select2').select2.defaults.defaults.templateSelection = (option) => django.jQuery(option.text);
+    django.jQuery('.django-select2').select2.defaults.defaults.templateResult = defaultTemplateResult;
+    django.jQuery('.django-select2').select2.defaults.defaults.templateSelection = defaultTemplateResult;
 
     // Change API link
     django.jQuery('.django-select2-apilink').on('change', (e) => {
