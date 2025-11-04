@@ -77,13 +77,35 @@ def get_wikidata_label(data, property, language='en'):
     return resp.json() if resp.status_code == requests.codes.ok else ''
 
 
+def get_or_create_object_from_wikidata_id(wikidata_id, property, model):
+    response = requests.get(settings.WIKIDATA_STATEMENTS_URL.format(wikidata_id),
+                            headers={'accept': 'application/json',
+                                     'Authorization': f'Bearer {settings.WIKIDATA_API_KEY}'})
+    if response.status_code != requests.codes.ok:
+        return None
+    data = response.json()
+    return get_option_from_wikidata_property(data, property, model).get('id', None)
+
+
+def create_object_from_wikidata_id(model, wikidata_id):
+    if model not in [Place, Country]:
+        return None
+    field_values = get_wikidata_label_translations(wikidata_id, 'name_')
+    field_values['wikidata_id'] = wikidata_id
+    if model == Place:
+        field_values['country_id'] = get_or_create_object_from_wikidata_id(wikidata_id, 'P17', Country)
+    return model.objects.create(**field_values)
+
+
 def get_option_from_wikidata_property(data, property, model):
     wikidata_id = get_nested_object(data, ('statements', property, 0, 'value', 'content'))
     objects = model.objects.filter(wikidata_id=wikidata_id)
-    if not objects:
-        return {}
-    obj = objects[0]
-    return {'text': str(objects[0]), 'id': obj.pk}
+    if objects:
+        obj = objects[0]
+        return {'text': str(obj), 'id': obj.pk}
+    if obj := create_object_from_wikidata_id(model, wikidata_id):
+        return {'text': str(obj), 'id': obj.pk}
+    return {}
 
 
 class FillFieldsView(AutoResponseView):
