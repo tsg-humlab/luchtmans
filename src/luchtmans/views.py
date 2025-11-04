@@ -8,7 +8,8 @@ from django.http import JsonResponse
 from django.conf import settings
 from django.utils import translation
 
-from .models import Country
+from .models import Country, Person, Place
+from .utils import get_nested_object
 
 
 class WikidataSuggestView(AutoResponseView):
@@ -48,13 +49,13 @@ class WikidataSuggestView(AutoResponseView):
             <div>
                 <b>{label}</b>
                 <span style='color: dimgray; margin-left: auto; margin-right: 0'>{id}</span>
-            <br/>
+                <br/>
                 <small>{description}</small>
             </div>
         """
 
 
-def get_wikidata_labels(api_id, prefix):
+def get_wikidata_label_translations(api_id, prefix):
     field_values = {}
     for language_code, _ in settings.LANGUAGES:
         response = requests.get(settings.WIKIDATA_LABEL_URL.format(api_id, language_code),
@@ -64,6 +65,25 @@ def get_wikidata_labels(api_id, prefix):
             continue
         field_values[f'{prefix}{language_code}'] = response.json()
     return field_values
+
+
+def get_wikidata_label(data, property, language='en'):
+    id = get_nested_object(data, ('statements', property, 0, 'value', 'content'))
+    if not id:
+        return ''
+    resp = requests.get(settings.WIKIDATA_LABEL_URL.format(id, language),
+                        headers={'accept': 'application/json',
+                                 'Authorization': f'Bearer {settings.WIKIDATA_API_KEY}'})
+    return resp.json() if resp.status_code == requests.codes.ok else ''
+
+
+def get_option_from_wikidata_property(data, property, model):
+    wikidata_id = get_nested_object(data, ('statements', property, 0, 'value', 'content'))
+    objects = model.objects.filter(wikidata_id=wikidata_id)
+    if not objects:
+        return {}
+    obj = objects[0]
+    return {'text': str(objects[0]), 'id': obj.pk}
 
 
 class FillFieldsView(AutoResponseView):
@@ -76,22 +96,43 @@ class FillFieldsView(AutoResponseView):
     @staticmethod
     def get_country_wikidata_fillfield_response(request):
         api_id = request.GET.get('api_id', "")
-        return get_wikidata_labels(api_id, "name_")
+        return get_wikidata_label_translations(api_id, "name_")
 
     @staticmethod
     def get_place_wikidata_fillfield_response(request):
         api_id = request.GET.get('api_id', "")
-        field_values = get_wikidata_labels(api_id, "name_")
+        field_values = get_wikidata_label_translations(api_id, "name_")
 
-        response = requests.get('https://www.wikidata.org/w/rest.php/wikibase/v1/entities/items/{}?_fields=statements'.format(api_id),
+        response = requests.get(settings.WIKIDATA_STATEMENTS_URL.format(api_id),
                                 headers={'accept': 'application/json',
                                          'Authorization': f'Bearer {settings.WIKIDATA_API_KEY}'})
         if response.status_code == requests.codes.ok:
             data = response.json()
-            wikidata_id = data['statements']['P17'][0]['value']['content']
-            countries = Country.objects.filter(wikidata_id=wikidata_id)
-            if countries.exists():
-                country = countries[0]
-                field_values['country'] = {'text': country.name, 'id': country.pk}
+            field_values['country'] = get_option_from_wikidata_property(data, 'P17', Country)
+
+        return field_values
+
+    @staticmethod
+    def get_person_wikidata_fillfield_response(request):
+        api_id = request.GET.get('api_id', "")
+        field_values = {}
+
+        response = requests.get(settings.WIKIDATA_STATEMENTS_URL.format(api_id),
+                                headers={'accept': 'application/json',
+                                         'Authorization': f'Bearer {settings.WIKIDATA_API_KEY}'})
+
+        if response.status_code == requests.codes.ok:
+            data = response.json()
+            field_values['first_names'] = get_wikidata_label(data, 'P735')
+            field_values['surname'] = get_wikidata_label(data, 'P734')
+            field_values['date_of_birth'] = get_nested_object(data, ('statements', 'P569', 0, 'value', 'content',
+                                                                     'time', slice(1, 11)))
+            field_values['date_of_death'] = get_nested_object(data, ('statements', 'P570', 0, 'value', 'content',
+                                                                     'time', slice(1, 11)))
+            sex = get_wikidata_label(data, 'P21')
+            field_values['sex'] = getattr(Person.GenderChoices, sex.upper()).value \
+                                    if sex and hasattr(Person.GenderChoices, sex.upper()) else None
+            field_values['place_of_birth'] = get_option_from_wikidata_property(data, 'P19', Place)
+            field_values['place_of_death'] = get_option_from_wikidata_property(data, 'P20', Place)
 
         return field_values

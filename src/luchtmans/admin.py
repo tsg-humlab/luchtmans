@@ -98,7 +98,7 @@ class ReligionInline(admin.TabularInline):
 
 
 @admin.register(Person)
-class PersonAdmin(admin.ModelAdmin):
+class PersonAdmin(WikidataMixin, admin.ModelAdmin):
     list_display = [
         "short_name",
         "sex",
@@ -110,6 +110,7 @@ class PersonAdmin(admin.ModelAdmin):
     autocomplete_fields = ["place_of_birth", "place_of_death"]
     list_filter = ["sex", "place_of_birth", "place_of_death", "religious_affiliation"]
     inlines = [RelatedPersonInline, ReligionInline]
+    fill_field_name = 'person_wikidata'
 
     def wikidata_link(self, obj):
         wikidata_id = html.escape(obj.wikidata_id)
