@@ -18,9 +18,7 @@ class ApiInfo:
 
 class ApiSelectWidget(HeavySelect2Widget):
     css_class_name = 'django-select2 django-select2-apilink'
-
-    class Media:
-        js = ["apilink.js"]
+    js = 'apilink.js'
 
     def __init__(self, *args, **kwargs):
         self.api_info = kwargs.pop('api_info', None)
@@ -41,4 +39,5 @@ class ApiSelectWidget(HeavySelect2Widget):
                 <a class="button fill-button" id="fillbutton_{model_field_name}" data-fill-field-name="{fill_field_name}" 
                 type="">Fill in</a>
             </div>
+            <script src="{settings.STATIC_URL}{self.js}"></script>
         """)
