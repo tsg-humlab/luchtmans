@@ -1,7 +1,10 @@
+import requests
+
+from django.conf import settings
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
-from django.utils import html
+from django.utils import translation, html
 
 from modeltranslation.admin import TranslationAdmin
 
@@ -9,19 +12,47 @@ from .models import (Country, Place, Street, Address, Person, PersonPersonRelati
                      Religion, PersonReligion, UniqueNameModel, Language, GenreParisianCategory, Work,
                      PersonWorkRelationRole, PersonWorkRelation, Format, STCNGenre, Edition, PersonEditionRelationRole,
                      PersonEditionRelation, Collection, ItemType, Page, Binding, Item)
+from .forms import ApiSelectWidget, ApiInfo
+
+
+class WikidataMixin:
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        api_info = ApiInfo(obj, 'wikidata_id', settings.WIKIDATA_URL, 'Wikidata', fill_field_name=self.fill_field_name)
+
+        if not obj:
+            form.base_fields['wikidata_id'].widget = ApiSelectWidget(data_view='wikidata', api_info=api_info)
+            return form
+
+        language_code = translation.get_language()
+        api_key = settings.WIKIDATA_API_KEY
+        response = requests.get(settings.WIKIDATA_LABEL_URL.format(obj.wikidata_id, language_code),
+                                headers={'accept': 'application/json', 'Authorization': f'Bearer {api_key}'})
+        text = f"""
+            <div>
+                <b>{str(response.json())}</b>
+                <span style='color: dimgray; margin-left: auto; margin-right: 0'>{obj.wikidata_id}</span>
+            </div>
+        """
+
+        form.base_fields['wikidata_id'].widget = ApiSelectWidget(data_view='wikidata', api_info=api_info,
+                                                                 choices=[(obj.wikidata_id, text)])
+        return form
 
 
 @admin.register(Country)
-class CountryAdmin(TranslationAdmin):
+class CountryAdmin(WikidataMixin, TranslationAdmin):
     search_fields = ["name"]
+    fill_field_name = 'country_wikidata'
 
 
 @admin.register(Place)
-class PlaceAdmin(TranslationAdmin):
+class PlaceAdmin(WikidataMixin, TranslationAdmin):
     list_display = ["name", "country"]
     search_fields = ["name", "country__name"]
     list_filter = ["country"]
     autocomplete_fields = ["country"]
+    fill_field_name = 'place_wikidata'
 
 
 @admin.register(Street)
@@ -67,7 +98,7 @@ class ReligionInline(admin.TabularInline):
 
 
 @admin.register(Person)
-class PersonAdmin(admin.ModelAdmin):
+class PersonAdmin(WikidataMixin, admin.ModelAdmin):
     list_display = [
         "short_name",
         "sex",
@@ -79,6 +110,7 @@ class PersonAdmin(admin.ModelAdmin):
     autocomplete_fields = ["place_of_birth", "place_of_death"]
     list_filter = ["sex", "place_of_birth", "place_of_death", "religious_affiliation"]
     inlines = [RelatedPersonInline, ReligionInline]
+    fill_field_name = 'person_wikidata'
 
     def wikidata_link(self, obj):
         wikidata_id = html.escape(obj.wikidata_id)

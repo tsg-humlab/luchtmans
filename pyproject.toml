@@ -8,6 +8,7 @@ dependencies = [
     "django-extensions>=4.1",
     "django-modeltranslation>=0.19.17",
     "django-rosetta>=0.10.2",
+    "django-select2>=8.4.3",
     "environs>=14.3.0",
     "gunicorn>=23.0.0",
     "psycopg[binary]>=3.2.10",
