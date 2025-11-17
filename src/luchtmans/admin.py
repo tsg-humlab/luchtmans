@@ -56,22 +56,24 @@ class PlaceAdmin(WikidataMixin, TranslationAdmin):
 
 
 @admin.register(Street)
-class StreetAdmin(admin.ModelAdmin):
+class StreetAdmin(WikidataMixin, admin.ModelAdmin):
     list_display = ["name", "place", "country"]
     search_fields = ["name", "place__name"]
     list_filter = ["place"]
     autocomplete_fields = ["place"]
+    fill_field_name = 'street_wikidata'
 
     def country(self, obj):
         return obj.place.country
 
 
 @admin.register(Address)
-class AddressAdmin(admin.ModelAdmin):
+class AddressAdmin(WikidataMixin, admin.ModelAdmin):
     list_display = ["address", "place", "description", "streetname_old"]
     search_fields = ["description", "streetname_old", "house_number"]
     list_filter = ["street__place__name"]
     autocomplete_fields = ["street"]
+    fill_field_name = 'address_wikidata'
 
     @admin.display(description=_("address"))
     def address(self, obj):
@@ -97,6 +99,12 @@ class ReligionInline(admin.TabularInline):
     verbose_name = _("Religious affiliation")
 
 
+class PeriodOfResidenceInline(admin.TabularInline):
+    model = PeriodOfResidence
+    extra = 0
+    autocomplete_fields = ["address"]
+
+
 @admin.register(Person)
 class PersonAdmin(WikidataMixin, admin.ModelAdmin):
     list_display = [
@@ -109,7 +117,7 @@ class PersonAdmin(WikidataMixin, admin.ModelAdmin):
     search_fields = ["short_name", "surname", "first_names"]
     autocomplete_fields = ["place_of_birth", "place_of_death"]
     list_filter = ["sex", "place_of_birth", "place_of_death", "religious_affiliation"]
-    inlines = [RelatedPersonInline, ReligionInline]
+    inlines = [RelatedPersonInline, ReligionInline, PeriodOfResidenceInline]
     fill_field_name = 'person_wikidata'
 
     def wikidata_link(self, obj):

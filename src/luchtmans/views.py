@@ -161,3 +161,18 @@ class FillFieldsView(AutoResponseView):
             field_values['place_of_death'] = get_option_from_wikidata_property(data, 'P20', Place)
 
         return {k:v for k,v in field_values.items() if v}  # Leave out items with empty values
+
+    @staticmethod
+    def get_address_wikidata_fillfield_response(request):
+        api_id = request.GET.get('api_id', "")
+        field_values = {'description': get_wikidata_label(api_id)}
+        # TODO Get/create Housenumber, Street, Place and Country (problem: the info is hard to get from WikiData)
+        return {k:v for k,v in field_values.items() if v}  # Leave out items with empty values
+
+    @staticmethod
+    def get_street_wikidata_fillfield_response(request):
+        api_id = request.GET.get('api_id', "")
+        field_values = {}
+        field_values['name'] = get_wikidata_label(api_id)
+        # TODO Create Place en Country (problem: streets are often linked to a municipality instead of a city)
+        return {k:v for k,v in field_values.items() if v}  # Leave out items with empty values

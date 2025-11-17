@@ -136,7 +136,7 @@ class Place(Wikidata, GeoLocation):
         return self.name
 
 
-class Street(models.Model):
+class Street(Wikidata, GeoLocation):
     name = models.CharField(_("name"), max_length=1024)
     place = models.ForeignKey(Place, models.PROTECT)
 
