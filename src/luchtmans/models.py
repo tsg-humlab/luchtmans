@@ -91,8 +91,8 @@ class Wikidata(models.Model):
 
 
 class GeoLocation(models.Model):
-    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True, editable=False)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True, editable=False)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
 
     class Meta:
         abstract = True

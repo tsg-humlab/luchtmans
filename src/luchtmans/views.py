@@ -117,7 +117,11 @@ class FillFieldsView(AutoResponseView):
     @staticmethod
     def get_country_wikidata_fillfield_response(request):
         api_id = request.GET.get('api_id', "")
-        return get_wikidata_label_translations(api_id, "name_")
+        field_values = get_wikidata_label_translations(api_id, "name_")
+        if data := get_wikidata_statements(api_id):
+            field_values['latitude'] = round(get_nested_object(data, ('statements', 'P625', 0, 'value', 'content', 'latitude')), 6)
+            field_values['longitude'] = round(get_nested_object(data, ('statements', 'P625', 0, 'value', 'content', 'longitude')), 6)
+        return field_values
 
     @staticmethod
     def get_place_wikidata_fillfield_response(request):
@@ -126,6 +130,8 @@ class FillFieldsView(AutoResponseView):
 
         if data := get_wikidata_statements(api_id):
             field_values['country'] = get_option_from_wikidata_property(data, 'P17', Country)
+            field_values['latitude'] = round(get_nested_object(data, ('statements', 'P625', 0, 'value', 'content', 'latitude')), 6)
+            field_values['longitude'] = round(get_nested_object(data, ('statements', 'P625', 0, 'value', 'content', 'longitude')), 6)
 
         return field_values
 
@@ -152,7 +158,12 @@ class FillFieldsView(AutoResponseView):
     @staticmethod
     def get_address_wikidata_fillfield_response(request):
         api_id = request.GET.get('api_id', "")
-        field_values = {'description': get_wikidata_label(api_id)}
+        field_values = {}
+        if data := get_wikidata_statements(api_id):
+            field_values['description'] = get_wikidata_label(api_id)
+            field_values['latitude'] = get_nested_object(data, ('statements', 'P625', 0, 'value', 'content', 'latitude'))
+            field_values['longitude'] = get_nested_object(data, ('statements', 'P625', 0, 'value', 'content', 'longitude'))
+        print(field_values)
         # TODO Get/create Housenumber, Street, Place and Country (problem: the info is hard to get from WikiData)
         return {k:v for k,v in field_values.items() if v}  # Leave out items with empty values
 
