@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'rosetta',
     'easyaudit',
+    'django_select2',
 ]
 
 MIDDLEWARE = [
@@ -76,7 +77,7 @@ ROOT_URLCONF = 'lm_project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -175,3 +176,9 @@ STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+WIKIDATA_API_KEY = env('WIKIDATA_API_KEY', default="")
+WIKIDATA_LABEL_URL = 'https://www.wikidata.org/w/rest.php/wikibase/v1/entities/items/{}/labels/{}'
+WIKIDATA_URL = 'https://www.wikidata.org/wiki/{}'
+WIKIDATA_SUGGEST_URL = 'https://www.wikidata.org/w/rest.php/wikibase/v0/suggest/items'
+WIKIDATA_STATEMENTS_URL = 'https://www.wikidata.org/w/rest.php/wikibase/v1/entities/items/{}?_fields=statements'
