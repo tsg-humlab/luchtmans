@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.gis',
 
     'luchtmans',
 
@@ -58,6 +59,7 @@ INSTALLED_APPS = [
     'rosetta',
     'easyaudit',
     'django_select2',
+    'leaflet',
 ]
 
 MIDDLEWARE = [
@@ -182,3 +184,12 @@ WIKIDATA_LABEL_URL = 'https://www.wikidata.org/w/rest.php/wikibase/v1/entities/i
 WIKIDATA_URL = 'https://www.wikidata.org/wiki/{}'
 WIKIDATA_SUGGEST_URL = 'https://www.wikidata.org/w/rest.php/wikibase/v0/suggest/items'
 WIKIDATA_STATEMENTS_URL = 'https://www.wikidata.org/w/rest.php/wikibase/v1/entities/items/{}?_fields=statements'
+
+
+LEAFLET_CONFIG = {
+    'DEFAULT_CENTER': (52.155172, 5.387201),
+    'DEFAULT_ZOOM': 6,
+    'MIN_ZOOM': 3,
+    'MAX_ZOOM': 18,
+    'DEFAULT_PRECISION': 6,
+}
