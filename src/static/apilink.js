@@ -1,12 +1,15 @@
 (function() {
-    var map;
-    django.jQuery(window).on('map:init', function(e) {
-        var detail = e.originalEvent ? e.originalEvent.detail : e.detail;
-        map = detail.map;
+    // Gather maps using the field name taken from the container ID
+    window.maps = {};
+    L.Map.addInitHook(function () {
+        window.maps[this._container.id.slice(3,-4)] = this;
     });
 
     django.jQuery(document).ready(() => {
-        map.setZoom(6);
+        // Set zoom for all maps
+        for(const [key, value] of Object.entries(window.maps)) {
+            value.setZoom(5);
+        }
 
         // Allow HTML in options
         django.jQuery('.django-select2-apilink').djangoSelect2({
@@ -49,12 +52,15 @@
                                 field.append(newOption).trigger('change');
                             }
                         } else if(field.hasClass('django-leaflet-raw-textarea')) {
+                            const map = window.maps[fieldName];
                             map.eachLayer((layer) => {
                                 if(layer['_latlng']!=undefined)
                                     layer.remove();
                             });
                             const coordinates = JSON.parse(data)['coordinates'];
-                            L.marker([coordinates[1],coordinates[0]]).addTo(map);
+                            const latlng = [coordinates[1],coordinates[0]];
+                            L.marker(latlng).addTo(map);
+                            map.setView(latlng, 5);
                             field.val(data);
                         } else {
                             field.val(data);
