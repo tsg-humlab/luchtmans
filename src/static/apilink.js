@@ -7,8 +7,28 @@
 
     django.jQuery(document).ready(() => {
         // Set zoom for all maps
-        for(const [key, value] of Object.entries(window.maps)) {
-            value.setZoom(5);
+        for(const [fieldName, map] of Object.entries(window.maps)) {
+            const map_textarea = django.jQuery('#id_'+fieldName);
+            const form_id = map_textarea.parents('form')[0].id
+            if(map_textarea.text() == '') {
+                # Creating
+                if(form_id.startsWith('country')) {
+                    map.setZoom(4);
+                } else if(form_id.startsWith('place')) {
+                    map.setZoom(6);
+                } else {
+                    map.setZoom(7);
+                }
+            } else {
+                # Editing
+                if(form_id.startsWith('country')) {
+                    map.setZoom(5);
+                } else if(form_id.startsWith('place')) {
+                    map.setZoom(9);
+                } else {
+                    map.setZoom(13);
+                }
+            }
         }
 
         // Allow HTML in options
@@ -60,7 +80,13 @@
                             const coordinates = JSON.parse(data)['coordinates'];
                             const latlng = [coordinates[1],coordinates[0]];
                             L.marker(latlng).addTo(map);
-                            map.setView(latlng, 5);
+                            if(fillFieldName.startsWith('country')) {
+                                map.setView(latlng, 5);
+                            } else if(fillFieldName.startsWith('place')) {
+                                map.setView(latlng, 9);
+                            } else {
+                                map.setView(latlng, 13);
+                            }
                             field.val(data);
                         } else {
                             field.val(data);
