@@ -11,7 +11,7 @@
             const map_textarea = django.jQuery('#id_'+fieldName);
             const form_id = map_textarea.parents('form')[0].id
             if(map_textarea.text() == '') {
-                # Creating
+                // Creating
                 if(form_id.startsWith('country')) {
                     map.setZoom(4);
                 } else if(form_id.startsWith('place')) {
@@ -20,7 +20,7 @@
                     map.setZoom(7);
                 }
             } else {
-                # Editing
+                // Editing
                 if(form_id.startsWith('country')) {
                     map.setZoom(5);
                 } else if(form_id.startsWith('place')) {
