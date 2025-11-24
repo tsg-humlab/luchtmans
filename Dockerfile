@@ -7,7 +7,7 @@ FROM ghcr.io/astral-sh/uv:python3.14-alpine AS builder
 ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy
 
 # Install system dependencies
-RUN apk add binutils proj-dev gdal geos
+RUN apk add --no-cache g++ binutils proj-dev gdal gdal-dev geos
 
 # Install project dependencies
 WORKDIR /app
@@ -33,7 +33,7 @@ WORKDIR /app/
 RUN mkdir /app/writable /app/staticfiles
 
 # Install dependencies
-RUN apk add binutils proj gdal geos
+RUN apk add --no-cache binutils proj gdal geos
 
 # Make libraries findable for GeoDjango
 RUN ln -s /usr/lib/libgeos.so.3.13.1 /usr/lib/libgeos.so \
