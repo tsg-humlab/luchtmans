@@ -91,8 +91,8 @@ class Wikidata(models.Model):
 
 
 class GeoLocation(models.Model):
-    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True, editable=False)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True, editable=False)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
 
     class Meta:
         abstract = True
@@ -136,7 +136,7 @@ class Place(Wikidata, GeoLocation):
         return self.name
 
 
-class Street(models.Model):
+class Street(Wikidata, GeoLocation):
     name = models.CharField(_("name"), max_length=1024)
     place = models.ForeignKey(Place, models.PROTECT)
 
