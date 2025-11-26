@@ -53,7 +53,7 @@
         // Fill in button
         django.jQuery('.fill-button').on('click', (e) => {
             const elem = e.currentTarget;
-            const original_elem_text = elem.text;
+            const original_elem_text = elem.innerText;
             const fieldName = elem.id.slice("fillbutton_".length);
             const fillFieldName = elem.getAttribute('data-fill-field-name');
             const id =  django.jQuery('#id_'+fieldName).find(':selected')[0].value;
@@ -61,7 +61,7 @@
             django.jQuery.ajax({
                 url: "/fill_fields/"+fillFieldName+"/?api_id="+id,
                 beforeSend: function() {
-                    elem.text = 'Fetching data...';
+                    elem.innerText = 'Fetching data...';
                 },
                 success: function(result) {
                     django.jQuery.each(result, (fieldName, data) => {
@@ -98,7 +98,7 @@
                     });
                 },
                 complete: function() {
-                    elem.text = original_elem_text;
+                    elem.innerText = original_elem_text;
                 }
             });
         });
