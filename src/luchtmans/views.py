@@ -69,7 +69,7 @@ def get_wikidata_label_translations(api_id, prefix):
 
 
 def get_wikidata_label_for_property(data, property, language='en'):
-    id = get_nested_object(data, ('statements', property, 0, 'value', 'content'))
+    id = get_nested_object(data, ('statements', property, 0, 'value', 'content'), None)
     if not id:
         return ''
     resp = requests.get(settings.WIKIDATA_LABEL_URL.format(id, language),
