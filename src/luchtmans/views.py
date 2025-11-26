@@ -89,6 +89,10 @@ def create_object_from_wikidata_id(model, wikidata_id):
         return None
     field_values = get_wikidata_label_translations(wikidata_id, 'name_')
     field_values['wikidata_id'] = wikidata_id
+    if data := get_wikidata_statements(wikidata_id):
+        latitude = round(get_nested_object(data, ('statements', 'P625', 0, 'value', 'content', 'latitude')), 6)
+        longitude = round(get_nested_object(data, ('statements', 'P625', 0, 'value', 'content', 'longitude')), 6)
+        field_values['location'] = f'{{ "type": "Point", "coordinates": [ {longitude}, {latitude} ] }}'  # Leaflet format
     if model == Place:
         field_values['country_id'] = get_or_create_object_from_wikidata_id(wikidata_id, 'P17', Country)
     return model.objects.create(**field_values)
