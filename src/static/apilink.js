@@ -1,32 +1,36 @@
 (function() {
     // Gather maps using the field name taken from the container ID
-    window.maps = {};
-    L.Map.addInitHook(function () {
-        window.maps[this._container.id.slice(3,-4)] = this;
-    });
+    if("L" in window) {  // Leaflet must be loaded
+        window.maps = {};
+        L.Map.addInitHook(function () {
+            window.maps[this._container.id.slice(3,-4)] = this;
+        });
+    }
 
     django.jQuery(document).ready(() => {
         // Set zoom for all maps
-        for(const [fieldName, map] of Object.entries(window.maps)) {
-            const map_textarea = django.jQuery('#id_'+fieldName);
-            const form_id = map_textarea.parents('form')[0].id
-            if(map_textarea.text() == '') {
-                // Creating
-                if(form_id.startsWith('country')) {
-                    map.setZoom(4);
-                } else if(form_id.startsWith('place')) {
-                    map.setZoom(6);
+        if("L" in window) {  // Leaflet must be loaded
+            for(const [fieldName, map] of Object.entries(window.maps)) {
+                const map_textarea = django.jQuery('#id_'+fieldName);
+                const form_id = map_textarea.parents('form')[0].id
+                if(map_textarea.text() == '') {
+                    // Creating
+                    if(form_id.startsWith('country')) {
+                        map.setZoom(4);
+                    } else if(form_id.startsWith('place')) {
+                        map.setZoom(6);
+                    } else {
+                        map.setZoom(7);
+                    }
                 } else {
-                    map.setZoom(7);
-                }
-            } else {
-                // Editing
-                if(form_id.startsWith('country')) {
-                    map.setZoom(5);
-                } else if(form_id.startsWith('place')) {
-                    map.setZoom(9);
-                } else {
-                    map.setZoom(13);
+                    // Editing
+                    if(form_id.startsWith('country')) {
+                        map.setZoom(5);
+                    } else if(form_id.startsWith('place')) {
+                        map.setZoom(9);
+                    } else {
+                        map.setZoom(13);
+                    }
                 }
             }
         }
@@ -71,7 +75,7 @@
                                 // Append it to the select
                                 field.append(newOption).trigger('change');
                             }
-                        } else if(field.hasClass('django-leaflet-raw-textarea')) {
+                        } else if(field.hasClass('django-leaflet-raw-textarea') && "L" in window) {
                             const map = window.maps[fieldName];
                             map.eachLayer((layer) => {
                                 if(layer['_latlng']!=undefined)
