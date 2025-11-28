@@ -89,6 +89,10 @@ def create_object_from_wikidata_id(model, wikidata_id):
         return None
     field_values = get_wikidata_label_translations(wikidata_id, 'name_')
     field_values['wikidata_id'] = wikidata_id
+    if data := get_wikidata_statements(wikidata_id):
+        latitude = round(get_nested_object(data, ('statements', 'P625', 0, 'value', 'content', 'latitude')), 6)
+        longitude = round(get_nested_object(data, ('statements', 'P625', 0, 'value', 'content', 'longitude')), 6)
+        field_values['location'] = f'{{ "type": "Point", "coordinates": [ {longitude}, {latitude} ] }}'  # Leaflet format
     if model == Place:
         field_values['country_id'] = get_or_create_object_from_wikidata_id(wikidata_id, 'P17', Country)
     return model.objects.create(**field_values)
@@ -119,8 +123,9 @@ class FillFieldsView(AutoResponseView):
         api_id = request.GET.get('api_id', "")
         field_values = get_wikidata_label_translations(api_id, "name_")
         if data := get_wikidata_statements(api_id):
-            field_values['latitude'] = round(get_nested_object(data, ('statements', 'P625', 0, 'value', 'content', 'latitude')), 6)
-            field_values['longitude'] = round(get_nested_object(data, ('statements', 'P625', 0, 'value', 'content', 'longitude')), 6)
+            latitude = round(get_nested_object(data, ('statements', 'P625', 0, 'value', 'content', 'latitude')), 6)
+            longitude = round(get_nested_object(data, ('statements', 'P625', 0, 'value', 'content', 'longitude')), 6)
+            field_values['location'] = f'{{ "type": "Point", "coordinates": [ {longitude}, {latitude} ] }}'  # Leaflet format
         return field_values
 
     @staticmethod
@@ -130,8 +135,9 @@ class FillFieldsView(AutoResponseView):
 
         if data := get_wikidata_statements(api_id):
             field_values['country'] = get_option_from_wikidata_property(data, 'P17', Country)
-            field_values['latitude'] = round(get_nested_object(data, ('statements', 'P625', 0, 'value', 'content', 'latitude')), 6)
-            field_values['longitude'] = round(get_nested_object(data, ('statements', 'P625', 0, 'value', 'content', 'longitude')), 6)
+            latitude = round(get_nested_object(data, ('statements', 'P625', 0, 'value', 'content', 'latitude')), 6)
+            longitude = round(get_nested_object(data, ('statements', 'P625', 0, 'value', 'content', 'longitude')), 6)
+            field_values['location'] = f'{{ "type": "Point", "coordinates": [ {longitude}, {latitude} ] }}'  # Leaflet format
 
         return field_values
 
@@ -161,8 +167,9 @@ class FillFieldsView(AutoResponseView):
         field_values = {}
         if data := get_wikidata_statements(api_id):
             field_values['description'] = get_wikidata_label(api_id)
-            field_values['latitude'] = get_nested_object(data, ('statements', 'P625', 0, 'value', 'content', 'latitude'))
-            field_values['longitude'] = get_nested_object(data, ('statements', 'P625', 0, 'value', 'content', 'longitude'))
+            latitude = round(get_nested_object(data, ('statements', 'P625', 0, 'value', 'content', 'latitude')), 6)
+            longitude = round(get_nested_object(data, ('statements', 'P625', 0, 'value', 'content', 'longitude')), 6)
+            field_values['location'] = f'{{ "type": "Point", "coordinates": [ {longitude}, {latitude} ] }}'  # Leaflet format
         print(field_values)
         # TODO Get/create Housenumber, Street, Place and Country (problem: the info is hard to get from WikiData)
         return {k:v for k,v in field_values.items() if v}  # Leave out items with empty values
@@ -172,5 +179,9 @@ class FillFieldsView(AutoResponseView):
         api_id = request.GET.get('api_id', "")
         field_values = {}
         field_values['name'] = get_wikidata_label(api_id)
+        if data := get_wikidata_statements(api_id):
+            latitude = round(get_nested_object(data, ('statements', 'P625', 0, 'value', 'content', 'latitude')), 6)
+            longitude = round(get_nested_object(data, ('statements', 'P625', 0, 'value', 'content', 'longitude')), 6)
+            field_values['location'] = f'{{ "type": "Point", "coordinates": [ {longitude}, {latitude} ] }}'  # Leaflet format
         # TODO Create Place en Country (problem: streets are often linked to a municipality instead of a city)
         return {k:v for k,v in field_values.items() if v}  # Leave out items with empty values
