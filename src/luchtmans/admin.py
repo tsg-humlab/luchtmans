@@ -5,8 +5,10 @@ from django.contrib import admin
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 from django.utils import translation, html
+from leaflet import DEFAULT_ZOOM
 
 from modeltranslation.admin import TranslationAdmin
+from leaflet.admin import LeafletGeoAdmin
 
 from .models import (Country, Place, Street, Address, Person, PersonPersonRelation, RelationType, PeriodOfResidence,
                      Religion, PersonReligion, UniqueNameModel, Language, GenreParisianCategory, Work,
@@ -41,13 +43,13 @@ class WikidataMixin:
 
 
 @admin.register(Country)
-class CountryAdmin(WikidataMixin, TranslationAdmin):
+class CountryAdmin(WikidataMixin, LeafletGeoAdmin, TranslationAdmin):
     search_fields = ["name"]
     fill_field_name = 'country_wikidata'
 
 
 @admin.register(Place)
-class PlaceAdmin(WikidataMixin, TranslationAdmin):
+class PlaceAdmin(WikidataMixin, LeafletGeoAdmin, TranslationAdmin):
     list_display = ["name", "country"]
     search_fields = ["name", "country__name"]
     list_filter = ["country"]
@@ -56,7 +58,7 @@ class PlaceAdmin(WikidataMixin, TranslationAdmin):
 
 
 @admin.register(Street)
-class StreetAdmin(WikidataMixin, admin.ModelAdmin):
+class StreetAdmin(WikidataMixin, LeafletGeoAdmin, admin.ModelAdmin):
     list_display = ["name", "place", "country"]
     search_fields = ["name", "place__name"]
     list_filter = ["place"]
@@ -68,7 +70,7 @@ class StreetAdmin(WikidataMixin, admin.ModelAdmin):
 
 
 @admin.register(Address)
-class AddressAdmin(WikidataMixin, admin.ModelAdmin):
+class AddressAdmin(WikidataMixin, LeafletGeoAdmin, admin.ModelAdmin):
     list_display = ["address", "place", "description", "streetname_old"]
     search_fields = ["description", "streetname_old", "house_number"]
     list_filter = ["street__place__name"]

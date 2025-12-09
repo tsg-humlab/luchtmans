@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.gis.db import models as gis_models
 from django.db.models.signals import post_save, post_delete, m2m_changed
 from django.utils.translation import gettext_lazy as _
 from django.dispatch import receiver
@@ -91,8 +92,7 @@ class Wikidata(models.Model):
 
 
 class GeoLocation(models.Model):
-    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    location = gis_models.PointField(null=True)
 
     class Meta:
         abstract = True

@@ -36,8 +36,8 @@ class ApiSelectWidget(HeavySelect2Widget):
                  href_base="{url_template[:-2]}">
                     Show on {api_name}
                 </a>
-                <a class="button fill-button" id="fillbutton_{model_field_name}" data-fill-field-name="{fill_field_name}" 
-                type="">Fill in</a>
+                <button class="button fill-button" id="fillbutton_{model_field_name}" data-fill-field-name="{fill_field_name}" 
+                type="button">Fill in</button>
             </div>
             <script src="{settings.STATIC_URL}{self.js}"></script>
         """)
