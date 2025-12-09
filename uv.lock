@@ -77,6 +77,18 @@ wheels = [
 ]
 
 [[package]]
+name = "django-appconf"
+version = "1.1.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/61/a9/dcf95ff3fa0620b6818fc02276fbbb8926e7f286039b6d015e56e8b7af39/django-appconf-1.1.0.tar.gz", hash = "sha256:9fcead372f82a0f21ee189434e7ae9c007cbb29af1118c18251720f3d06243e4", size = 15986, upload-time = "2025-02-13T16:09:40.258Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/62/9e/f3a899991e4aaae4b69c1aa187ba4a32e34742475c91eb13010ee7fbe9db/django_appconf-1.1.0-py3-none-any.whl", hash = "sha256:7abd5a163ff57557f216e84d3ce9dac36c37ffce1ab9a044d3d53b7c943dd10f", size = 6389, upload-time = "2025-02-13T16:09:39.133Z" },
+]
+
+[[package]]
 name = "django-easy-audit"
 version = "1.3.7"
 source = { registry = "https://pypi.org/simple" }
@@ -98,6 +110,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/6d/b3/ed0f54ed706ec0b54fd251cc0364a249c6cd6c6ec97f04dc34be5e929eac/django_extensions-4.1.tar.gz", hash = "sha256:7b70a4d28e9b840f44694e3f7feb54f55d495f8b3fa6c5c0e5e12bcb2aa3cdeb", size = 283078, upload-time = "2025-04-11T01:15:39.617Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/64/96/d967ca440d6a8e3861120f51985d8e5aec79b9a8bdda16041206adfe7adc/django_extensions-4.1-py3-none-any.whl", hash = "sha256:0699a7af28f2523bf8db309a80278519362cd4b6e1fd0a8cd4bf063e1e023336", size = 232980, upload-time = "2025-04-11T01:15:37.701Z" },
+]
+
+[[package]]
+name = "django-leaflet"
+version = "0.32.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/9c/73/958f1544f833337326d4ced8c243992ea667a93ebe9172b649890fc5fc75/django_leaflet-0.32.0.tar.gz", hash = "sha256:013ccb06ee08071caec98a65dffd68ab3694dafce72caff34f3d78f35568ae25", size = 562450, upload-time = "2025-05-14T12:49:39.281Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/ec/d3/bf4a46eff75a5a804fc32588696d2dcd04370008041114009f0f35a3fb42/django_leaflet-0.32.0-py3-none-any.whl", hash = "sha256:a17d8e6cc05dd98e8e543fbf198b81dabbf9f195c222e786d1686aeda91c1aa8", size = 582439, upload-time = "2025-05-14T12:49:34.151Z" },
 ]
 
 [[package]]
@@ -127,6 +151,19 @@ wheels = [
 ]
 
 [[package]]
+name = "django-select2"
+version = "8.4.3"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django" },
+    { name = "django-appconf" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/0c/60/70f52b66b91e525695fd34a4e030f0680aac0f3815c909ecfe0942a7b154/django_select2-8.4.3.tar.gz", hash = "sha256:49626ccea8327dde7797d42788094fd362b502a479bc84b016d5c5c5ea976344", size = 13388, upload-time = "2025-10-15T09:16:33.493Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/89/4c/ac386908efcbe348db8a702d9fbf9369fe9d8dc8c61776403d29bd32a53d/django_select2-8.4.3-py3-none-any.whl", hash = "sha256:c5910cf7c1e1d393af3e96842df8c28c1efa55e23a7c5f26494cadeb3911579f", size = 15531, upload-time = "2025-10-15T09:16:32.108Z" },
+]
+
+[[package]]
 name = "environs"
 version = "14.3.0"
 source = { registry = "https://pypi.org/simple" }
@@ -138,6 +175,12 @@ sdist = { url = "https://files.pythonhosted.org/packages/7f/7c/db59db76a70254aa0
 wheels = [
     { url = "https://files.pythonhosted.org/packages/ad/e3/98d8567eb438c7856a4dcedd97a8a7c6707120a5ada6f7d84ace44fd8591/environs-14.3.0-py3-none-any.whl", hash = "sha256:91e4c4ea964be277855cdd83a588f6375f10fad9fa452660ecb9f503c230f26a", size = 16355, upload-time = "2025-08-01T15:56:52.897Z" },
 ]
+
+[[package]]
+name = "gdal"
+version = "3.8.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/df/02/d08a66d0541ee4267886b763209604e2bf86c1245efccac4adccb599e2d0/GDAL-3.8.0.tar.gz", hash = "sha256:9ec312ccd48a1182603feebb38de7bf2e824d16fbefbd8f2e5041a3af2aada07", size = 802260, upload-time = "2023-11-13T17:36:35.955Z" }
 
 [[package]]
 name = "gunicorn"
@@ -256,9 +299,12 @@ dependencies = [
     { name = "django" },
     { name = "django-easy-audit" },
     { name = "django-extensions" },
+    { name = "django-leaflet" },
     { name = "django-modeltranslation" },
     { name = "django-rosetta" },
+    { name = "django-select2" },
     { name = "environs" },
+    { name = "gdal" },
     { name = "gunicorn" },
     { name = "psycopg", extra = ["binary"] },
 ]
@@ -268,9 +314,12 @@ requires-dist = [
     { name = "django", specifier = ">=5.2.6" },
     { name = "django-easy-audit", specifier = ">=1.3.7" },
     { name = "django-extensions", specifier = ">=4.1" },
+    { name = "django-leaflet", specifier = ">=0.32.0" },
     { name = "django-modeltranslation", specifier = ">=0.19.17" },
     { name = "django-rosetta", specifier = ">=0.10.2" },
+    { name = "django-select2", specifier = ">=8.4.3" },
     { name = "environs", specifier = ">=14.3.0" },
+    { name = "gdal", specifier = "==3.8" },
     { name = "gunicorn", specifier = ">=23.0.0" },
     { name = "psycopg", extras = ["binary"], specifier = ">=3.2.10" },
 ]
