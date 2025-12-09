@@ -36,10 +36,10 @@ RUN mkdir /app/writable /app/staticfiles
 RUN apk add --no-cache binutils proj gdal geos
 
 # Make libraries findable for GeoDjango
-RUN ln -s /usr/lib/libgeos.so.3.13.1 /usr/lib/libgeos.so \
-    && ln -s /usr/lib/libgeos_c.so.1 /usr/lib/libgeos_c.so \
-    && ln -s /usr/lib/libgdal.so.36 /usr/lib/libgdal.so \
-    && ln -s /usr/lib/libproj.so.25 /usr/lib/libproj.so
+RUN ln -s $(ls -1 /usr/lib/libgeos.so.* | head -1) /usr/lib/libgeos.so \
+    && ln -s $(ls -1 /usr/lib/libgeos_c.so.* | head -1) /usr/lib/libgeos_c.so \
+    && ln -s $(ls -1 /usr/lib/libgdal.so.* | head -1) /usr/lib/libgdal.so \
+    && ln -s $(ls -1 /usr/lib/libproj.so.* | head -1) /usr/lib/libproj.so
 
 # Prepare 'entrypoint.sh'
 COPY ./entrypoint.sh /entrypoint.sh
