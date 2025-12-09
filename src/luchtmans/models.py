@@ -414,7 +414,7 @@ class PersonEditionRelationRole(UniqueNameModel, UUIDModel):
         verbose_name_plural = _("person edition relation roles")
 
 
-class PersonEditionRelation(models.Model):
+class PersonEditionRelation(UUIDModel):
     person = models.ForeignKey(Person, on_delete=models.CASCADE, verbose_name=_("person"))
     edition = models.ForeignKey(Edition, on_delete=models.CASCADE, verbose_name=_("edition"))
     role = models.ForeignKey(PersonEditionRelationRole, on_delete=models.PROTECT, verbose_name=_("role"))
@@ -445,7 +445,7 @@ class ItemType(UniqueNameModel, UUIDModel):
         verbose_name_plural = _("item type")
 
 
-class Page(models.Model):
+class Page(UUIDModel):
     RECTO = 'R'
     VERSO = 'V'
     RECTO_VERSO_CHOICES = {
