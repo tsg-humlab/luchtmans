@@ -7,26 +7,30 @@ from django_select2.views import AutoResponseView
 from django.http import JsonResponse
 from django.conf import settings
 from django.utils import translation
+from requests import Response
 
 from .models import Country, Person, Place
 from .utils import get_nested_object
 from .wikidata_api import get_wikidata_statements, get_wikidata_label
 
 
+def request_wikidata_suggest(term: str, page: int=1, limit: int=10) -> Response:
+    api_key = settings.WIKIDATA_API_KEY
+    language_code = translation.get_language()
+    offset = (page - 1) * limit
+
+    return requests.get(settings.WIKIDATA_SUGGEST_URL,
+                        params={'q': term, 'language': language_code, 'limit': limit, 'offset': offset},
+                        headers={'accept': 'application/json', 'Authorization': f'Bearer {api_key}'})
+
+
 class WikidataSuggestView(AutoResponseView):
     def get(self, request, *args, **kwargs):
-        api_key = settings.WIKIDATA_API_KEY
-        language_code = translation.get_language()
         term = request.GET.get('term', '')
         page = request.GET.get('page', '1')
+        page = int(page) if page.isdigit() else 1
         limit = 10
-
-        page = int(page) if re.match(r'^[1-9]\d*$', page) else 1
-        offset = (page - 1) * limit
-
-        response = requests.get(settings.WIKIDATA_SUGGEST_URL,
-                                params={'q': term, 'language': language_code, 'limit': limit, 'offset': offset},
-                                headers={'accept': 'application/json', 'Authorization': f'Bearer {api_key}'})
+        response = request_wikidata_suggest(term, page, limit)
 
         if response.status_code != requests.codes.ok:
             return JsonResponse({'results': {}, 'more': False})
