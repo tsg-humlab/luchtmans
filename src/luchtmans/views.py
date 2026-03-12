@@ -7,11 +7,13 @@ from django_select2.views import AutoResponseView
 from django.http import JsonResponse
 from django.conf import settings
 from django.utils import translation
+from django.apps import apps
 from requests import Response
 
 from .models import Country, Person, Place
 from .utils import get_nested_object
 from .wikidata_api import get_wikidata_statements, get_wikidata_label
+from .apps import LuchtmansConfig
 
 
 def request_wikidata_suggest(term: str, page: int=1, limit: int=10) -> Response:
@@ -189,3 +191,12 @@ class FillFieldsView(AutoResponseView):
             field_values['location'] = f'{{ "type": "Point", "coordinates": [ {longitude}, {latitude} ] }}'  # Leaflet format
         # TODO Create Place en Country (problem: streets are often linked to a municipality instead of a city)
         return {k:v for k,v in field_values.items() if v}  # Leave out items with empty values
+
+
+class ObjectExistsWikidataView(AutoResponseView):
+    """Returns whether an object exists given the model name and Wikidata ID"""
+    def get(self, request, model_name, wikidata_id):
+        model = apps.get_model(app_label=LuchtmansConfig.name, model_name=model_name)
+        return JsonResponse({
+            'exists': model.objects.filter(wikidata_id=wikidata_id).exists()
+        })

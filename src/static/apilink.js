@@ -43,11 +43,25 @@
 
         // Change API link
         django.jQuery('.django-select2-apilink').on('change', (e) => {
+            // Show/hide the API block: link and fill button
             const fieldName = e.currentTarget.id.slice("id_".length);
             const id =  django.jQuery('#id_'+fieldName).find(':selected')[0].value;
             const link = django.jQuery('#apilink_'+fieldName);
             link.attr("href", link.attr("href_base")+id);
             django.jQuery('#api_block_'+fieldName)[0].style.display = id ? 'inline' : 'none';
+
+            // Check whether an object exists given the Django model name and ID
+            const api_duplicate_indicator = django.jQuery('#api_object_exists_'+fieldName);
+            const django_model = api_duplicate_indicator.data('django-model');
+            django.jQuery.ajax({
+                url: "/object_exists_wikidata/"+django_model+"/"+id+"/",
+                beforeSend: function() {
+                    api_duplicate_indicator[0].style.display = 'none';
+                },
+                success: function(result) {
+                    api_duplicate_indicator[0].style.display = result['exists'] == true ? 'inline' : 'none';
+                }
+            });
         });
 
         // Fill in button

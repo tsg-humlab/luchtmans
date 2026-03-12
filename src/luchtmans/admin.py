@@ -20,7 +20,8 @@ from .forms import ApiSelectWidget, ApiInfo
 class WikidataMixin:
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
-        api_info = ApiInfo(obj, 'wikidata_id', settings.WIKIDATA_URL, 'Wikidata', fill_field_name=self.fill_field_name)
+        api_info = ApiInfo(obj, self.model, 'wikidata_id', settings.WIKIDATA_URL, 'Wikidata',
+                           fill_field_name=self.fill_field_name)
 
         if not obj:
             form.base_fields['wikidata_id'].widget = ApiSelectWidget(data_view='wikidata', api_info=api_info)
