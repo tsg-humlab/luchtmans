@@ -1,10 +1,15 @@
 @import url('https://fonts.googleapis.com/css?family=Open+Sans');
+@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css");
 
 body {
 	background-image: url("../img/paper.png");
 	background-position: left top;
 	background-repeat: repeat;
 	font-family: "Open Sans", sans-serif;
+}
+
+a {
+  color: #b82b22;
 }
 
 .navbar {
@@ -21,4 +26,101 @@ body {
 
 .navbar-nav .nav-link.active {
     font-weight: bold;
+}
+
+.card-header .bi {
+  transition: .3s transform ease-in-out;
+}
+.card-header .collapsed .bi {
+  transform: rotate(90deg);
+}
+
+.row {
+    margin-top: 1em;
+}
+
+.card-header > a {
+  text-decoration: none;
+}
+
+form th {
+    width: 15%;
+}
+
+/* TABLE SORTING */
+.table-sortable > thead > tr > th {
+  position: relative;
+}
+
+.table-sortable > thead > tr > th > a {
+  text-decoration: none;
+}
+
+.table-sortable > thead > tr > th:after {
+  content: ' ';
+	position: absolute;
+  height: 0;
+  width: 0;
+  right: 10px; /* (right padding / 2) - arrow width */
+  top: 16px; /* ((padding * 2) + line height) - arrow height */
+  /** As pointed out by Dave Everitt in
+   * https://css-tricks.com/snippets/css/css-triangle/
+   * The arrow is not an equilateral triangle.
+   * the height is 86.6% of the width.
+   * Notice the above code does not subract the border
+   * width exactly. It is subtracting
+   * (rounded) border width * 86.6%
+   **/
+}
+
+/* Default sortable indicator */
+.table-sortable > thead > tr > th:after {
+  border-left: 5px solid transparent;
+	border-right: 5px solid transparent;
+	border-top: 5px solid #ccc;
+  border-bottom: 0px solid transparent;
+}
+/* !Default */
+
+/* Default sortable indicator:hover */
+.table-sortable > thead > tr > th:hover:after {
+	border-top: 5px solid #888;
+}
+/* !Default:hover */
+
+/* Ascending sortable indicator */
+.table-sortable > thead > tr > th.asc:after {
+  border-left: 5px solid transparent;
+	border-right: 5px solid transparent;
+  border-top: 0px solid transparent;
+	border-bottom: 5px solid #333;
+}
+.table-sortable > thead > tr > th.asc:hover:after {
+	border-bottom: 5px solid #888;
+}
+/* !Ascending */
+
+/* Descending sortable indicator */
+.table-sortable > thead > tr > th.desc:after {
+  border-left: 5px solid transparent;
+	border-right: 5px solid transparent;
+  border-top: 5px solid #333;
+	border-bottom: 5px solid transparent;
+}
+/* !Descending */
+
+/* END TABLE SORTING */
+
+.select2, input[type="text"], input[type="email"], input[type="password"]{
+  min-width: 100%;
+}
+
+.select2-container {
+  min-width: 100%
+  max-width: 100%;
+}
+
+.select2-selection {
+  outline: 0;
+  max-width: 100%;
 }

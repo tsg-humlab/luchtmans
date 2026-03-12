@@ -3,14 +3,21 @@ import html
 import requests
 import re
 
+from django.views.generic import ListView
 from django_select2.views import AutoResponseView
 from django.http import JsonResponse
 from django.conf import settings
 from django.utils import translation
+from django.utils.translation import gettext_lazy as _
 from django.apps import apps
+from django.urls import reverse_lazy
 from requests import Response
 
+import django_tables2
+
 from .models import Country, Person, Place
+from .filters import PersonFilter
+from .tables import PersonTable
 from .utils import get_nested_object
 from .wikidata_api import get_wikidata_statements, get_wikidata_label
 from .apps import LuchtmansConfig
@@ -200,3 +207,29 @@ class ObjectExistsWikidataView(AutoResponseView):
         return JsonResponse({
             'exists': model.objects.filter(wikidata_id=wikidata_id).exists()
         })
+
+class PersonTableView(ListView):
+    model = Person
+    template_name = 'generic_list.html'
+
+    def get_queryset(self):
+        return Person.objects.all().distinct()
+
+    def get_context_data(self, **kwargs):
+        context = super(PersonTableView, self).get_context_data(**kwargs)
+        filter = PersonFilter(self.request.GET, queryset=self.get_queryset())
+
+        table = PersonTable(filter.qs)
+        django_tables2.RequestConfig(self.request, ).configure(table)
+
+        context['filter'] = filter
+        context['table'] = table
+
+        context['action'] = _("add")
+        context['object_name'] = "person"
+        context['add_url'] = reverse_lazy('add_person') if self.request.user.has_perm('persons.add_person') else None
+
+        context['per_page_choices'] = [25, 50, 100]
+
+        return context
+

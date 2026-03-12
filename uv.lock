@@ -125,6 +125,18 @@ wheels = [
 ]
 
 [[package]]
+name = "django-filter"
+version = "25.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/2c/e4/465d2699cd388c0005fb8d6ae6709f239917c6d8790ac35719676fffdcf3/django_filter-25.2.tar.gz", hash = "sha256:760e984a931f4468d096f5541787efb8998c61217b73006163bf2f9523fe8f23", size = 143818, upload-time = "2025-10-05T09:51:31.521Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/c1/40/6a02495c5658beb1f31eb09952d8aa12ef3c2a66342331ce3a35f7132439/django_filter-25.2-py3-none-any.whl", hash = "sha256:9c0f8609057309bba611062fe1b720b4a873652541192d232dd28970383633e3", size = 94145, upload-time = "2025-10-05T09:51:29.728Z" },
+]
+
+[[package]]
 name = "django-leaflet"
 version = "0.32.0"
 source = { registry = "https://pypi.org/simple" }
@@ -173,6 +185,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/0c/60/70f52b66b91e525695fd34a4e030f0680aac0f3815c909ecfe0942a7b154/django_select2-8.4.3.tar.gz", hash = "sha256:49626ccea8327dde7797d42788094fd362b502a479bc84b016d5c5c5ea976344", size = 13388, upload-time = "2025-10-15T09:16:33.493Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/89/4c/ac386908efcbe348db8a702d9fbf9369fe9d8dc8c61776403d29bd32a53d/django_select2-8.4.3-py3-none-any.whl", hash = "sha256:c5910cf7c1e1d393af3e96842df8c28c1efa55e23a7c5f26494cadeb3911579f", size = 15531, upload-time = "2025-10-15T09:16:32.108Z" },
+]
+
+[[package]]
+name = "django-tables2"
+version = "2.8.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/28/ab/3533314e818b04a9e1f04ae167845fec509f4e78ebaa6cf507d12eabcce3/django_tables2-2.8.0.tar.gz", hash = "sha256:0dea3401bb99a0164ba09e20d59a7d90856fdc05e5ae2da9a14d0fa14d99257c", size = 129204, upload-time = "2025-11-21T10:17:43.813Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/79/8b/047bb29359953b1c76f8886377845538144033d87da622c6b743f597a50b/django_tables2-2.8.0-py3-none-any.whl", hash = "sha256:860633b0f448216af73fca6005c7e38dc9b46931dc36c08a9281a71ee250b1ee", size = 95968, upload-time = "2025-11-21T10:17:42.363Z" },
 ]
 
 [[package]]
@@ -312,10 +336,12 @@ dependencies = [
     { name = "django-bootstrap5" },
     { name = "django-easy-audit" },
     { name = "django-extensions" },
+    { name = "django-filter" },
     { name = "django-leaflet" },
     { name = "django-modeltranslation" },
     { name = "django-rosetta" },
     { name = "django-select2" },
+    { name = "django-tables2" },
     { name = "environs" },
     { name = "gdal" },
     { name = "gunicorn" },
@@ -328,10 +354,12 @@ requires-dist = [
     { name = "django-bootstrap5", specifier = ">=26.2" },
     { name = "django-easy-audit", specifier = ">=1.3.7" },
     { name = "django-extensions", specifier = ">=4.1" },
+    { name = "django-filter", specifier = ">=25.2" },
     { name = "django-leaflet", specifier = ">=0.32.0" },
     { name = "django-modeltranslation", specifier = ">=0.19.17" },
     { name = "django-rosetta", specifier = ">=0.10.2" },
     { name = "django-select2", specifier = ">=8.4.3" },
+    { name = "django-tables2", specifier = ">=2.8.0" },
     { name = "environs", specifier = ">=14.3.0" },
     { name = "gdal", specifier = "==3.8" },
     { name = "gunicorn", specifier = ">=23.0.0" },

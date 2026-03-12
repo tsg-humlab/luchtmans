@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load render_table from django_tables2 %}
+{% load static %}
+
+{% load django_bootstrap5 %}
+
+{% block extracss %}
+<link href="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" type="text/css" media="screen" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="card">
+            <h5 class="card-header">
+                <a data-bs-toggle="collapse" href="#collapse-filter" aria-expanded="true" aria-controls="collapse-filter" id="heading-filter" class="d-block collapsed">
+                    <i class="bi bi-chevron-down float-end"></i><i class="bi bi-filter"> </i>Filter
+                </a>
+            </h5>
+            <div id="collapse-filter" class="collapse" aria-labelledby="heading-filter">
+                <div class="card-body">
+                    <form action="" method="get">
+                        <table class="table">
+                        {% bootstrap_form filter.form layout='horizontal' %}
+                        </table>
+                        <div class="pull-right">
+                            {% if per_page_choices and table %}
+                                <select name="per_page">
+                                    {% for per_page in per_page_choices %}
+                                        <option value="{{ per_page }}" {% if per_page == table.paginator.per_page %}selected{% endif %}>{{ per_page }}</option>
+                                    {% endfor %}
+                                </select>
+                                results per page {{ current_per_page }}
+                            {% endif %}
+                            <input type="submit" class="btn"/>
+                            <a href='{{ request.path }}' class="btn btn-default">Clear</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xs-12">
+        <h1>
+            {% if object_name_plural %}
+                {{ object_name_plural|title }}
+            {% else %}
+                {{ object_name|title }}s
+            {% endif %}
+        </h1>
+        {% if info_include %}
+            {% include info_include %}
+            <br/>
+        {% endif %}
+        <div class="small">Displaying {{ filter.qs.count }} of {{ filter.queryset.count }}</div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xs-12">
+        {% if table %}
+            {% render_table table %}
+        {% else %}
+            <div>No {{ object_name}}s.</div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extrajs %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    {{ filter.form.media.js }}
+{% endblock %}
