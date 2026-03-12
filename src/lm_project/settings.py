@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'easyaudit',
     'django_select2',
     'leaflet',
+    'django_bootstrap5',
 ]
 
 MIDDLEWARE = [

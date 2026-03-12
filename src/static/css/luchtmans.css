@@ -1,0 +1,24 @@
+@import url('https://fonts.googleapis.com/css?family=Open+Sans');
+
+body {
+	background-image: url("../img/paper.png");
+	background-position: left top;
+	background-repeat: repeat;
+	font-family: "Open Sans", sans-serif;
+}
+
+.navbar {
+    background: #b82b22;
+}
+
+.navbar-brand {
+    color: white !important;
+}
+
+.navbar-nav > li > a {
+    color: white !important;
+}
+
+.navbar-nav .nav-link.active {
+    font-weight: bold;
+}

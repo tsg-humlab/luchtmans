@@ -1,5 +1,5 @@
 from django.urls import path
-from django.views.generic.base import RedirectView
+from django.views.generic.base import RedirectView, TemplateView
 
 from .views import WikidataSuggestView, FillFieldsView, ObjectExistsWikidataView
 
@@ -9,4 +9,5 @@ urlpatterns = [
     path('wikidata/', WikidataSuggestView.as_view(), name='wikidata'),
     path('fill_fields/<fill_field_name>/', FillFieldsView.as_view(), name='fill_fields'),
     path('object_exists_wikidata/<model_name>/<wikidata_id>/', ObjectExistsWikidataView.as_view(), name='object_exists_wikidata'),
+    path('about', TemplateView.as_view(template_name="about.html"), name='about'),
 ]
