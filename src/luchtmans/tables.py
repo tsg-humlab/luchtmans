@@ -1,5 +1,7 @@
+from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
 from django.utils.html import format_html, format_html_join
+from django.urls import reverse_lazy
 
 import django_tables2 as tables
 
@@ -7,6 +9,7 @@ from .models import Person
 
 
 class PersonTable(tables.Table):
+    uuid = tables.Column(empty_values=(), verbose_name="", orderable=False)
     collections = tables.Column(empty_values=(None))
     roles = tables.Column(empty_values=(None))
     relations = tables.Column(
@@ -21,6 +24,7 @@ class PersonTable(tables.Table):
         attrs = {'class': 'table table-sortable'}
         fields = [
             'short_name',
+            'uuid',
             'sex',
             'roles',
             'place_of_birth',
@@ -30,6 +34,14 @@ class PersonTable(tables.Table):
             'collections',
             'relations',
         ]
+
+    def render_uuid(self, record, value):
+        context = {
+            'object': record,
+            'url_name_change': 'admin:luchtmans_person_change',
+            'url_name_delete': 'admin:luchtmans_person_delete',
+        }
+        return render_to_string('uuid_column.html', context)
 
     def render_relations(self, record):
         person = record

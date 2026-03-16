@@ -1,0 +1,24 @@
+{% load i18n %}
+
+<div class="text-nowrap">
+
+    {% if url_name_view %}
+            <a href="{% url url_name_view object.pk %}">
+                <span class="glyphicon glyphicon-eye-open" data-toggle="tooltip" data-original-title="{% translate 'View' %}">
+                    <i class="bi bi-eye"></i>
+                </span>
+            </a>
+    {% endif %}
+
+    {% if url_name_change %}
+            <a href="{% url url_name_change object.pk %}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="{% translate 'Change' %}">
+            <i class="bi bi-pencil"></i></a>
+    {% endif %}
+
+    {% if url_name_delete %}
+            <a class="delete-entry" href="{% url url_name_delete object.pk %}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="{% translate 'Delete' %}">
+                    <i class="bi bi-trash"></i>
+            </a>
+    {% endif %}
+
+</div>
