@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+
+<div class="row flex-row">
+    <div class="col-md-6 offset-md-3">
+            <h3 class="float-end">
+                <a href="{% url 'admin:luchtmans_person_change' object.pk %}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="{% translate 'Change' %}">
+                <i class="bi bi-pencil"></i></a>
+                <a class="delete-entry" href="{% url 'admin:luchtmans_person_delete' object.pk %}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="{% translate 'Delete' %}">
+                    <i class="bi bi-trash"></i>
+                </a>
+            </h3>
+        <h1 style="margin-top: 40px; margin-bottom: 40px; font-size: 48px; text-align: left">
+            Person <i>{{ object }}</i>
+        </h1>
+        <div class="container">
+            <div class="row flex-row">
+                <div class="col-md-7">
+                    <table class="table">
+                            <tbody>
+                            <tr>
+                                <th scope="row">
+                                    {% translate 'Short name' %}
+                                </th>
+                                <td>
+                                    {{ object.short_name }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    {% translate 'Name' %}
+                                </th>
+                                <td>
+                                    {{ object.surname }}, {{ object.first_names }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    {% translate 'Birth' %}
+                                </th>
+                                <td>
+                                    {{ object.place_of_birth }} {{ object.date_of_birth }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    {% translate 'Death' %}
+                                </th>
+                                <td>
+                                    {{ object.place_of_death }} {{ object.date_of_death }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    {% translate 'Sex' %}
+                                </th>
+                                <td>
+                                    {{ object.get_sex_display }}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-md-5">
+
+                </div>
+            </div>
+
+            <div class="row flex-row">
+                <hr/>
+                <h2>Collections</h2>
+            </div>
+
+            <div class="row flex-row">
+                <hr/>
+                <h2>Edition (as author)</h2>
+            </div>
+
+            <div class="row flex-row">
+                <hr/>
+                <h2>Works (as author)</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

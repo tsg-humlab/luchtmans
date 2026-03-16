@@ -3,7 +3,7 @@ import html
 import requests
 import re
 
-from django.views.generic import ListView
+from django.views.generic import ListView, DetailView
 from django_select2.views import AutoResponseView
 from django.http import JsonResponse
 from django.conf import settings
@@ -208,6 +208,7 @@ class ObjectExistsWikidataView(AutoResponseView):
             'exists': model.objects.filter(wikidata_id=wikidata_id).exists()
         })
 
+
 class PersonTableView(ListView):
     model = Person
     template_name = 'generic_list.html'
@@ -232,4 +233,7 @@ class PersonTableView(ListView):
         context['per_page_choices'] = [25, 50, 100]
 
         return context
+
+class PersonDetailView(DetailView):
+    model = Person
 

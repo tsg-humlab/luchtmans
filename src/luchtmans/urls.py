@@ -1,7 +1,7 @@
 from django.urls import path
 from django.views.generic.base import RedirectView, TemplateView
 
-from .views import WikidataSuggestView, FillFieldsView, ObjectExistsWikidataView, PersonTableView
+from .views import WikidataSuggestView, FillFieldsView, ObjectExistsWikidataView, PersonTableView, PersonDetailView
 
 
 urlpatterns = [
@@ -11,4 +11,5 @@ urlpatterns = [
     path('object_exists_wikidata/<model_name>/<wikidata_id>/', ObjectExistsWikidataView.as_view(), name='object_exists_wikidata'),
     path('about', TemplateView.as_view(template_name="about.html"), name='about'),
     path('persons', PersonTableView.as_view(), name='persons'),
+    path('person/<uuid:pk>', PersonDetailView.as_view(), name='person_detail'),
 ]

@@ -1,21 +1,22 @@
 from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
 from django.utils.html import format_html, format_html_join
-from django.urls import reverse_lazy
 
 import django_tables2 as tables
+from django_tables2.utils import A
 
 from .models import Person
 
 
 class PersonTable(tables.Table):
+    short_name = tables.LinkColumn('person_detail', args=[A("pk")])
     uuid = tables.Column(empty_values=(), verbose_name="", orderable=False)
     collections = tables.Column(empty_values=(None))
     roles = tables.Column(empty_values=(None))
     relations = tables.Column(
         verbose_name=_("Relations"),
         orderable=False,
-        empty_values=()
+        empty_values=(None)
     )
 
     class Meta:
