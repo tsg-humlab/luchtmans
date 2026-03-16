@@ -1,5 +1,10 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load leaflet_tags %}
+
+{% block extracss %}
+{% leaflet_css %}
+{% endblock %}
 
 {% block content %}
 
@@ -64,7 +69,7 @@
                     </table>
                 </div>
                 <div class="col-md-5">
-
+                    {% leaflet_map "person_map" %}
                 </div>
             </div>
 
@@ -86,4 +91,15 @@
     </div>
 </div>
 
+{% endblock %}
+
+{% block extrajs %}
+{% leaflet_js %}
+<script>
+    window.addEventListener("map:init", function (e) {
+        var detail = e.detail;
+        L.marker([{{ object.place_of_birth.location.y|safe }}, {{ object.place_of_birth.location.x|safe }}]).addTo(detail.map);
+        L.marker([{{ object.place_of_death.location.y|safe }}, {{ object.place_of_death.location.x|safe }}]).addTo(detail.map);
+    }, false);
+</script>
 {% endblock %}
