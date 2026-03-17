@@ -11,7 +11,7 @@ from .models import Person
 
 
 class PersonTable(tables.Table):
-    short_name = tables.LinkColumn('person_detail', args=[A("pk")])
+    short_name = tables.Column(linkify=('person_detail', [A("pk")]))
     uuid = tables.Column(empty_values=(), verbose_name="", orderable=False)
     collection = tables.Column(empty_values=(None), verbose_name="Collection")
     roles = tables.Column(empty_values=(None))
