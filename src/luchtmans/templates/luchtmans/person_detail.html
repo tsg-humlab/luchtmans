@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load l10n %}
 {% load leaflet_tags %}
 
 {% block extracss %}
@@ -98,8 +99,8 @@
 <script>
     window.addEventListener("map:init", function (e) {
         var detail = e.detail;
-        L.marker([{{ object.place_of_birth.location.y|safe }}, {{ object.place_of_birth.location.x|safe }}]).addTo(detail.map);
-        L.marker([{{ object.place_of_death.location.y|safe }}, {{ object.place_of_death.location.x|safe }}]).addTo(detail.map);
+        L.marker([{{ object.place_of_birth.location.y|unlocalize }}, {{ object.place_of_birth.location.x|unlocalize }}]).addTo(detail.map);
+        L.marker([{{ object.place_of_death.location.y|unlocalize }}, {{ object.place_of_death.location.x|unlocalize }}]).addTo(detail.map);
     }, false);
 </script>
 {% endblock %}
