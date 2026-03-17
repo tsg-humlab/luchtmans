@@ -1,4 +1,5 @@
 from django.template.loader import render_to_string
+from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 from django.utils.html import format_html, format_html_join
 
@@ -11,7 +12,7 @@ from .models import Person
 class PersonTable(tables.Table):
     short_name = tables.LinkColumn('person_detail', args=[A("pk")])
     uuid = tables.Column(empty_values=(), verbose_name="", orderable=False)
-    collections = tables.Column(empty_values=(None))
+    collection = tables.Column(empty_values=(None), verbose_name="Collection")
     roles = tables.Column(empty_values=(None))
     relations = tables.Column(
         verbose_name=_("Relations"),
@@ -32,7 +33,7 @@ class PersonTable(tables.Table):
             'date_of_birth',
             'place_of_death',
             'date_of_death',
-            'collections',
+            'collection',
             'relations',
         ]
 
@@ -61,3 +62,12 @@ class PersonTable(tables.Table):
                                      relation.first_person.get_absolute_url(), relation.first_person)
             relations.append(relation_str)
         return format_html_join('\n', '{}<br/>', ((rel,) for rel in relations))
+
+    def render_collection(self, record):
+        if not self.request.user.has_perm('luchtmans.change_collection'):
+            return format_html('{}', record.collection)
+
+        change_collection_url = reverse_lazy('admin:luchtmans_collection_change',
+                                             kwargs={'object_id': record.collection.id})
+        return format_html('{} <a href="{}"><i class="bi bi-pencil"></i></a>',
+                           record.collection, change_collection_url)

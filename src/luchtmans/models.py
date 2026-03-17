@@ -437,6 +437,9 @@ class Collection(UUIDModel):
         verbose_name = _("collection")
         verbose_name_plural = _("collections")
 
+    def __str__(self):
+        return self.short_title
+
 
 class ItemType(UniqueNameModel, UUIDModel):
 
