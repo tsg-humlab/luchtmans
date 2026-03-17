@@ -224,9 +224,9 @@ class PersonTableView(ListView):
         context['filter'] = filter
         context['table'] = table
 
-        context['action'] = _("add")
         context['object_name'] = "person"
-        context['add_url'] = reverse_lazy('add_person') if self.request.user.has_perm('persons.add_person') else None
+        context['add_url'] = reverse_lazy('admin:luchtmans_person_add') \
+                                if self.request.user.has_perm('persons.add_person') else None
 
         context['per_page_choices'] = [25, 50, 100]
 

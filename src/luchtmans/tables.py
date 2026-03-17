@@ -36,11 +36,12 @@ class PersonTable(tables.Table):
             'relations',
         ]
 
+
     def render_uuid(self, record, value):
         context = {
             'object': record,
-            'url_name_change': 'admin:luchtmans_person_change',
-            'url_name_delete': 'admin:luchtmans_person_delete',
+            'url_name_change': 'admin:luchtmans_person_change' if self.request.user.has_perm('luchtmans.change_person') else '',
+            'url_name_delete': 'admin:luchtmans_person_delete' if self.request.user.has_perm('luchtmans.delete_person') else '',
         }
         return render_to_string('uuid_column.html', context)
 

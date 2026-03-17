@@ -47,9 +47,11 @@
 <div class="row">
     <div class="col-xs-12">
         <h1>
-            <a class="float-end" href="{% url 'admin:luchtmans_person_add' %}" title="{% translate 'Create person' %}">
-                <i class="bi bi-plus-square"></i>
-            </a>
+            {% if add_url %}
+                <a class="float-end" href="{{ add_url }}" title="{% translate 'Create' %} {{ object_name }}">
+                    <i class="bi bi-plus-square"></i>
+                </a>
+            {% endif %}
             {% if object_name_plural %}
                 {{ object_name_plural|title }}
             {% else %}
