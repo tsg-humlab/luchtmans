@@ -1,5 +1,6 @@
 import html
 import requests
+from django.db.models import Count, OuterRef
 
 from django.views.generic import ListView, DetailView
 from django_select2.views import AutoResponseView
@@ -212,7 +213,10 @@ class PersonTableView(ListView):
     template_name = 'generic_list.html'
 
     def get_queryset(self):
-        return Person.objects.all().distinct()
+        return (Person.objects.distinct()
+                .annotate(number_of_editions=Count(Edition.objects
+                                                   .filter(work__personworkrelation__person=OuterRef('pk'))
+                                                   .values('pk'))))
 
     def get_context_data(self, **kwargs):
         context = super(PersonTableView, self).get_context_data(**kwargs)

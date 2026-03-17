@@ -14,6 +14,7 @@ class PersonTable(tables.Table):
     short_name = tables.Column(linkify=('person_detail', [A("pk")]))
     uuid = tables.Column(empty_values=(), verbose_name="", orderable=False)
     collection = tables.Column(empty_values=(None), verbose_name="Collection")
+    number_of_editions = tables.Column(empty_values=(), accessor=A("number_of_editions"))
     roles = tables.Column(empty_values=(None))
     relations = tables.Column(
         verbose_name=_("Relations"),
@@ -37,6 +38,7 @@ class PersonTable(tables.Table):
             'date_of_death',
             'roles',
             'collection',
+            'number_of_editions',
             'relations',
             'wikidata_id',
         ]
