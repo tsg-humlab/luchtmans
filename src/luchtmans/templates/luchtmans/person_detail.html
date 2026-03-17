@@ -9,25 +9,32 @@
 
 {% block content %}
 
-<div class="row flex-row">
-    <div class="col-md-6 offset-md-3">
-            <h3 class="float-end">
-                {% if perms.luchtmans.person_change %}
-                    <a href="{% url 'admin:luchtmans_person_change' object.pk %}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="{% translate 'Change' %}">
-                    <i class="bi bi-pencil"></i></a>
-                {% endif %}
-                {% if perms.luchtmans.person_delete %}
-                    <a class="delete-entry" href="{% url 'admin:luchtmans_person_delete' object.pk %}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="{% translate 'Delete' %}">
-                        <i class="bi bi-trash"></i>
-                    </a>
-                {% endif %}
-            </h3>
-        <h1 style="margin-top: 40px; margin-bottom: 40px; font-size: 48px; text-align: left">
-            Person <i>{{ object }}</i>
-        </h1>
+<div class="container-xl">
+<div class="row">
+    <div class="col">
         <div class="container">
-            <div class="row flex-row">
-                <div class="col-md-7">
+            <div class="row">
+                <div class="col">
+                    <h3 class="float-end">
+                        {% if perms.luchtmans.person_change %}
+                            <a href="{% url 'admin:luchtmans_person_change' object.pk %}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="{% translate 'Change' %}">
+                            <i class="bi bi-pencil"></i></a>
+                        {% endif %}
+                        {% if perms.luchtmans.person_delete %}
+                            <a class="delete-entry" href="{% url 'admin:luchtmans_person_delete' object.pk %}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="{% translate 'Delete' %}">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        {% endif %}
+                    </h3>
+                    <h1 style="margin-top: 40px; margin-bottom: 40px; font-size: 48px; text-align: left">
+                        Person <i>{{ object }}</i>
+                    </h1>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-7">
                     <table class="table">
                             <tbody>
                             <tr>
@@ -83,12 +90,12 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="col-md-5">
+                <div class="col-xl-5">
                     {% leaflet_map "person_map" %}
                 </div>
             </div>
 
-            <div class="row flex-row">
+            <div class="row">
                 <hr/>
                 <h2>Collections</h2>
                 <p>
@@ -101,7 +108,7 @@
                 </p>
             </div>
 
-            <div class="row flex-row">
+            <div class="row">
                 <hr/>
                 <h2>Edition (as author)</h2>
                 <ul>
@@ -118,7 +125,7 @@
                 </ul>
             </div>
 
-            <div class="row flex-row">
+            <div class="row">
                 <hr/>
                 <h2>Works (as author)</h2>
                 <ul>
@@ -136,6 +143,7 @@
             </div>
         </div>
     </div>
+</div>
 </div>
 
 {% endblock %}

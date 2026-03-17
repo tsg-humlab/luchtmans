@@ -48,10 +48,8 @@
     </nav>
 {% endwith %}
 
-    <div class="container-fluid">
-        {% block content %}(no content){% endblock %}
-    </div>
+{% block content %}(no content){% endblock %}
 
-    {% block extrajs %}{% endblock %}
+{% block extrajs %}{% endblock %}
 </body>
 </html>
