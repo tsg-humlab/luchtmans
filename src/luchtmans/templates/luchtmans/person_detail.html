@@ -70,6 +70,16 @@
                                     {{ object.get_sex_display }}
                                 </td>
                             </tr>
+                            <tr>
+                                <th scope="row">
+                                    {% translate 'Wikidata' %}
+                                </th>
+                                <td>
+                                    <a href="{{ object.wikidata_url }}">
+                                        {{ object.wikidata_id }}
+                                    </a>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>

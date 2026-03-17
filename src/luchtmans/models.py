@@ -1,5 +1,6 @@
 import uuid
 
+from django.conf import settings
 from django.db import models
 from django.contrib.gis.db import models as gis_models
 from django.db.models.signals import post_save, post_delete, m2m_changed
@@ -98,6 +99,9 @@ class Wikidata(models.Model):
 
     class Meta:
         abstract = True
+
+    def wikidata_url(self):
+        return settings.WIKIDATA_URL.format(self.wikidata_id)
 
 
 class GeoLocation(models.Model):

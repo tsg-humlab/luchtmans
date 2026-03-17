@@ -2,6 +2,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 from django.utils.html import format_html, format_html_join
+from django.conf import settings
 
 import django_tables2 as tables
 from django_tables2.utils import A
@@ -19,6 +20,8 @@ class PersonTable(tables.Table):
         orderable=False,
         empty_values=(None)
     )
+    wikidata_id = tables.Column(linkify=lambda record: settings.WIKIDATA_URL.format(record.wikidata_id),
+                                verbose_name=_("Wikidata ID"))
 
     class Meta:
         model = Person
@@ -28,13 +31,14 @@ class PersonTable(tables.Table):
             'short_name',
             'uuid',
             'sex',
-            'roles',
             'place_of_birth',
             'date_of_birth',
             'place_of_death',
             'date_of_death',
+            'roles',
             'collection',
             'relations',
+            'wikidata_id',
         ]
 
 
