@@ -1,7 +1,5 @@
 import html
-
 import requests
-import re
 
 from django.views.generic import ListView, DetailView
 from django_select2.views import AutoResponseView
@@ -15,7 +13,7 @@ from requests import Response
 
 import django_tables2
 
-from .models import Country, Person, Place
+from .models import Country, Person, Place, Edition
 from .filters import PersonFilter
 from .tables import PersonTable
 from .utils import get_nested_object
@@ -236,4 +234,9 @@ class PersonTableView(ListView):
 
 class PersonDetailView(DetailView):
     model = Person
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['editions'] = Edition.objects.filter(work__personworkrelation__person=self.get_object())
+        return context
 
