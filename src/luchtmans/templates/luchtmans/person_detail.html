@@ -99,8 +99,14 @@
 <script>
     window.addEventListener("map:init", function (e) {
         var detail = e.detail;
-        L.marker([{{ object.place_of_birth.location.y|unlocalize }}, {{ object.place_of_birth.location.x|unlocalize }}]).addTo(detail.map);
-        L.marker([{{ object.place_of_death.location.y|unlocalize }}, {{ object.place_of_death.location.x|unlocalize }}]).addTo(detail.map);
+        L.marker(
+            [{{ object.place_of_birth.location.y|unlocalize }}, {{ object.place_of_birth.location.x|unlocalize }}],
+            {'title': '{% translate "Place of birth" %}'}
+        ).addTo(detail.map);
+        L.marker(
+            [{{ object.place_of_death.location.y|unlocalize }}, {{ object.place_of_death.location.x|unlocalize }}],
+            {'title': '{% translate "Place of death" %}'}
+        ).addTo(detail.map);
     }, false);
 </script>
 {% endblock %}
