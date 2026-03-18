@@ -4,7 +4,7 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 from django.db.models import Q
 
-from .models import Person, Place, Country, Religion, Collection
+from .models import Person, Place, Country, Religion, Collection, Item, Edition, Language
 
 
 # Person filter
@@ -123,4 +123,39 @@ class CollectionFilter(django_filters.FilterSet):
             'all_headers',
             'client',
             'notes',
+        ]
+
+
+class EditionFilter(django_filters.FilterSet):
+    persons = django_filters.ModelMultipleChoiceFilter(
+        queryset=Person.objects.all(),
+        widget=Select2MultipleWidget(attrs={'data-placeholder': "Select multiple"}),
+        field_name='persons',
+    )
+    places_of_publication = django_filters.ModelMultipleChoiceFilter(
+        queryset=Place.objects.all(),
+        widget=Select2MultipleWidget(attrs={'data-placeholder': "Select multiple"}),
+        field_name='places_of_publication',
+    )
+    languages = django_filters.ModelMultipleChoiceFilter(
+        queryset=Language.objects.all(),
+        widget=Select2MultipleWidget(attrs={'data-placeholder': "Select multiple"}),
+        field_name='languages',
+    )
+
+    class Meta:
+        model = Edition
+        fields = [
+            'short_title',
+            'persons',
+            'title',
+            'edition_uncertain',
+            'places_of_publication',
+            'languages',
+            'volumes',
+            'stcn_genres',
+            'work',
+            'notes',
+            'year_of_publication_start',
+            'year_of_publication_end',
         ]

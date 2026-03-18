@@ -15,8 +15,8 @@ from requests import Response
 import django_tables2
 
 from .models import Country, Person, Place, Edition, Collection, Item
-from .filters import PersonFilter, CollectionFilter
-from .tables import PersonTable, CollectionTable, ItemsInCollectionTable
+from .filters import PersonFilter, CollectionFilter, EditionFilter
+from .tables import PersonTable, CollectionTable, ItemsInCollectionTable, EditionTable
 from .utils import get_nested_object
 from .wikidata_api import get_wikidata_statements, get_wikidata_label
 from .apps import LuchtmansConfig
@@ -287,3 +287,30 @@ class CollectionDetailView(DetailView):
         item_table = ItemsInCollectionTable(Item.objects.filter(collection=self.get_object()))
         context['item_table'] = item_table
         return context
+
+
+class EditionTableView(ListView):
+    model = Edition
+    template_name = 'generic_list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        filter = EditionFilter(self.request.GET, queryset=self.get_queryset())
+
+        table = EditionTable(filter.qs)
+        django_tables2.RequestConfig(self.request, ).configure(table)
+
+        context['filter'] = filter
+        context['table'] = table
+
+        context['object_name'] = "edition"
+        context['add_url'] = reverse_lazy('admin:luchtmans_edition_add') \
+                                if self.request.user.has_perm('luchtmans.add_edition') else None
+
+        context['per_page_choices'] = [25, 50, 100]
+
+        return context
+
+
+class EditionDetailView(DetailView):
+    model = Edition

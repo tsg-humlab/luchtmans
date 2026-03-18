@@ -187,6 +187,7 @@ WIKIDATA_URL = 'https://www.wikidata.org/wiki/{}'
 WIKIDATA_SUGGEST_URL = 'https://www.wikidata.org/w/rest.php/wikibase/v0/suggest/items'
 WIKIDATA_STATEMENTS_URL = 'https://www.wikidata.org/w/rest.php/wikibase/v1/entities/items/{}?_fields=statements'
 
+STCN_URL = 'https://data.cerl.org/stcn/{}'
 
 LEAFLET_CONFIG = {
     'DEFAULT_CENTER': (52.155172, 5.387201),

@@ -7,7 +7,7 @@ from django.conf import settings
 import django_tables2 as tables
 from django_tables2.utils import A
 
-from .models import Person, Collection, Item
+from .models import Person, Collection, Item, Edition
 
 
 class UUIDMixin:
@@ -127,3 +127,32 @@ class ItemsInCollectionTable(tables.Table):
             'notes',
             'work_in_progress',
         ]
+
+
+class EditionTable(UUIDMixin, tables.Table):
+    short_title = tables.Column(linkify=('edition_detail', [A("pk")]))
+    uuid = tables.Column(empty_values=(), verbose_name="", orderable=False)
+    stcn_id = tables.Column(linkify=lambda record: settings.STCN_URL.format(record.stcn_id), verbose_name=_("STCN ID"))
+    years_of_publication = tables.Column(empty_values=(), orderable=False)
+
+    class Meta:
+        model = Edition
+        attrs = {'class': 'table table-sortable'}
+        fields = [
+            'short_title',
+            'uuid',
+            'persons',
+            'title',
+            'edition_uncertain',
+            'places_of_publication',
+            'languages',
+            'volumes',
+            'stcn_id',
+            'stcn_genres',
+            'work',
+            'notes',
+            'years_of_publication',
+        ]
+
+    def render_years_of_publication(self, record):
+        return f'{record.year_of_publication_start or "?"} - {record.year_of_publication_end or "?"}'
