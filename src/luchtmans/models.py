@@ -467,6 +467,9 @@ class Page(UUIDModel):
         verbose_name = _("page")
         verbose_name_plural = _("pages")
 
+    def __str__(self):
+        return f'{self.volume}_{self.folio}{self.recto_verso}'
+
 
 class Binding(UniqueNameModel, UUIDModel):
 
@@ -498,3 +501,6 @@ class Item(UUIDModel):
     class Meta:
         verbose_name = _("item")
         verbose_name_plural = _("items")
+
+    def __str__(self):
+        return self.transcription_full

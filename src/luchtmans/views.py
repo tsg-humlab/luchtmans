@@ -1,6 +1,6 @@
 import html
 import requests
-from django.db.models import Count, OuterRef
+from django.db.models import Count, OuterRef, Subquery
 
 from django.views.generic import ListView, DetailView
 from django_select2.views import AutoResponseView
@@ -14,9 +14,9 @@ from requests import Response
 
 import django_tables2
 
-from .models import Country, Person, Place, Edition
-from .filters import PersonFilter
-from .tables import PersonTable
+from .models import Country, Person, Place, Edition, Collection, Item
+from .filters import PersonFilter, CollectionFilter
+from .tables import PersonTable, CollectionTable, ItemsInCollectionTable
 from .utils import get_nested_object
 from .wikidata_api import get_wikidata_statements, get_wikidata_label
 from .apps import LuchtmansConfig
@@ -230,11 +230,12 @@ class PersonTableView(ListView):
 
         context['object_name'] = "person"
         context['add_url'] = reverse_lazy('admin:luchtmans_person_add') \
-                                if self.request.user.has_perm('persons.add_person') else None
+                                if self.request.user.has_perm('luchtmans.add_person') else None
 
         context['per_page_choices'] = [25, 50, 100]
 
         return context
+
 
 class PersonDetailView(DetailView):
     model = Person
@@ -244,3 +245,45 @@ class PersonDetailView(DetailView):
         context['editions'] = Edition.objects.filter(work__personworkrelation__person=self.get_object())
         return context
 
+
+class CollectionTableView(ListView):
+    model = Collection
+    template_name = 'generic_list.html'
+
+    def get_queryset(self):
+        first_item_year = Item.objects.filter(collection_id=OuterRef('pk')).order_by('date').values("date__year")[:1]
+        last_item_year = Item.objects.filter(collection_id=OuterRef('pk')).order_by('-date').values("date__year")[:1]
+        return (
+            Collection.objects.distinct()
+            .annotate(first_year=Subquery(first_item_year))
+            .annotate(last_year=Subquery(last_item_year))
+            .annotate(item_count=Count('item'))
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        filter = CollectionFilter(self.request.GET, queryset=self.get_queryset())
+
+        table = CollectionTable(filter.qs)
+        django_tables2.RequestConfig(self.request, ).configure(table)
+
+        context['filter'] = filter
+        context['table'] = table
+
+        context['object_name'] = "collection"
+        context['add_url'] = reverse_lazy('admin:luchtmans_collection_add') \
+                                if self.request.user.has_perm('luchtmans.add_collection') else None
+
+        context['per_page_choices'] = [25, 50, 100]
+
+        return context
+
+
+class CollectionDetailView(DetailView):
+    model = Collection
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        item_table = ItemsInCollectionTable(Item.objects.filter(collection=self.get_object()))
+        context['item_table'] = item_table
+        return context

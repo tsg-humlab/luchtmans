@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load l10n %}
+{% load render_table from django_tables2 %}
+
+{% block extracss %}
+{% endblock %}
+
+{% block content %}
+
+<div class="container-xl">
+<div class="row">
+    <div class="col">
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <h3 class="float-end">
+                        {% if perms.luchtmans.collection_change %}
+                            <a href="{% url 'admin:luchtmans_collection_change' object.pk %}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="{% translate 'Change' %}">
+                            <i class="bi bi-pencil"></i></a>
+                        {% endif %}
+                        {% if perms.luchtmans.collection_delete %}
+                            <a class="delete-entry" href="{% url 'admin:luchtmans_collection_delete' object.pk %}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="{% translate 'Delete' %}">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        {% endif %}
+                    </h3>
+                    <h1 style="margin-top: 40px; margin-bottom: 40px; font-size: 48px; text-align: left">
+                        Collection <i>{{ object }}</i>
+                    </h1>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <th scope="row">
+                                    {% translate 'Client' %}
+                                </th>
+                                <td>
+                                    {{ object.client }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    {% translate 'Pages' %}
+                                </th>
+                                <td>
+                                    {% for item in object.item_set.all %}
+                                        {{ item.page }}{% if not forloop.last %}; {% endif %}
+                                    {% endfor %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    {% translate 'Notes' %}
+                                </th>
+                                <td>
+                                    {{ object.notes }}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-xs-12">
+            <h3>{% translate 'Items' %}</h3>
+            {% if item_table %}
+                {% render_table item_table %}
+            {% else %}
+                <div>No items.</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extrajs %}
+{% endblock %}

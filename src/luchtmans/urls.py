@@ -1,8 +1,8 @@
 from django.urls import path
 from django.views.generic.base import RedirectView, TemplateView
 
-from .views import WikidataSuggestView, FillFieldsView, ObjectExistsWikidataView, PersonTableView, PersonDetailView
-
+from .views import WikidataSuggestView, FillFieldsView, ObjectExistsWikidataView, PersonTableView, PersonDetailView, \
+    CollectionTableView, CollectionDetailView
 
 urlpatterns = [
     path('', RedirectView.as_view(url='/admin')),
@@ -12,4 +12,6 @@ urlpatterns = [
     path('about', TemplateView.as_view(template_name="about.html"), name='about'),
     path('persons', PersonTableView.as_view(), name='persons'),
     path('person/<uuid:pk>', PersonDetailView.as_view(), name='person_detail'),
+    path('collections', CollectionTableView.as_view(), name='collections'),
+    path('collection/<uuid:pk>', CollectionDetailView.as_view(), name='collection_detail'),
 ]

@@ -40,7 +40,10 @@
               <a class="nav-link {% if url_name == 'about' %}active{% endif %}" aria-current="page" href="{% url 'about' %}">{% trans "About" %}</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link {% if url_name == 'persons' %}active{% endif %}" aria-current="page" href="{% url 'persons' %}">{% trans "Persons" %}</a>
+              <a class="nav-link {% if url_name == 'persons' or url_name == 'person_detail' %}active{% endif %}" aria-current="page" href="{% url 'persons' %}">{% trans "Persons" %}</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if url_name == 'collections' or url_name == 'collection_detail' %}active{% endif %}" aria-current="page" href="{% url 'collections' %}">{% trans "Collections" %}</a>
             </li>
           </ul>
         </div>

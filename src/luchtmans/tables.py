@@ -7,10 +7,21 @@ from django.conf import settings
 import django_tables2 as tables
 from django_tables2.utils import A
 
-from .models import Person
+from .models import Person, Collection, Item
 
 
-class PersonTable(tables.Table):
+class UUIDMixin:
+    def render_uuid(self, record, value):
+        model_name = self._meta.model.__name__.lower()
+        context = {
+            'object': record,
+            'url_name_change': f'admin:luchtmans_{model_name}_change' if self.request.user.has_perm(f'luchtmans.change_{model_name}') else '',
+            'url_name_delete': f'admin:luchtmans_{model_name}_delete' if self.request.user.has_perm(f'luchtmans.delete_{model_name}') else '',
+        }
+        return render_to_string('uuid_column.html', context)
+
+
+class PersonTable(UUIDMixin, tables.Table):
     short_name = tables.Column(linkify=('person_detail', [A("pk")]))
     uuid = tables.Column(empty_values=(), verbose_name="", orderable=False)
     collection = tables.Column(empty_values=(None), verbose_name="Collection")
@@ -43,15 +54,6 @@ class PersonTable(tables.Table):
             'wikidata_id',
         ]
 
-
-    def render_uuid(self, record, value):
-        context = {
-            'object': record,
-            'url_name_change': 'admin:luchtmans_person_change' if self.request.user.has_perm('luchtmans.change_person') else '',
-            'url_name_delete': 'admin:luchtmans_person_delete' if self.request.user.has_perm('luchtmans.delete_person') else '',
-        }
-        return render_to_string('uuid_column.html', context)
-
     def render_relations(self, record):
         person = record
         of_str = ' of'
@@ -77,3 +79,51 @@ class PersonTable(tables.Table):
                                              kwargs={'object_id': record.collection.id})
         return format_html('{} <a href="{}"><i class="bi bi-pencil"></i></a>',
                            record.collection, change_collection_url)
+
+
+class CollectionTable(UUIDMixin, tables.Table):
+    client = tables.Column(linkify=('person_detail', [A("client_id")]), empty_values=(), verbose_name="Short name")
+    short_title = tables.Column(linkify=('collection_detail', [A("pk")]), verbose_name="Collection")
+    uuid = tables.Column(empty_values=(), verbose_name="", orderable=False)
+    first_year = tables.Column(empty_values=())
+    last_year = tables.Column(empty_values=())
+    item_count = tables.Column(empty_values=(), verbose_name="Number of purchases")
+
+    class Meta:
+        model = Collection
+        attrs = {'class': 'table table-sortable'}
+        fields = [
+            'client',
+            'short_title',
+            'uuid',
+            'first_year',
+            'last_year',
+            'item_count',
+        ]
+
+
+class ItemsInCollectionTable(tables.Table):
+    page = tables.Column(linkify=('admin:luchtmans_page_change', [A("page__pk")]))
+
+    class Meta:
+        model = Item
+        attrs = {'class': 'table table-sortable'}
+        fields = [
+            'transcription_full',
+            'type',
+            'non_book',
+            'transcription_incomplete',
+            'page',
+            'date',
+            'date_paid',
+            'editions',
+            'edition_uncertain',
+            'volumes',
+            'number_of_copies',
+            'binding',
+            'languages',
+            'price',
+            'price_decimal',
+            'notes',
+            'work_in_progress',
+        ]

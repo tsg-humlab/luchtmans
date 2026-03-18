@@ -4,7 +4,7 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 from django.db.models import Q
 
-from .models import Person, Place, Country, Religion
+from .models import Person, Place, Country, Religion, Collection
 
 
 # Person filter
@@ -104,3 +104,23 @@ class PersonFilter(django_filters.FilterSet):
             second_person_query = Q(from_relations__types__in=value)
             return queryset.filter(first_person_query | second_person_query).distinct()
         return queryset
+
+class CollectionFilter(django_filters.FilterSet):
+    short_title = django_filters.CharFilter(label=mark_safe(_("Short title")), field_name='short_title', lookup_expr='icontains')
+    all_headers = django_filters.CharFilter(label=mark_safe(_("Headers")), field_name='all_headers', lookup_expr='icontains')
+    client = django_filters.ModelMultipleChoiceFilter(
+        label="Client",
+        queryset=Person.objects.all(),
+        widget=Select2MultipleWidget(attrs={'data-placeholder': "Select multiple"},),
+        field_name='client',
+    )
+    notes = django_filters.CharFilter(label=mark_safe(_("Notes")), field_name='notes', lookup_expr='icontains')
+
+    class Meta:
+        model = Collection
+        fields = [
+            'short_title',
+            'all_headers',
+            'client',
+            'notes',
+        ]
