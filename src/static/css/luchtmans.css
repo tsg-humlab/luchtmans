@@ -16,11 +16,9 @@ a {
     background: #b82b22;
 }
 
-.navbar-brand {
-    color: white !important;
-}
-
-.navbar-nav > li > a {
+.navbar-brand,
+.navbar-nav > li > a,
+.navbar .d-flex {
     color: white !important;
 }
 

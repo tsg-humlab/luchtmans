@@ -5,7 +5,7 @@ from .views import WikidataSuggestView, FillFieldsView, ObjectExistsWikidataView
     CollectionTableView, CollectionDetailView, EditionTableView, EditionDetailView, WorkTableView, WorkDetailView
 
 urlpatterns = [
-    path('', RedirectView.as_view(url='/admin')),
+    path('', RedirectView.as_view(pattern_name='about', permanent=False)),
     path('wikidata/', WikidataSuggestView.as_view(), name='wikidata'),
     path('fill_fields/<fill_field_name>/', FillFieldsView.as_view(), name='fill_fields'),
     path('object_exists_wikidata/<model_name>/<wikidata_id>/', ObjectExistsWikidataView.as_view(), name='object_exists_wikidata'),
