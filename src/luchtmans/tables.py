@@ -32,8 +32,7 @@ class PersonTable(UUIDMixin, tables.Table):
         orderable=False,
         empty_values=(None)
     )
-    wikidata_id = tables.Column(linkify=lambda record: settings.WIKIDATA_URL.format(record.wikidata_id),
-                                verbose_name=_("Wikidata ID"))
+    wikidata_id = tables.Column(verbose_name=_("Wikidata ID"))
 
     class Meta:
         model = Person
@@ -79,6 +78,10 @@ class PersonTable(UUIDMixin, tables.Table):
                                              kwargs={'object_id': record.collection.id})
         return format_html('{} <a href="{}"><i class="bi bi-pencil"></i></a>',
                            record.collection, change_collection_url)
+
+    def render_wikidata_id(self, record):
+        return format_html('<a href="{}">{} <i class="bi bi-box-arrow-up-right"></i></a>',
+                           settings.WIKIDATA_URL.format(record.wikidata_id), record.wikidata_id)
 
 
 class CollectionTable(UUIDMixin, tables.Table):
@@ -132,7 +135,7 @@ class ItemsInCollectionTable(tables.Table):
 class EditionTable(UUIDMixin, tables.Table):
     short_title = tables.Column(linkify=('edition_detail', [A("pk")]))
     uuid = tables.Column(empty_values=(), verbose_name="", orderable=False)
-    stcn_id = tables.Column(linkify=lambda record: settings.STCN_URL.format(record.stcn_id), verbose_name=_("STCN ID"))
+    stcn_id = tables.Column(verbose_name=_("STCN ID"))
     years_of_publication = tables.Column(empty_values=(), orderable=False)
 
     class Meta:
@@ -156,3 +159,7 @@ class EditionTable(UUIDMixin, tables.Table):
 
     def render_years_of_publication(self, record):
         return f'{record.year_of_publication_start or "?"} - {record.year_of_publication_end or "?"}'
+
+    def render_stcn_id(self, record):
+        return format_html('<a href="{}">{} <i class="bi bi-box-arrow-up-right"></i></a>',
+                           settings.STCN_URL.format(record.stcn_id), record.stcn_id)
