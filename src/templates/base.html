@@ -48,6 +48,9 @@
             <li class="nav-item">
               <a class="nav-link {% if url_name == 'editions' or url_name == 'edition_detail' %}active{% endif %}" aria-current="page" href="{% url 'editions' %}">{% trans "Editions" %}</a>
             </li>
+            <li class="nav-item">
+              <a class="nav-link {% if url_name == 'works' or url_name == 'work_detail' %}active{% endif %}" aria-current="page" href="{% url 'works' %}">{% trans "Works" %}</a>
+            </li>
           </ul>
         </div>
       </div>

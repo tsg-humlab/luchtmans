@@ -7,7 +7,7 @@ from django.conf import settings
 import django_tables2 as tables
 from django_tables2.utils import A
 
-from .models import Person, Collection, Item, Edition
+from .models import Person, Collection, Item, Edition, Work
 
 
 class UUIDMixin:
@@ -163,3 +163,26 @@ class EditionTable(UUIDMixin, tables.Table):
     def render_stcn_id(self, record):
         return format_html('<a href="{}">{} <i class="bi bi-box-arrow-up-right"></i></a>',
                            settings.STCN_URL.format(record.stcn_id), record.stcn_id)
+
+
+class WorkTable(UUIDMixin, tables.Table):
+    title = tables.Column(linkify=('work_detail', [A("pk")]))
+    uuid = tables.Column(empty_values=(), verbose_name="", orderable=False)
+
+    class Meta:
+        model = Work
+        attrs = {'class': 'table table-sortable'}
+        fields = [
+            'title',
+            'uuid',
+            'authors',
+            'uncertain',
+            'languages',
+            'viaf_id',
+            'genre_parisian_category',
+            'notes',
+        ]
+
+    def render_viaf_id(self, record):
+        return format_html('<a href="{}">{} <i class="bi bi-box-arrow-up-right"></i></a>',
+                           settings.VIAF_URL.format(record.viaf_id), record.viaf_id)

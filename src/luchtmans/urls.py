@@ -2,7 +2,7 @@ from django.urls import path
 from django.views.generic.base import RedirectView, TemplateView
 
 from .views import WikidataSuggestView, FillFieldsView, ObjectExistsWikidataView, PersonTableView, PersonDetailView, \
-    CollectionTableView, CollectionDetailView, EditionTableView, EditionDetailView
+    CollectionTableView, CollectionDetailView, EditionTableView, EditionDetailView, WorkTableView, WorkDetailView
 
 urlpatterns = [
     path('', RedirectView.as_view(url='/admin')),
@@ -16,4 +16,6 @@ urlpatterns = [
     path('collection/<uuid:pk>', CollectionDetailView.as_view(), name='collection_detail'),
     path('editions', EditionTableView.as_view(), name='editions'),
     path('edition/<uuid:pk>', EditionDetailView.as_view(), name='edition_detail'),
+    path('works', WorkTableView.as_view(), name='works'),
+    path('work/<uuid:pk>', WorkDetailView.as_view(), name='work_detail'),
 ]

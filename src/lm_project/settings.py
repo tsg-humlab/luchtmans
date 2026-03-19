@@ -189,6 +189,8 @@ WIKIDATA_STATEMENTS_URL = 'https://www.wikidata.org/w/rest.php/wikibase/v1/entit
 
 STCN_URL = 'https://data.cerl.org/stcn/{}'
 
+VIAF_URL = 'https://viaf.org/viaf/{}'
+
 LEAFLET_CONFIG = {
     'DEFAULT_CENTER': (52.155172, 5.387201),
     'DEFAULT_ZOOM': 6,

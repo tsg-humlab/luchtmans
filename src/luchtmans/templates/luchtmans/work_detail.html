@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load l10n %}
+{% load render_table from django_tables2 %}
+
+{% block extracss %}
+{% endblock %}
+
+{% block content %}
+
+<div class="container-xl">
+<div class="row">
+    <div class="col">
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <h3 class="float-end">
+                        {% if perms.luchtmans.work_change %}
+                            <a href="{% url 'admin:luchtmans_work_change' object.pk %}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="{% translate 'Change' %}">
+                            <i class="bi bi-pencil"></i></a>
+                        {% endif %}
+                        {% if perms.luchtmans.work_delete %}
+                            <a class="delete-entry" href="{% url 'admin:luchtmans_work_delete' object.pk %}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="{% translate 'Delete' %}">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        {% endif %}
+                    </h3>
+                    <h1 style="margin-top: 40px; margin-bottom: 40px; font-size: 48px; text-align: left">
+                        Work <i>{{ object }}</i>
+                    </h1>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <th scope="row">
+                                    {% translate 'Title' %}
+                                </th>
+                                <td>
+                                    {{ object.title }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    {% translate 'Authors' %}
+                                </th>
+                                <td>
+                                    {% for person in object.authors.all %}
+                                        {{ person }}{% if not forloop.last %}; {% endif %}
+                                    {% endfor %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    {% translate 'Uncertain' %}
+                                </th>
+                                <td>
+                                    {% if object.uncertain %}
+                                        <i class="bi bi-check-lg"></i>
+                                    {% else %}
+                                        <i class="bi bi-x-lg"></i>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    {% translate 'Languages' %}
+                                </th>
+                                <td>
+                                    {% for language in object.languages.all %}
+                                        {{ language }}{% if not forloop.last %}, {% endif %}
+                                    {% endfor %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    {% translate 'VIAF' %}
+                                </th>
+                                <td>
+                                    <a href="https://viaf.org/viaf/{{ object.viaf_id }}">{{ object.viaf_id }}
+                                        <i class="bi bi-box-arrow-up-right"></i></a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    {% translate 'Parisian categories' %}
+                                </th>
+                                <td>
+                                    {% for category in object.genre_parisian_category.all %}
+                                        {{ category }}{% if not forloop.last %}, {% endif %}
+                                    {% endfor %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    {% translate 'Notes' %}
+                                </th>
+                                <td>
+                                    {{ object.notes }}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+{% endblock %}
+
+{% block extrajs %}
+{% endblock %}

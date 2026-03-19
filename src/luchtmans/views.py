@@ -14,9 +14,9 @@ from requests import Response
 
 import django_tables2
 
-from .models import Country, Person, Place, Edition, Collection, Item
-from .filters import PersonFilter, CollectionFilter, EditionFilter
-from .tables import PersonTable, CollectionTable, ItemsInCollectionTable, EditionTable
+from .models import Country, Person, Place, Edition, Collection, Item, Work
+from .filters import PersonFilter, CollectionFilter, EditionFilter, WorkFilter
+from .tables import PersonTable, CollectionTable, ItemsInCollectionTable, EditionTable, WorkTable
 from .utils import get_nested_object
 from .wikidata_api import get_wikidata_statements, get_wikidata_label
 from .apps import LuchtmansConfig
@@ -314,3 +314,30 @@ class EditionTableView(ListView):
 
 class EditionDetailView(DetailView):
     model = Edition
+
+
+class WorkTableView(ListView):
+    model = Work
+    template_name = 'generic_list.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        filter = WorkFilter(self.request.GET, queryset=self.get_queryset())
+
+        table = WorkTable(filter.qs)
+        django_tables2.RequestConfig(self.request, ).configure(table)
+
+        context['filter'] = filter
+        context['table'] = table
+
+        context['object_name'] = "work"
+        context['add_url'] = reverse_lazy('admin:luchtmans_work_add') \
+                                if self.request.user.has_perm('luchtmans.add_work') else None
+
+        context['per_page_choices'] = [25, 50, 100]
+
+        return context
+
+
+class WorkDetailView(DetailView):
+    model = Work
