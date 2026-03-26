@@ -161,8 +161,8 @@ class EditionTable(UUIDMixin, tables.Table):
         return f'{record.year_of_publication_start or "?"} - {record.year_of_publication_end or "?"}'
 
     def render_stcn_id(self, record):
-        return format_html('<a href="{}">{} <i class="bi bi-box-arrow-up-right"></i></a>',
-                           settings.STCN_URL.format(record.stcn_id), record.stcn_id)
+        return format_html('<a href="{}" title="{}" target="_blank">{} <i class="bi bi-box-arrow-up-right"></i></a>',
+                           settings.STCN_URL.format(record.stcn_id), _("Show on data.cerl.org/stcn in a new tab/window"), record.stcn_id)
 
     def render_persons(self, record):
         template = """
