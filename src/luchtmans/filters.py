@@ -163,9 +163,10 @@ class EditionFilter(django_filters.FilterSet):
 
 class WorkFilter(django_filters.FilterSet):
     authors = django_filters.ModelMultipleChoiceFilter(
+        label=mark_safe(_("Authors")),
         queryset=Person.objects.all(),
         widget=Select2MultipleWidget(attrs={'data-placeholder': "Select multiple"}),
-        field_name='persons',
+        field_name='authors',
     )
     languages = django_filters.ModelMultipleChoiceFilter(
         queryset=Language.objects.all(),
