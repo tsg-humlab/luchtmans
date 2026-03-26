@@ -184,5 +184,11 @@ class WorkTable(UUIDMixin, tables.Table):
         ]
 
     def render_viaf_id(self, record):
-        return format_html('<a href="{}">{} <i class="bi bi-box-arrow-up-right"></i></a>',
-                           settings.VIAF_URL.format(record.viaf_id), record.viaf_id)
+        return format_html('<a href="{}" title="{}" target="_blank">{} <i class="bi bi-box-arrow-up-right"></i></a>',
+                           settings.VIAF_URL.format(record.viaf_id), _("Show on viaf.org in a new tab/window"), record.viaf_id)
+
+    def render_authors(self, record):
+        return format_html(', '.join([
+            format_html('{} <a href="{}" title="{} \'{}\'"><i class="bi bi-pencil"></i></a>', author, reverse_lazy('person_detail', kwargs={'pk': author.pk}), _("Change author"), author)
+            for author in record.authors.all()
+        ]))
