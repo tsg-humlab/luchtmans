@@ -164,6 +164,18 @@ class EditionTable(UUIDMixin, tables.Table):
         return format_html('<a href="{}">{} <i class="bi bi-box-arrow-up-right"></i></a>',
                            settings.STCN_URL.format(record.stcn_id), record.stcn_id)
 
+    def render_persons(self, record):
+        template = """
+            <a href="{}">{}</a>
+            <a href="{}" title="{} \'{}\'"><i class="bi bi-pencil"></i></a>
+        """
+        return format_html(', '.join([
+            format_html(template, reverse_lazy('person_detail', kwargs={'pk': person.pk}), person,
+                        reverse_lazy('admin:luchtmans_person_change', kwargs={'object_id': person.pk}),
+                        _("Change person"), person)
+            for person in record.persons.all()
+        ]))
+
 
 class WorkTable(UUIDMixin, tables.Table):
     title = tables.Column(linkify=('work_detail', [A("pk")]))
