@@ -188,7 +188,13 @@ class WorkTable(UUIDMixin, tables.Table):
                            settings.VIAF_URL.format(record.viaf_id), _("Show on viaf.org in a new tab/window"), record.viaf_id)
 
     def render_authors(self, record):
+        template = """
+            <a href="{}">{}</a>
+            <a href="{}" title="{} \'{}\'"><i class="bi bi-pencil"></i></a>
+        """
         return format_html(', '.join([
-            format_html('{} <a href="{}" title="{} \'{}\'"><i class="bi bi-pencil"></i></a>', author, reverse_lazy('person_detail', kwargs={'pk': author.pk}), _("Change author"), author)
+            format_html(template, reverse_lazy('person_detail', kwargs={'pk': author.pk}), author,
+                        reverse_lazy('admin:luchtmans_person_change', kwargs={'object_id': author.pk}),
+                        _("Change author"), author)
             for author in record.authors.all()
         ]))
