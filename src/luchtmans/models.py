@@ -466,6 +466,7 @@ class Page(UUIDModel):
     class Meta:
         verbose_name = _("page")
         verbose_name_plural = _("pages")
+        ordering = ['volume', 'folio', 'recto_verso']
 
     def __str__(self):
         return f'{self.volume}_{self.folio}{self.recto_verso}'
