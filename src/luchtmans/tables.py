@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
@@ -107,6 +109,7 @@ class CollectionTable(UUIDMixin, tables.Table):
 
 class ItemsInCollectionTable(tables.Table):
     page = tables.Column(linkify=('admin:luchtmans_page_change', [A("page__pk")]))
+    day_of_week = tables.Column(empty_values=())
 
     class Meta:
         model = Item
@@ -118,6 +121,7 @@ class ItemsInCollectionTable(tables.Table):
             'transcription_incomplete',
             'page',
             'date',
+            'day_of_week',
             'date_paid',
             'editions',
             'edition_uncertain',
@@ -130,6 +134,9 @@ class ItemsInCollectionTable(tables.Table):
             'notes',
             'work_in_progress',
         ]
+
+    def render_day_of_week(self, record):
+        return record.date.strftime('%A')
 
 
 class EditionTable(UUIDMixin, tables.Table):
