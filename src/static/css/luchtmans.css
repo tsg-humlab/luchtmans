@@ -26,6 +26,23 @@ a {
     font-weight: bold;
 }
 
+.navbar-toggler {
+    color: white;
+    border-width: 1px;
+    border-color: white;
+}
+
+.navbar-toggler-icon
+{
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28256, 256, 256, 1.0%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='3' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+.navbar-toggler:focus,
+.navbar-toggler:active,
+.navbar-toggler-icon:focus {
+    box-shadow: white 0px 0px 0px 1px;
+}
+
 .card-header .bi {
   transition: .3s transform ease-in-out;
 }
