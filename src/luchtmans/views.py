@@ -258,6 +258,7 @@ class CollectionTableView(ListView):
             .annotate(first_year=Subquery(first_item_year))
             .annotate(last_year=Subquery(last_item_year))
             .annotate(item_count=Count('item'))
+            .annotate(edition_count=Count('client__work__edition', distinct=True))
         )
 
     def get_context_data(self, **kwargs):

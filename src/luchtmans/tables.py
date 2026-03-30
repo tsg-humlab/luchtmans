@@ -104,6 +104,7 @@ class CollectionTable(UUIDMixin, tables.Table):
             'first_year',
             'last_year',
             'item_count',
+            'edition_count',
         ]
 
 
