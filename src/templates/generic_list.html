@@ -62,7 +62,7 @@
             {% include info_include %}
             <br/>
         {% endif %}
-        <div class="small">Displaying {{ filter.qs.count }} of {{ filter.queryset.count }}</div>
+        <div class="small">Displaying {{ table.paginate.paginator.count }} of {{ filter.queryset.count }}</div>
     </div>
 </div>
 <div class="row">
