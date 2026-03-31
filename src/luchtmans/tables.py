@@ -73,13 +73,18 @@ class PersonTable(UUIDMixin, tables.Table):
         return format_html_join('\n', '{}<br/>', ((rel,) for rel in relations))
 
     def render_collection(self, record):
+        view_collection_url = reverse_lazy('collection_detail', args=[record.collection.id])
         if not self.request.user.has_perm('luchtmans.change_collection'):
-            return format_html('{}', record.collection)
+            return format_html('<a href="{}">{}</a>', view_collection_url, record.collection)
 
+        template = """
+            <a href="{}">{}</a>
+            <a href="{}" title="{} \'{}\'"><i class="bi bi-pencil"></i></a>
+        """
         change_collection_url = reverse_lazy('admin:luchtmans_collection_change',
                                              kwargs={'object_id': record.collection.id})
-        return format_html('{} <a href="{}"><i class="bi bi-pencil"></i></a>',
-                           record.collection, change_collection_url)
+        return format_html(template, view_collection_url, record.collection, change_collection_url,
+                           _("Change collection"), record.collection)
 
     def render_wikidata_id(self, record):
         return format_html('<a href="{}">{} <i class="bi bi-box-arrow-up-right"></i></a>',
