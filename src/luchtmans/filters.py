@@ -9,8 +9,8 @@ from .models import Person, Place, Country, Religion, Collection, Item, Edition,
 
 # Person filter
 class PersonFilter(django_filters.FilterSet):
-    short_name = django_filters.Filter(method='short_name_filter')
-    surname = django_filters.Filter(method='surname_filter')
+    short_name = django_filters.Filter(field_name='short_name', lookup_expr='icontains')
+    surname = django_filters.Filter(field_name='surname', lookup_expr='icontains')
     sex = django_filters.MultipleChoiceFilter(
         choices=Person.GenderChoices,
         widget=Select2MultipleWidget(attrs={'data-placeholder': "Select multiple"},)
@@ -76,20 +76,6 @@ class PersonFilter(django_filters.FilterSet):
             'religious_affiliation',
             'related_to',
         ]
-
-    def short_name_filter(self, queryset, name, value):
-        if value:
-            short_name_q = Q(short_name__icontains=value)
-            alternative_short_name_q = Q(alternative_names__short_name__icontains=value)
-            return queryset.filter(short_name_q | alternative_short_name_q)
-        return queryset
-
-    def surname_filter(self, queryset, name, value):
-        if value:
-            surname_q = Q(surname__icontains=value)
-            alternative_surname_q = Q(alternative_names__surname__icontains=value)
-            return queryset.filter(surname_q | alternative_surname_q)
-        return queryset
 
     def related_to_filter(self, queryset, name, value):
         if value:
