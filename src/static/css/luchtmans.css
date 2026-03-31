@@ -62,6 +62,19 @@ form th {
     width: 15%;
 }
 
+.page-link {
+    color: #b82b22;
+}
+
+.active > .page-link {
+    background-color: #b82b22;
+    border-color: #b82b22;
+}
+
+.page-link:hover {
+    color: #b82b22;
+}
+
 /* TABLE SORTING */
 .table-sortable > thead > tr > th {
   position: relative;
