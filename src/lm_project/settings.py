@@ -35,6 +35,8 @@ DEBUG = env.bool('DEBUG', False)
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS')
 
+INTERNAL_IPS = ["127.0.0.1",]
+
 LANGUAGES = [
     ("en", _("English")),
     ("nl", _("Dutch")),
@@ -62,6 +64,7 @@ INSTALLED_APPS = [
     'leaflet',
     'django_bootstrap5',
     'django_tables2',
+    'debug_toolbar',
 ]
 
 MIDDLEWARE = [
@@ -74,6 +77,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'easyaudit.middleware.easyaudit.EasyAuditMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'lm_project.urls'
