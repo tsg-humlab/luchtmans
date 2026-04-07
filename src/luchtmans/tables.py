@@ -132,6 +132,10 @@ class CollectionTable(UUIDMixin, tables.Table):
         formatted_decimal_str = formats.number_format(decimal.Decimal(decimal_str))
         return f'{formatted_decimal_str} %'
 
+    def render_price_total(self, record):
+        formatted_decimal_str = formats.number_format(decimal.Decimal(record.price_total))
+        return f'ƒ {formatted_decimal_str}'
+
 
 class ItemsInCollectionTable(tables.Table):
     page = tables.Column(linkify=('admin:luchtmans_page_change', [A("page__pk")]))
