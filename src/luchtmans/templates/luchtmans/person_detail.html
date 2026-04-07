@@ -99,7 +99,9 @@
                 <hr/>
                 <h2>Collections</h2>
                 <p>
-                    {{ object.collection.short_title }}
+                    <a href="{% url 'collection_detail' object.collection.pk %}">
+                        {{ object.collection.short_title }}
+                    </a>
                     {% if perms.luchtmans.collection_change %}
                         <a href="{% url 'admin:luchtmans_collection_change' object.collection.pk %}">
                             <i class="bi bi-pencil"></i>
@@ -114,7 +116,8 @@
                 <ul>
                     {% for edition in editions %}
                         <li>
-                            {{ edition.work }} ({% for place in edition.places_of_publication.all %}{{ place }}{% if not forloop.last %}, {% endif %}{% endfor %}, {{ edition.volumes }})
+                            <a href="{% url 'edition_detail' edition.pk %}">{{ edition.work }}</a>
+                            ({% for place in edition.places_of_publication.all %}{{ place }}{% if not forloop.last %}, {% endif %}{% endfor %}, {{ edition.volumes }})
                             {% if perms.luchtmans.edition_change %}
                                 <a href="{% url 'admin:luchtmans_edition_change' edition.pk %}">
                                     <i class="bi bi-pencil"></i>
@@ -131,7 +134,7 @@
                 <ul>
                     {% for work in object.work_set.all %}
                         <li>
-                            {{ work.title }}
+                            <a href="{% url 'work_detail' work.pk %}">{{ work.title }}</a>
                             {% if perms.luchtmans.work_change %}
                                 <a href="{% url 'admin:luchtmans_work_change' work.pk %}">
                                     <i class="bi bi-pencil"></i>
