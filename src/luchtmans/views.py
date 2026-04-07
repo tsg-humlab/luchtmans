@@ -1,6 +1,6 @@
 import html
 import requests
-from django.db.models import Count, OuterRef, Subquery, Q, Sum
+from django.db.models import Count, OuterRef, Subquery, Q, Sum, F, Case, When, Value
 
 from django.views.generic import ListView, DetailView
 from django_select2.views import AutoResponseView
@@ -261,7 +261,7 @@ class CollectionTableView(ListView):
             .annotate(last_year=Subquery(last_item_year))
             .annotate(item_count=Count('item'))
             .annotate(non_book_count=Count('item', filter=Q(item__non_book=True)))
-            .annotate(percentage_non_book=100.0 * Count('item', filter=Q(item__non_book=True)) / Count('item'))
+            .annotate(percentage_non_book=Case(When(item_count=0, then=Value(0.0)), default=100.0 * F('non_book_count') / F('item_count')))
             .annotate(price_total=Sum('item__price_decimal'))
             .annotate(edition_count=Count('client__work__edition', distinct=True))
         )
