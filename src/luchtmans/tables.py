@@ -9,6 +9,7 @@ from django.conf import settings
 import django_tables2 as tables
 from django_tables2.utils import A
 
+from luchtmans.utils import str_to_date
 from .models import Person, Collection, Item, Edition, Work
 
 
@@ -54,6 +55,12 @@ class PersonTable(UUIDMixin, tables.Table):
             'relations',
             'wikidata_id',
         ]
+
+    def render_date_of_birth(self, record):
+        return str_to_date(record.date_of_birth)
+
+    def render_date_of_death(self, record):
+        return str_to_date(record.date_of_death)
 
     def render_relations(self, record):
         person = record
