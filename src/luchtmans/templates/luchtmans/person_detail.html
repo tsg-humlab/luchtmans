@@ -2,6 +2,7 @@
 {% load i18n %}
 {% load l10n %}
 {% load leaflet_tags %}
+{% load formatting %}
 
 {% block extracss %}
 {% leaflet_css %}
@@ -50,7 +51,8 @@
                                     {% translate 'Name' %}
                                 </th>
                                 <td>
-                                    {{ object.surname }}, {{ object.first_names }}
+                                    {{ object.surname }}{% if object.surname and object.first_names %}, {%endif %}
+                                    {{ object.first_names }}
                                 </td>
                             </tr>
                             <tr>
@@ -58,7 +60,8 @@
                                     {% translate 'Birth' %}
                                 </th>
                                 <td>
-                                    {{ object.place_of_birth }} {{ object.date_of_birth }}
+                                    {{ object.place_of_birth|default:"" }}{% if object.place_of_birth and object.date_of_birth %}, {%endif %}
+                                    {{ object.date_of_birth|str_to_date }}
                                 </td>
                             </tr>
                             <tr>
@@ -66,7 +69,8 @@
                                     {% translate 'Death' %}
                                 </th>
                                 <td>
-                                    {{ object.place_of_death }} {{ object.date_of_death }}
+                                    {{ object.place_of_death|default:"" }}{% if object.place_of_death and object.date_of_death %}, {%endif %}
+                                    {{ object.date_of_death|str_to_date }}
                                 </td>
                             </tr>
                             <tr>
@@ -100,9 +104,7 @@
                 <h2>Collections</h2>
                 <p>
                     {% if object.collection %}
-                        <a href="{% url 'collection_detail' object.collection.pk %}">
-                            {{ object.collection.short_title }}
-                        </a>
+                        <a href="{% url 'collection_detail' object.collection.pk %}">{{ object.collection.short_title }}</a>
                         {% if perms.luchtmans.collection_change %}
                             <a href="{% url 'admin:luchtmans_collection_change' object.collection.pk %}">
                                 <i class="bi bi-pencil"></i>
