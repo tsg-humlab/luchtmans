@@ -1,7 +1,8 @@
-from datetime import datetime
+import decimal
 
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy
+from django.utils import formats
 from django.utils.translation import gettext_lazy as _
 from django.utils.html import format_html, format_html_join
 from django.conf import settings
@@ -122,8 +123,14 @@ class CollectionTable(UUIDMixin, tables.Table):
             'item_count',
             'non_book_count',
             'percentage_non_book',
+            'price_total',
             'edition_count',
         ]
+
+    def render_percentage_non_book(self, record):
+        decimal_str = f'{record.percentage_non_book:.2f}'
+        formatted_decimal_str = formats.number_format(decimal.Decimal(decimal_str))
+        return f'{formatted_decimal_str} %'
 
 
 class ItemsInCollectionTable(tables.Table):

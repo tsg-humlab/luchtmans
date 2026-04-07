@@ -261,7 +261,7 @@ class CollectionTableView(ListView):
             .annotate(last_year=Subquery(last_item_year))
             .annotate(item_count=Count('item'))
             .annotate(non_book_count=Count('item', filter=Q(item__non_book=True)))
-            .annotate(percentage_non_book=100 * Count('item', filter=Q(item__non_book=True)) / Count('item'))
+            .annotate(percentage_non_book=100.0 * Count('item', filter=Q(item__non_book=True)) / Count('item'))
             .annotate(edition_count=Count('client__work__edition', distinct=True))
         )
 
