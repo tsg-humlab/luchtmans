@@ -106,6 +106,7 @@ class CollectionTable(UUIDMixin, tables.Table):
     uuid = tables.Column(empty_values=(), verbose_name="", orderable=False)
     first_year = tables.Column(empty_values=())
     last_year = tables.Column(empty_values=())
+    non_book_count = tables.Column(verbose_name="Number of non-books")
     item_count = tables.Column(empty_values=(), verbose_name="Number of purchases")
 
     class Meta:
@@ -118,6 +119,7 @@ class CollectionTable(UUIDMixin, tables.Table):
             'first_year',
             'last_year',
             'item_count',
+            'non_book_count',
             'edition_count',
         ]
 
