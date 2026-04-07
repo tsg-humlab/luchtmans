@@ -99,13 +99,17 @@
                 <hr/>
                 <h2>Collections</h2>
                 <p>
-                    <a href="{% url 'collection_detail' object.collection.pk %}">
-                        {{ object.collection.short_title }}
-                    </a>
-                    {% if perms.luchtmans.collection_change %}
-                        <a href="{% url 'admin:luchtmans_collection_change' object.collection.pk %}">
-                            <i class="bi bi-pencil"></i>
+                    {% if object.collection %}
+                        <a href="{% url 'collection_detail' object.collection.pk %}">
+                            {{ object.collection.short_title }}
                         </a>
+                        {% if perms.luchtmans.collection_change %}
+                            <a href="{% url 'admin:luchtmans_collection_change' object.collection.pk %}">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                        {% endif %}
+                    {% else %}
+                        <i>{% translate 'No collections' %}</i>
                     {% endif %}
                 </p>
             </div>
@@ -124,6 +128,8 @@
                                 </a>
                             {% endif %}
                         </li>
+                    {% empty %}
+                        <i>{% translate 'No editions' %}</i>
                     {% endfor %}
                 </ul>
             </div>
@@ -141,6 +147,8 @@
                                 </a>
                             {% endif %}
                         </li>
+                    {% empty %}
+                        <i>{% translate 'No works' %}</i>
                     {% endfor %}
                 </ul>
             </div>
