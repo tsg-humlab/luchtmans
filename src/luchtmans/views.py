@@ -215,6 +215,7 @@ class PersonTableView(ListView):
     def get_queryset(self):
         return (Person.objects.distinct()
                 .select_related('collection', 'place_of_birth', 'place_of_death')
+                .annotate(item_count=Count('collection__item'))
                 .annotate(number_of_editions=Count(Edition.objects
                                                    .filter(work__personworkrelation__person=OuterRef('pk'))
                                                    .values('pk'))))
