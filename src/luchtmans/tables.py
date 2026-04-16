@@ -139,8 +139,9 @@ class CollectionTable(UUIDMixin, tables.Table):
         return f'ƒ {formatted_decimal_str}'
 
 
-class ItemsInCollectionTable(tables.Table):
     page = tables.Column(linkify=('admin:luchtmans_page_change', [A("page__pk")]))
+class ItemsInCollectionTable(UUIDMixin, tables.Table):
+    uuid = tables.Column(empty_values=(), verbose_name="", orderable=False)
     day_of_week = tables.Column(empty_values=(), orderable=False)
 
     class Meta:
@@ -148,6 +149,7 @@ class ItemsInCollectionTable(tables.Table):
         attrs = {'class': 'table table-sortable'}
         fields = [
             'transcription_full',
+            'uuid',
             'type',
             'non_book',
             'transcription_incomplete',
