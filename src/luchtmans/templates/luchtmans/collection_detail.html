@@ -2,6 +2,7 @@
 {% load i18n %}
 {% load l10n %}
 {% load render_table from django_tables2 %}
+{% load formatting %}
 
 {% block extracss %}
 {% endblock %}
@@ -41,7 +42,7 @@
                                     {% translate 'Client' %}
                                 </th>
                                 <td>
-                                    {{ object.client }}
+                                    {{ object.client }} <span class="ms-2 text-secondary">{{ object.client.date_of_birth|str_to_date }} &ndash; {{ object.client.date_of_death|str_to_date }}</span>
                                 </td>
                             </tr>
                             <tr>
@@ -50,7 +51,7 @@
                                 </th>
                                 <td>
                                     {% for page in pages %}
-                                        {{ page }} ({{ page.first_year }} - {{ page.last_year }}){% if not forloop.last %}; {% endif %}
+                                        {{ page }} <span class="text-secondary">{{ page.first_year }} - {{ page.last_year }}</span>{% if not forloop.last %}<span class="ms-3"></span>{% endif %}
                                     {% endfor %}
                                 </td>
                             </tr>
