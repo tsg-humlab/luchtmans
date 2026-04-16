@@ -143,6 +143,7 @@ class CollectionTable(UUIDMixin, tables.Table):
 class ItemsInCollectionTable(UUIDMixin, tables.Table):
     uuid = tables.Column(empty_values=(), verbose_name="", orderable=False)
     day_of_week = tables.Column(empty_values=(), orderable=False)
+    editions = tables.ManyToManyColumn(linkify_item=('edition_detail', [A("pk")]))
 
     class Meta:
         model = Item
