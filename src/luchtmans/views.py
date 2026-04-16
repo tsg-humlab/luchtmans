@@ -261,8 +261,12 @@ class CollectionTableView(ListView):
             .annotate(last_year=Subquery(last_item_year))
             .annotate(item_count=Count('item'))
             .annotate(non_book_count=Count('item', filter=Q(item__non_book=True)))
-            .annotate(percentage_non_book=Case(When(item_count=0, then=Value(0.0)), default=100.0 * F('non_book_count') / F('item_count')))
+            .annotate(percentage_non_book=Case(When(item_count=0, then=Value(0.0)),
+                                               default=100.0 * F('non_book_count') / F('item_count')))
             .annotate(price_total=Sum('item__price_decimal'))
+            .annotate(year_count=Count('item__date__year', distinct=True))
+            .annotate(average_number_of_books_per_year=Case(When(year_count=0, then=Value(0.0)),
+                                                            default=1.0 * F('item_count') / F('year_count')))
             .annotate(edition_count=Count('client__work__edition', distinct=True))
         )
 
