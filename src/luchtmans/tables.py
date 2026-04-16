@@ -125,6 +125,7 @@ class CollectionTable(UUIDMixin, tables.Table):
             'percentage_non_book',
             'price_total',
             'average_number_of_books_per_year',
+            'median_number_of_books_per_year',
             'edition_count',
         ]
 

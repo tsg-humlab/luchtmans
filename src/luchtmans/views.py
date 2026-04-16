@@ -17,7 +17,7 @@ import django_tables2
 from .models import Country, Person, Place, Edition, Collection, Item, Work
 from .filters import PersonFilter, CollectionFilter, EditionFilter, WorkFilter
 from .tables import PersonTable, CollectionTable, ItemsInCollectionTable, EditionTable, WorkTable
-from .utils import get_nested_object
+from .utils import get_nested_object, SubqueryMedian
 from .wikidata_api import get_wikidata_statements, get_wikidata_label
 from .apps import LuchtmansConfig
 
@@ -253,8 +253,11 @@ class CollectionTableView(ListView):
     template_name = 'generic_list.html'
 
     def get_queryset(self):
-        first_item_year = Item.objects.filter(collection_id=OuterRef('pk')).order_by('date').values("date__year")[:1]
-        last_item_year = Item.objects.filter(collection_id=OuterRef('pk')).order_by('-date').values("date__year")[:1]
+        items_in_collection = Item.objects.filter(collection_id=OuterRef('pk'))
+        first_item_year = items_in_collection.order_by('date').values("date__year")[:1]
+        last_item_year = items_in_collection.order_by('-date').values("date__year")[:1]
+        year_counts = (items_in_collection.values('date__year').annotate(year_count=Count('date__year'))
+                       .values('year_count'))
         return (
             Collection.objects.distinct()
             .annotate(first_year=Subquery(first_item_year))
@@ -267,6 +270,7 @@ class CollectionTableView(ListView):
             .annotate(year_count=Count('item__date__year', distinct=True))
             .annotate(average_number_of_books_per_year=Case(When(year_count=0, then=Value(0.0)),
                                                             default=1.0 * F('item_count') / F('year_count')))
+            .annotate(median_number_of_books_per_year=SubqueryMedian(year_counts))
             .annotate(edition_count=Count('client__work__edition', distinct=True))
         )
 
