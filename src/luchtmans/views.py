@@ -14,7 +14,7 @@ from requests import Response
 
 import django_tables2
 
-from .models import Country, Person, Place, Edition, Collection, Item, Work
+from .models import Country, Person, Place, Edition, Collection, Item, Work, Page
 from .filters import PersonFilter, CollectionFilter, EditionFilter, WorkFilter
 from .tables import PersonTable, CollectionTable, ItemsInCollectionTable, EditionTable, WorkTable
 from .utils import get_nested_object, SubqueryMedian
@@ -298,8 +298,15 @@ class CollectionDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+
         item_table = ItemsInCollectionTable(Item.objects.filter(collection=self.get_object()))
         context['item_table'] = item_table
+
+        first_year = Item.objects.filter(page=OuterRef('pk')).order_by('date__year').values('date__year')[:1]
+        last_year = Item.objects.filter(page=OuterRef('pk')).order_by('-date__year').values('date__year')[:1]
+        context['pages'] = (Page.objects.filter(item__collection=self.get_object()).distinct()
+                            .annotate(first_year=first_year).annotate(last_year=last_year))
+        
         return context
 
 

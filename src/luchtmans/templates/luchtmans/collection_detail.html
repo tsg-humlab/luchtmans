@@ -49,8 +49,8 @@
                                     {% translate 'Pages' %}
                                 </th>
                                 <td>
-                                    {% for item in object.item_set.all %}
-                                        {{ item.page }}{% if not forloop.last %}; {% endif %}
+                                    {% for page in pages %}
+                                        {{ page }} ({{ page.first_year }} - {{ page.last_year }}){% if not forloop.last %}; {% endif %}
                                     {% endfor %}
                                 </td>
                             </tr>
