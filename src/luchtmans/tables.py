@@ -141,7 +141,7 @@ class CollectionTable(UUIDMixin, tables.Table):
 
 class ItemsInCollectionTable(tables.Table):
     page = tables.Column(linkify=('admin:luchtmans_page_change', [A("page__pk")]))
-    day_of_week = tables.Column(empty_values=())
+    day_of_week = tables.Column(empty_values=(), orderable=False)
 
     class Meta:
         model = Item

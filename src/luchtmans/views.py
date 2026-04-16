@@ -300,13 +300,14 @@ class CollectionDetailView(DetailView):
         context = super().get_context_data(**kwargs)
 
         item_table = ItemsInCollectionTable(Item.objects.filter(collection=self.get_object()))
+        django_tables2.RequestConfig(self.request, ).configure(item_table)
         context['item_table'] = item_table
 
         first_year = Item.objects.filter(page=OuterRef('pk')).order_by('date__year').values('date__year')[:1]
         last_year = Item.objects.filter(page=OuterRef('pk')).order_by('-date__year').values('date__year')[:1]
         context['pages'] = (Page.objects.filter(item__collection=self.get_object()).distinct()
                             .annotate(first_year=first_year).annotate(last_year=last_year))
-        
+
         return context
 
 
