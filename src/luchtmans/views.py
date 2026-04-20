@@ -212,13 +212,18 @@ class PersonTableView(ListView):
     model = Person
     template_name = 'generic_list.html'
 
+
     def get_queryset(self):
+        items_in_collection = Item.objects.filter(collection__client_id=OuterRef('pk'))
+        first_item_year = items_in_collection.order_by('date').values("date__year")[:1]
+        last_item_year = items_in_collection.order_by('-date').values("date__year")[:1]
         return (Person.objects.distinct()
                 .select_related('collection', 'place_of_birth', 'place_of_death')
                 .annotate(item_count=Count('collection__item'))
                 .annotate(number_of_editions=Count(Edition.objects
                                                    .filter(work__personworkrelation__person=OuterRef('pk'))
-                                                   .values('pk'))))
+                                                   .values('pk')))
+                .annotate(first_item_year=first_item_year, last_item_year=last_item_year))
 
     def get_context_data(self, **kwargs):
         context = super(PersonTableView, self).get_context_data(**kwargs)

@@ -84,8 +84,9 @@ class PersonTable(UUIDMixin, tables.Table):
 
     def render_collection(self, record):
         view_collection_url = reverse_lazy('collection_detail', args=[record.collection.id])
+        collection_text = f'{record.collection} {record.first_item_year} - {record.last_item_year}'
         if not self.request.user.has_perm('luchtmans.change_collection'):
-            return format_html('<a href="{}">{}</a>', view_collection_url, record.collection)
+            return format_html('<a href="{}">{}</a>', view_collection_url, collection_text)
 
         template = """
             <a href="{}">{}</a>
@@ -93,7 +94,7 @@ class PersonTable(UUIDMixin, tables.Table):
         """
         change_collection_url = reverse_lazy('admin:luchtmans_collection_change',
                                              kwargs={'object_id': record.collection.id})
-        return format_html(template, view_collection_url, record.collection, change_collection_url,
+        return format_html(template, view_collection_url, collection_text, change_collection_url,
                            _("Change collection"), record.collection)
 
     def render_wikidata_id(self, record):
