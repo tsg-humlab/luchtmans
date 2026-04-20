@@ -140,8 +140,9 @@ class CollectionTable(UUIDMixin, tables.Table):
         return f'ƒ {formatted_decimal_str}'
 
 
-class ItemsInCollectionTable(UUIDMixin, tables.Table):
+class ItemTable(UUIDMixin, tables.Table):
     uuid = tables.Column(empty_values=(), verbose_name="", orderable=False)
+    collection = tables.Column(linkify=('collection_detail', [A("collection_id")]))
     day_of_week = tables.Column(empty_values=(), orderable=False)
     editions = tables.ManyToManyColumn(linkify_item=('edition_detail', [A("pk")]))
 
@@ -151,6 +152,7 @@ class ItemsInCollectionTable(UUIDMixin, tables.Table):
         fields = [
             'transcription_full',
             'uuid',
+            'collection',
             'type',
             'non_book',
             'transcription_incomplete',
@@ -172,6 +174,11 @@ class ItemsInCollectionTable(UUIDMixin, tables.Table):
 
     def render_day_of_week(self, record):
         return record.date.strftime('%A')
+
+
+class ItemsInCollectionTable(ItemTable):
+    class Meta(ItemTable.Meta):
+        exclude = ('collection',)
 
 
 class EditionTable(UUIDMixin, tables.Table):

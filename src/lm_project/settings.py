@@ -64,6 +64,8 @@ INSTALLED_APPS = [
     'leaflet',
     'django_bootstrap5',
     'django_tables2',
+    'django_filters',
+    'bootstrap_datepicker_plus',
     'debug_toolbar',
 ]
 

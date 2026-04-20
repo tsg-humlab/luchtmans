@@ -51,6 +51,9 @@
             <li class="nav-item">
               <a class="nav-link {% if url_name == 'works' or url_name == 'work_detail' %}active{% endif %}" aria-current="page" href="{% url 'works' %}">{% trans "Works" %}</a>
             </li>
+            <li class="nav-item">
+              <a class="nav-link {% if url_name == 'items' or url_name == 'item_detail' %}active{% endif %}" aria-current="page" href="{% url 'items' %}">{% trans "Items" %}</a>
+            </li>
           </ul>
             <div class="d-flex">
             {% if user.is_authenticated %}

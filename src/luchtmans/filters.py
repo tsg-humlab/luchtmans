@@ -4,6 +4,8 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 from django.db.models import Q
 
+from bootstrap_datepicker_plus.widgets import DatePickerInput
+
 from .models import Person, Place, Country, Religion, Collection, Item, Edition, Language, Work
 
 
@@ -169,3 +171,21 @@ class WorkFilter(django_filters.FilterSet):
             'languages',
             'notes',
         ]
+
+
+class ItemFilter(django_filters.FilterSet):
+    collections = django_filters.ModelMultipleChoiceFilter(
+        label=mark_safe(_("Collections")),
+        queryset=Collection.objects.all(),
+        widget=Select2MultipleWidget(attrs={'data-placeholder': "Select multiple"}),
+        field_name='collection',
+    )
+    date = django_filters.DateFilter(widget=DatePickerInput())
+
+    class Meta:
+        model = Item
+        fields = [
+            'collections',
+            'date'
+        ]
+
