@@ -93,6 +93,21 @@
                                     {% endif %}
                                 </td>
                             </tr>
+                            <tr>
+                                <th scope="row">
+                                    {% translate 'Residence' %}
+                                </th>
+                                <td>
+                                    <ul>
+                                    {% for period_of_residence in periods_of_residence %}
+                                        <li>
+                                            {{ period_of_residence.start_year }} - {{ period_of_residence.end_year }}:
+                                            {{ period_of_residence.address }}
+                                        </li>
+                                    {% endfor %}
+                                    </ul>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -176,6 +191,12 @@
             [{{ object.place_of_death.location.y|unlocalize }}, {{ object.place_of_death.location.x|unlocalize }}],
             {'title': '{% translate "Place of death" %}'}
         ).addTo(detail.map);
+        {% for period_of_residence in periods_of_residence %}
+            L.marker(
+                [{{ period_of_residence.address.location.y|unlocalize }}, {{ period_of_residence.address.location.x|unlocalize }}],
+                {'title': '{% translate "Residence" %} {{ period_of_residence.start_year }} - {{ period_of_residence.end_year }}'}
+            ).addTo(detail.map);
+        {% endfor %}
     }, false);
 </script>
 {% endblock %}

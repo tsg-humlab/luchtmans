@@ -14,7 +14,7 @@ from requests import Response
 
 import django_tables2
 
-from .models import Country, Person, Place, Edition, Collection, Item, Work, Page
+from .models import Country, Person, Place, Edition, Collection, Item, Work, Page, PeriodOfResidence
 from .filters import PersonFilter, CollectionFilter, EditionFilter, WorkFilter, ItemFilter
 from .tables import PersonTable, CollectionTable, ItemsInCollectionTable, EditionTable, WorkTable, ItemTable
 from .utils import get_nested_object, SubqueryMedian
@@ -250,6 +250,7 @@ class PersonDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['editions'] = Edition.objects.filter(work__personworkrelation__person=self.get_object())
+        context['periods_of_residence'] = PeriodOfResidence.objects.filter(person=self.get_object())
         return context
 
 
