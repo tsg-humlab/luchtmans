@@ -26,7 +26,15 @@ class UUIDMixin:
         return render_to_string('uuid_column.html', context)
 
 
-class PersonTable(UUIDMixin, tables.Table):
+class TagsMixin:
+    def render_tags(self, record):
+        return format_html(' '.join([
+            format_html('<span class="badge rounded-pill bg-secondary">{}</span>', tag)
+            for tag in record.tags.all()
+        ]))
+
+
+class PersonTable(UUIDMixin, TagsMixin, tables.Table):
     short_name = tables.Column(linkify=('person_detail', [A("pk")]))
     uuid = tables.Column(empty_values=(), verbose_name="", orderable=False)
     collection = tables.Column(empty_values=(None), verbose_name="Collection")
@@ -58,6 +66,7 @@ class PersonTable(UUIDMixin, tables.Table):
             'number_of_editions',
             'relations',
             'wikidata_id',
+            'tags',
         ]
 
     def render_date_of_birth(self, record):
@@ -141,7 +150,7 @@ class CollectionTable(UUIDMixin, tables.Table):
         return f'ƒ {formatted_decimal_str}'
 
 
-class ItemTable(UUIDMixin, tables.Table):
+class ItemTable(UUIDMixin, TagsMixin, tables.Table):
     uuid = tables.Column(empty_values=(), verbose_name="", orderable=False)
     collection = tables.Column(linkify=('collection_detail', [A("collection_id")]))
     day_of_week = tables.Column(empty_values=(), orderable=False)
@@ -171,6 +180,7 @@ class ItemTable(UUIDMixin, tables.Table):
             'price_decimal',
             'notes',
             'work_in_progress',
+            'tags',
         ]
 
     def render_date(self, record):
@@ -193,7 +203,7 @@ class ItemsInCollectionTable(ItemTable):
                            formats.localize(record.date))
 
 
-class EditionTable(UUIDMixin, tables.Table):
+class EditionTable(UUIDMixin, TagsMixin, tables.Table):
     short_title = tables.Column(linkify=('edition_detail', [A("pk")]))
     uuid = tables.Column(empty_values=(), verbose_name="", orderable=False)
     stcn_id = tables.Column(verbose_name=_("STCN ID"))
@@ -216,6 +226,7 @@ class EditionTable(UUIDMixin, tables.Table):
             'work',
             'notes',
             'years_of_publication',
+            'tags',
         ]
 
     def render_years_of_publication(self, record):
@@ -238,7 +249,7 @@ class EditionTable(UUIDMixin, tables.Table):
         ]))
 
 
-class WorkTable(UUIDMixin, tables.Table):
+class WorkTable(UUIDMixin, TagsMixin, tables.Table):
     title = tables.Column(linkify=('work_detail', [A("pk")]))
     uuid = tables.Column(empty_values=(), verbose_name="", orderable=False)
 
@@ -254,6 +265,7 @@ class WorkTable(UUIDMixin, tables.Table):
             'viaf_id',
             'genre_parisian_category',
             'notes',
+            'tags',
         ]
 
     def render_viaf_id(self, record):

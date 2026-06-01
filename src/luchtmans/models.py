@@ -121,7 +121,28 @@ class UniqueNameModel(models.Model):
         return self.name
 
 
+class Tag(UniqueNameModel, UUIDModel):
+    class Meta:
+        abstract = True
+
+
 # # # END Helper classes and functions # # #
+
+
+class PersonTag(Tag):
+    pass
+
+
+class ItemTag(Tag):
+    pass
+
+
+class EditionTag(Tag):
+    pass
+
+
+class WorkTag(Tag):
+    pass
 
 
 class Country(Wikidata, GeoLocation, UUIDModel):
@@ -217,6 +238,7 @@ class Person(Wikidata, UUIDModel):
         through_fields=('person', 'religion'),
         verbose_name=_("religious affiliation")
     )
+    tags = models.ManyToManyField(PersonTag, blank=True)
 
     class Meta:
         verbose_name = _("person")
@@ -330,6 +352,7 @@ class Work(Wikidata, UUIDModel):
     genre_parisian_category = models.ForeignKey(GenreParisianCategory, null=True, blank=True, on_delete=models.PROTECT,
                                                 verbose_name=_("genre Parisian category"))
     notes = models.TextField(_("notes"), blank=True)
+    tags = models.ManyToManyField(WorkTag, blank=True)
 
     class Meta:
         verbose_name = _("work")
@@ -402,6 +425,7 @@ class Edition(UUIDModel):
     notes = models.TextField(_("notes"), blank=True)
     short_title = models.CharField(_("short title"), max_length=256)
     work = models.ForeignKey(Work, on_delete=models.PROTECT, verbose_name=_("work"))
+    tags = models.ManyToManyField(EditionTag, blank=True)
 
     class Meta:
         verbose_name = _("edition")
@@ -498,6 +522,7 @@ class Item(UUIDModel):
     price_decimal = models.DecimalField(_("decimal price"), max_digits=20, decimal_places=2, blank=True)
     notes = models.TextField(_("notes"), blank=True)
     work_in_progress = models.BooleanField(_("work in progress"))
+    tags = models.ManyToManyField(ItemTag, blank=True)
 
     class Meta:
         verbose_name = _("item")

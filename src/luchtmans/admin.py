@@ -13,7 +13,8 @@ from leaflet.admin import LeafletGeoAdmin
 from .models import (Country, Place, Street, Address, Person, PersonPersonRelation, RelationType, PeriodOfResidence,
                      Religion, PersonReligion, UniqueNameModel, Language, GenreParisianCategory, Work,
                      PersonWorkRelationRole, PersonWorkRelation, Format, STCNGenre, Edition, PersonEditionRelationRole,
-                     PersonEditionRelation, Collection, ItemType, Page, Binding, Item)
+                     PersonEditionRelation, Collection, ItemType, Page, Binding, Item, PersonTag, ItemTag, EditionTag,
+                     WorkTag)
 from .forms import ApiSelectWidget, ApiInfo
 
 
@@ -118,7 +119,7 @@ class PersonAdmin(WikidataMixin, admin.ModelAdmin):
         "wikidata_link"
     ]
     search_fields = ["short_name", "surname", "first_names"]
-    autocomplete_fields = ["place_of_birth", "place_of_death"]
+    autocomplete_fields = ["place_of_birth", "place_of_death", "tags"]
     list_filter = ["sex", "place_of_birth", "place_of_death", "religious_affiliation"]
     inlines = [RelatedPersonInline, ReligionInline, PeriodOfResidenceInline]
     fill_field_name = 'person_wikidata'
@@ -155,7 +156,7 @@ class ReligionAdmin(TranslationAdmin):
     search_fields = ["name"]
 
 # Register empty admin classes in one go
-for model in [PersonWorkRelation, Format, PersonEditionRelation, Collection, ItemType, Page, Binding, Item]:
+for model in [PersonWorkRelation, Format, PersonEditionRelation]:
     base_class = TranslationAdmin if model.__base__ == UniqueNameModel else admin.ModelAdmin
     admin_class = type(model.__name__+'Admin', (base_class,), {})
     admin.site.register(model, admin_class)
@@ -190,7 +191,7 @@ class WorkAdmin(admin.ModelAdmin):
     list_display = ['title', 'authors_list', 'uncertain', 'language_list', 'viaf_id', 'genre_parisian_category', 'notes']
     search_fields = ['title']
     list_filter = ['uncertain', 'languages', 'genre_parisian_category']
-    autocomplete_fields = ['languages', 'genre_parisian_category']
+    autocomplete_fields = ['languages', 'genre_parisian_category', 'tags']
     inlines = [AuthorInline]
 
     @admin.display(description=_("authors"))
@@ -227,7 +228,7 @@ class EditionAdmin(admin.ModelAdmin):
                     'volumes', 'stcn_genre_list', 'notes']
     search_fields = ['short_title', 'title']
     list_filter = ['edition_uncertain', 'places_of_publication', 'languages', 'stcn_genres']
-    autocomplete_fields = ['places_of_publication', 'languages', 'stcn_genres', 'work']
+    autocomplete_fields = ['places_of_publication', 'languages', 'stcn_genres', 'work', 'tags']
     inlines = [PersonInline]
 
     @admin.display(description=_("persons"))
@@ -249,3 +250,54 @@ class EditionAdmin(admin.ModelAdmin):
     @admin.display(description=_("STCN genres"))
     def stcn_genre_list(self, obj):
         return ", ".join(obj.stcn_genres.values_list('name', flat=True))
+
+
+@admin.register(Item)
+class ItemAdmin(admin.ModelAdmin):
+    list_display = ['transcription_full', 'collection', 'type', 'non_book', 'transcription_incomplete', 'page', 'date',
+                    'date_paid', 'edition_uncertain', 'volumes', 'number_of_copies', 'price', 'price_decimal', 'notes',
+                    'work_in_progress']
+    search_fields = ['transcription_full']
+    autocomplete_fields = ['collection', 'type', 'page', 'editions', 'binding', 'languages', 'tags']
+    list_filter = ['type', 'binding', 'languages', 'non_book', 'transcription_incomplete', 'date',
+                    'date_paid', 'edition_uncertain', 'volumes', 'number_of_copies','tags']
+
+
+@admin.register(Collection)
+class CollectionAdmin(admin.ModelAdmin):
+    search_fields = ['short_title']
+
+
+@admin.register(Binding)
+class BindingAdmin(TranslationAdmin):
+    search_fields = ['name']
+
+
+@admin.register(ItemType)
+class ItemTypeAdmin(TranslationAdmin):
+    search_fields = ['name']
+
+
+@admin.register(Page)
+class PageAdmin(admin.ModelAdmin):
+    search_fields = ['name']
+
+
+@admin.register(PersonTag)
+class PersonTagAdmin(admin.ModelAdmin):
+    search_fields = ['name']
+
+
+@admin.register(ItemTag)
+class PersonTagAdmin(admin.ModelAdmin):
+    search_fields = ['name']
+
+
+@admin.register(EditionTag)
+class PersonTagAdmin(admin.ModelAdmin):
+    search_fields = ['name']
+
+
+@admin.register(WorkTag)
+class PersonTagAdmin(admin.ModelAdmin):
+    search_fields = ['name']
