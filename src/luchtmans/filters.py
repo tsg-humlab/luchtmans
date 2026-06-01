@@ -6,7 +6,8 @@ from django.db.models import Q
 
 from bootstrap_datepicker_plus.widgets import DatePickerInput
 
-from .models import Person, Place, Country, Religion, Collection, Item, Edition, Language, Work
+from .models import Person, Place, Country, Religion, Collection, Item, Edition, Language, Work, PersonTag, EditionTag, \
+    WorkTag, ItemTag
 
 
 # Person filter
@@ -63,6 +64,12 @@ class PersonFilter(django_filters.FilterSet):
         widget=Select2MultipleWidget(attrs={'data-placeholder': "Select multiple"}, ),
         method='related_to_filter'
     )
+    tags = django_filters.ModelMultipleChoiceFilter(
+        label="Tags",
+        queryset=PersonTag.objects.all(),
+        widget=Select2MultipleWidget(attrs={'data-placeholder': "Select multiple"}, ),
+        field_name='tags__name',
+    )
 
     class Meta:
         model = Person
@@ -77,6 +84,7 @@ class PersonFilter(django_filters.FilterSet):
             'date_of_death',
             'religious_affiliation',
             'related_to',
+            'tags',
         ]
 
     def related_to_filter(self, queryset, name, value):
@@ -130,6 +138,12 @@ class EditionFilter(django_filters.FilterSet):
         widget=Select2MultipleWidget(attrs={'data-placeholder': "Select multiple"}),
         field_name='languages',
     )
+    tags = django_filters.ModelMultipleChoiceFilter(
+        label="Tags",
+        queryset=EditionTag.objects.all(),
+        widget=Select2MultipleWidget(attrs={'data-placeholder': "Select multiple"}, ),
+        field_name='tags__name',
+    )
 
     class Meta:
         model = Edition
@@ -146,6 +160,7 @@ class EditionFilter(django_filters.FilterSet):
             'notes',
             'year_of_publication_start',
             'year_of_publication_end',
+            'tags',
         ]
 
 
@@ -161,6 +176,12 @@ class WorkFilter(django_filters.FilterSet):
         widget=Select2MultipleWidget(attrs={'data-placeholder': "Select multiple"}),
         field_name='languages',
     )
+    tags = django_filters.ModelMultipleChoiceFilter(
+        label="Tags",
+        queryset=WorkTag.objects.all(),
+        widget=Select2MultipleWidget(attrs={'data-placeholder': "Select multiple"}, ),
+        field_name='tags__name',
+    )
 
     class Meta:
         model = Work
@@ -170,6 +191,7 @@ class WorkFilter(django_filters.FilterSet):
             'authors',
             'languages',
             'notes',
+            'tags',
         ]
 
 
@@ -181,11 +203,18 @@ class ItemFilter(django_filters.FilterSet):
         field_name='collection',
     )
     date = django_filters.DateFilter(widget=DatePickerInput())
+    tags = django_filters.ModelMultipleChoiceFilter(
+        label="Tags",
+        queryset=ItemTag.objects.all(),
+        widget=Select2MultipleWidget(attrs={'data-placeholder': "Select multiple"}, ),
+        field_name='tags__name',
+    )
 
     class Meta:
         model = Item
         fields = [
             'collections',
-            'date'
+            'date',
+            'tags',
         ]
 
