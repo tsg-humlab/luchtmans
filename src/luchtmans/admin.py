@@ -120,7 +120,7 @@ class PersonAdmin(WikidataMixin, admin.ModelAdmin):
     ]
     search_fields = ["short_name", "surname", "first_names"]
     autocomplete_fields = ["place_of_birth", "place_of_death", "tags"]
-    list_filter = ["sex", "place_of_birth", "place_of_death", "religious_affiliation"]
+    list_filter = ["sex", "place_of_birth", "place_of_death", "religious_affiliation", "tags"]
     inlines = [RelatedPersonInline, ReligionInline, PeriodOfResidenceInline]
     fill_field_name = 'person_wikidata'
 
@@ -190,7 +190,7 @@ class AuthorInline(admin.TabularInline):
 class WorkAdmin(admin.ModelAdmin):
     list_display = ['title', 'authors_list', 'uncertain', 'language_list', 'viaf_id', 'genre_parisian_category', 'notes']
     search_fields = ['title']
-    list_filter = ['uncertain', 'languages', 'genre_parisian_category']
+    list_filter = ['uncertain', 'languages', 'genre_parisian_category', 'tags']
     autocomplete_fields = ['languages', 'genre_parisian_category', 'tags']
     inlines = [AuthorInline]
 
@@ -227,7 +227,7 @@ class EditionAdmin(admin.ModelAdmin):
     list_display = ['title', 'person_list', 'edition_uncertain', 'years', 'place_of_publication_list', 'language_list',
                     'volumes', 'stcn_genre_list', 'notes']
     search_fields = ['short_title', 'title']
-    list_filter = ['edition_uncertain', 'places_of_publication', 'languages', 'stcn_genres']
+    list_filter = ['edition_uncertain', 'places_of_publication', 'languages', 'stcn_genres', 'tags']
     autocomplete_fields = ['places_of_publication', 'languages', 'stcn_genres', 'work', 'tags']
     inlines = [PersonInline]
 
@@ -260,7 +260,7 @@ class ItemAdmin(admin.ModelAdmin):
     search_fields = ['transcription_full']
     autocomplete_fields = ['collection', 'type', 'page', 'editions', 'binding', 'languages', 'tags']
     list_filter = ['type', 'binding', 'languages', 'non_book', 'transcription_incomplete', 'date',
-                    'date_paid', 'edition_uncertain', 'volumes', 'number_of_copies','tags']
+                    'date_paid', 'edition_uncertain', 'volumes', 'number_of_copies', 'tags']
 
 
 @admin.register(Collection)
