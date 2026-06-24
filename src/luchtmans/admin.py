@@ -16,9 +16,15 @@ from .models import (Country, Place, Street, Address, Person, PersonPersonRelati
                      PersonEditionRelation, Collection, ItemType, Page, Binding, Item, PersonTag, ItemTag, EditionTag,
                      WorkTag)
 from .forms import ApiSelectWidget, ApiInfo
+from .utils import get_nested_object
 
 
 class WikidataMixin:
+    class Media:
+        css = {
+            'all': ('css/admin/apilink.css', 'admin/css/vendor/select2/select2.css')
+        }
+
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         api_info = ApiInfo(obj, self.model, 'wikidata_id', settings.WIKIDATA_URL, 'Wikidata',
@@ -230,6 +236,45 @@ class EditionAdmin(admin.ModelAdmin):
     list_filter = ['edition_uncertain', 'places_of_publication', 'languages', 'stcn_genres', 'tags']
     autocomplete_fields = ['places_of_publication', 'languages', 'stcn_genres', 'work', 'tags']
     inlines = [PersonInline]
+
+    class Media:
+        css = {
+            'all': ('css/admin/apilink.css', 'admin/css/vendor/select2/select2.css')
+        }
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        api_info = ApiInfo(obj, self.model, 'stcn_id', settings.STCN_URL, 'STCN', fill_field_name='edition_stcn')
+
+        if not obj:
+            form.base_fields['stcn_id'].widget = ApiSelectWidget(data_view='stcn_suggest', api_info=api_info)
+            return form
+
+        response = requests.get(settings.STCN_URL.format(obj.stcn_id), headers={'accept': 'application/json'})
+
+        if response.status_code != requests.codes.ok:
+            form.base_fields['stcn_id'].widget = ApiSelectWidget(data_view='stcn_suggest', api_info=api_info)
+            return form
+
+        data = response.json()
+        mainTitle = get_nested_object(data, ('data', 'title', 0, 'part', 0, 'mainTitle'), '').lstrip('@')
+        respStat = get_nested_object(data, ('data', 'title', 0, 'part', 1, 'respStat'), '')
+        title = f'{mainTitle}{" / " if mainTitle and respStat else ""}{respStat}'
+        imprint = get_nested_object(data, ('data', 'imprint', 'normalised'), '')
+
+        text = f"""
+                    <span>
+                        <b>{title}</b>
+                        <span style='color: dimgray; margin-left: auto; margin-right: 0'>{obj.stcn_id}</span>
+                        <br/>
+                        <small>{imprint}</small>
+                    </span>
+                """
+
+        form.base_fields['stcn_id'].widget = ApiSelectWidget(data_view='stcn_suggest', choices=[(obj.stcn_id, text)],
+                                                             api_info=api_info)
+        return form
+
 
     @admin.display(description=_("persons"))
     def person_list(self, obj):

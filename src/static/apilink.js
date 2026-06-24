@@ -54,7 +54,7 @@
             const api_duplicate_indicator = django.jQuery('#api_object_exists_'+fieldName);
             const django_model = api_duplicate_indicator.data('django-model');
             django.jQuery.ajax({
-                url: "/object_exists_wikidata/"+django_model+"/"+id+"/",
+                url: "/object_exists/"+django_model+"/"+fieldName+"/"+id+"/",
                 beforeSend: function() {
                     api_duplicate_indicator[0].style.display = 'none';
                 },

@@ -195,6 +195,7 @@ WIKIDATA_SUGGEST_URL = 'https://www.wikidata.org/w/rest.php/wikibase/v1/suggest/
 WIKIDATA_STATEMENTS_URL = 'https://www.wikidata.org/w/rest.php/wikibase/v1/entities/items/{}?_fields=statements'
 
 STCN_URL = 'https://data.cerl.org/stcn/{}'
+STCN_SUGGEST_URL = 'https://data.cerl.org/stcn/_search'
 
 VIAF_URL = 'https://viaf.org/viaf/{}'
 

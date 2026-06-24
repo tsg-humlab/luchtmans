@@ -22,6 +22,9 @@ from .wikidata_api import get_wikidata_statements, get_wikidata_label
 from .apps import LuchtmansConfig
 
 
+### WikiData views ###
+
+
 def request_wikidata_suggest(term: str, page: int=1, limit: int=10) -> Response:
     api_key = settings.WIKIDATA_API_KEY
     language_code = translation.get_language()
@@ -199,14 +202,61 @@ class FillFieldsView(AutoResponseView):
         return {k:v for k,v in field_values.items() if v}  # Leave out items with empty values
 
 
-class ObjectExistsWikidataView(AutoResponseView):
+class ObjectExistsView(AutoResponseView):
     """Returns whether an object exists given the model name and Wikidata ID"""
-    def get(self, request, model_name, wikidata_id):
+    def get(self, request, model_name, field_name, value):
         model = apps.get_model(app_label=LuchtmansConfig.name, model_name=model_name)
         return JsonResponse({
-            'exists': model.objects.filter(wikidata_id=wikidata_id).exists()
+            'exists': model.objects.filter(**{field_name: value}).exists()
         })
 
+
+### STCN views ###
+
+def request_stcn_suggest(term: str, page:int=1, limit: int=10):
+    offset = (page - 1) * limit
+    return requests.get(settings.STCN_SUGGEST_URL,
+                        params={'_format': 'json', 'query': term, 'size': limit, 'offset': offset,},
+                        headers={'Accept': 'application/json'})
+
+
+class STCNSuggestView(AutoResponseView):
+    def get(self, request):
+        term = request.GET.get('term', '')
+        page = request.GET.get('page', '1')
+        page = int(page) if page.isdigit() else 1
+        limit = 10
+        response = request_stcn_suggest(term, page, limit)
+
+        if response.status_code != requests.codes.ok:
+            return JsonResponse({'results': {}, 'more': False})
+
+        results = [
+            {'id': html.escape(item['id']), 'text': self.render_text(item)}
+            for item in response.json().get('rows', [])
+        ]
+
+        return JsonResponse({
+            'results': results,
+            'more': len(results) >= limit
+        })
+
+    @staticmethod
+    def render_text(item):
+        id = html.escape(item['id'])
+        title = html.escape(get_nested_object(item, ('display', 'title'), ''))
+        imprint = html.escape(get_nested_object(item, ('display', 'imprint'), ''))
+        return f"""
+            <div>
+                <b>{title}</b>
+                <span style='color: dimgray; margin-left: auto; margin-right: 0'>{id}</span>
+                <br/>
+                <small>{imprint}</small>
+            </div>
+        """
+
+
+### Luchtmans view ###
 
 class PersonTableView(ListView):
     model = Person

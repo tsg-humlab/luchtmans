@@ -1,0 +1,7 @@
+.select2 {
+    width: 610px !important;
+}
+
+div:has(> .django-select2-apilink) .select2-selection {
+    height: 60px;
+}
