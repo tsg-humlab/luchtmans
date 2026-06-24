@@ -206,9 +206,13 @@ class ObjectExistsView(AutoResponseView):
     """Returns whether an object exists given the model name and Wikidata ID"""
     def get(self, request, model_name, field_name, value):
         model = apps.get_model(app_label=LuchtmansConfig.name, model_name=model_name)
+
+        first = model.objects.filter(**{field_name: value}).first()
         return JsonResponse({
-            'exists': model.objects.filter(**{field_name: value}).exists()
+            'exists': first is not None,
+            'href': reverse_lazy(f'admin:{first._meta.app_label}_{first._meta.model_name}_change', args=(first.pk,)) if first else '',
         })
+
 
 
 ### STCN views ###

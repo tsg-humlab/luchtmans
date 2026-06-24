@@ -29,6 +29,7 @@ class ApiSelectWidget(HeavySelect2Widget):
     def render(self, *args, **kwargs):
         output =  super().render(*args, **kwargs)
         obj, model, model_field_name, url_template, api_name, fill_field_name = astuple(self.api_info)
+        field = model._meta.get_field(model_field_name)
         api_id, display_style = ("", "display: none") if not obj or not getattr(obj, model_field_name, None) \
                                 else (escape(getattr(obj, model_field_name)), "")
 
@@ -42,7 +43,10 @@ class ApiSelectWidget(HeavySelect2Widget):
                 type="button">Fill in</button>
             </div>
             <div id='api_object_exists_{model_field_name}' style="display: none;" data-django-model="{model.__name__}">
-                <p style="color: red; margin: .4em 1em 0em 1em">A {model.__name__} with this Wikidata ID already exists.</p>
+                <p style="color: red; margin: .4em 1em 0em 1em">A {model.__name__.lower()} with this {field.verbose_name} already exists.</p>
+                <a href="" target="_blank" style="margin-left:1em">
+                    <img src="/static/admin/img/icon-viewlink.svg" alt="View"> View that {model.__name__.lower()}
+                </a>
             </div>
             <script src="{settings.STATIC_URL}{self.js}"></script>
         """)
