@@ -17,8 +17,7 @@ from .models import (Country, Place, Street, Address, Person, PersonPersonRelati
                      PersonEditionRelation, Collection, ItemType, Page, Binding, Item, PersonTag, ItemTag, EditionTag,
                      WorkTag)
 from .forms import ApiSelectWidget, ApiInfo
-from .utils import get_nested_object
-
+from .utils import get_nested_object, get_STCN_resource
 
 logger = logging.getLogger(__name__)
 
@@ -254,14 +253,7 @@ class EditionAdmin(admin.ModelAdmin):
             form.base_fields['stcn_id'].widget = ApiSelectWidget(data_view='stcn_suggest', api_info=api_info)
             return form
 
-        try:
-            response = requests.get(settings.STCN_URL.format(obj.stcn_id), headers={'accept': 'application/json'},
-                                    timeout=5)
-            logger.debug(f'{response.request.url}: {response.status_code}')
-            request_failed = False
-        except requests.exceptions.RequestException as e:
-            logger.error(f'{e.__class__.__name__}: {e}')
-            request_failed = True
+        response, request_failed = get_STCN_resource(obj.stcn_id)
 
         if request_failed or response.status_code != requests.codes.ok:
             text = f"""

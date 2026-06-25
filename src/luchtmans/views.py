@@ -1,7 +1,8 @@
 import html
 import requests
-from django.db.models import Count, OuterRef, Subquery, Q, Sum, F, Case, When, Value
+import logging
 
+from django.db.models import Count, OuterRef, Subquery, Q, Sum, F, Case, When, Value
 from django.views.generic import ListView, DetailView
 from django_select2.views import AutoResponseView
 from django.http import JsonResponse
@@ -17,9 +18,12 @@ import django_tables2
 from .models import Country, Person, Place, Edition, Collection, Item, Work, Page, PeriodOfResidence
 from .filters import PersonFilter, CollectionFilter, EditionFilter, WorkFilter, ItemFilter
 from .tables import PersonTable, CollectionTable, ItemsInCollectionTable, EditionTable, WorkTable, ItemTable
-from .utils import get_nested_object, SubqueryMedian
+from .utils import get_nested_object, SubqueryMedian, get_STCN_resource
 from .wikidata_api import get_wikidata_statements, get_wikidata_label
 from .apps import LuchtmansConfig
+
+
+logger = logging.getLogger(__name__)
 
 
 ### WikiData views ###
@@ -200,6 +204,24 @@ class FillFieldsView(AutoResponseView):
             field_values['location'] = f'{{ "type": "Point", "coordinates": [ {longitude}, {latitude} ] }}'  # Leaflet format
         # TODO Create Place en Country (problem: streets are often linked to a municipality instead of a city)
         return {k:v for k,v in field_values.items() if v}  # Leave out items with empty values
+
+    @staticmethod
+    def get_edition_stcn_fillfield_response(request):
+        api_id = request.GET.get('api_id', "")
+        response, request_failed = get_STCN_resource(api_id)
+        if request_failed or response.status_code != requests.codes.ok:
+            return {}
+
+        data = response.json()
+        field_values = {}
+        mainTitle = get_nested_object(data, ('data', 'title', 0, 'part', 0, 'mainTitle'), '').lstrip('@')
+        respStat = get_nested_object(data, ('data', 'title', 0, 'part', 1, 'respStat'), '')
+        field_values['title'] = f'{mainTitle}{" / " if mainTitle and respStat else ""}{respStat}'
+        field_values['short_title'] = mainTitle
+        field_values['year_of_publication_start'] = get_nested_object(data, ('data', 'fingerprint', 0, 'year',), '')
+        field_values['year_of_publication_end'] = get_nested_object(data, ('data', 'fingerprint', 0, 'year',), '')
+
+        return {k: v for k, v in field_values.items() if v}  # Leave out items with empty values
 
 
 class ObjectExistsView(AutoResponseView):

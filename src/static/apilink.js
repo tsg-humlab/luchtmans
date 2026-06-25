@@ -85,6 +85,22 @@
             const fillFieldName = elem.getAttribute('data-fill-field-name');
             const id =  django.jQuery('#id_'+fieldName).find(':selected')[0].value;
 
+
+
+            function createResetElem(fieldName, oldValue, oldText) {
+                return `
+                    <div id="reset_${fieldName}" style="margin: 4px 0 0 10px; clear: both">
+                        <span style="color: red">Value changed!</span>
+                        <span>Old value: <b>${oldText}</b></span>
+                        <button type="button" class="button fill-button" 
+                                onclick="django.jQuery('#id_${fieldName}').val('${oldValue}').trigger('change');
+                                         django.jQuery('#reset_${fieldName}').remove();">
+                            Reset
+                        </button>
+                    </div>
+                `
+            }
+
             django.jQuery.ajax({
                 url: "/fill_fields/"+fillFieldName+"/?api_id="+id,
                 beforeSend: function() {
@@ -93,7 +109,13 @@
                 success: function(result) {
                     django.jQuery.each(result, (fieldName, data) => {
                         const field = django.jQuery('#id_'+fieldName);
+                        let oldValue = field.val();
+                        let oldText = null;
+                        let oldAndNewAreEqual = null;
+
                         if (field.hasClass("select2-hidden-accessible")) {
+                            oldText = django.jQuery("option:selected", field).text();
+                            oldAndNewAreEqual = (data.text == oldText && data.id == oldValue) ? true : false;
                             if (field.find("option[value='" + data.id + "']").length) {
                                 field.val(data.id).trigger('change');
                             } else {
@@ -103,6 +125,8 @@
                                 field.append(newOption).trigger('change');
                             }
                         } else if(field.hasClass('django-leaflet-raw-textarea') && "L" in window) {
+                            oldText = oldValue;
+                            oldAndNewAreEqual = oldValue == data ? true : false;
                             const map = window.maps[fieldName];
                             map.eachLayer((layer) => {
                                 if(layer['_latlng']!=undefined)
@@ -120,7 +144,18 @@
                             }
                             field.val(data);
                         } else {
+                            oldText = oldValue;
+                            oldAndNewAreEqual = oldValue == data ? true : false;
                             field.val(data);
+                        }
+
+                        if(oldValue && !oldAndNewAreEqual) {
+                            const resetElem = createResetElem(fieldName, oldValue, oldText);
+                            if(django.jQuery("#reset_"+fieldName).length) {
+                                django.jQuery("#reset_"+fieldName).replaceWith(resetElem);
+                            } else {
+                                django.jQuery(resetElem).insertAfter(field);
+                            }
                         }
                     });
                 },
