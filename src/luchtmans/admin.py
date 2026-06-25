@@ -1,4 +1,5 @@
 import requests
+import logging
 
 from django.conf import settings
 from django.contrib import admin
@@ -17,6 +18,9 @@ from .models import (Country, Place, Street, Address, Person, PersonPersonRelati
                      WorkTag)
 from .forms import ApiSelectWidget, ApiInfo
 from .utils import get_nested_object
+
+
+logger = logging.getLogger(__name__)
 
 
 class WikidataMixin:
@@ -250,10 +254,25 @@ class EditionAdmin(admin.ModelAdmin):
             form.base_fields['stcn_id'].widget = ApiSelectWidget(data_view='stcn_suggest', api_info=api_info)
             return form
 
-        response = requests.get(settings.STCN_URL.format(obj.stcn_id), headers={'accept': 'application/json'})
+        try:
+            response = requests.get(settings.STCN_URL.format(obj.stcn_id), headers={'accept': 'application/json'},
+                                    timeout=5)
+            logger.debug(f'{response.request.url}: {response.status_code}')
+            request_failed = False
+        except requests.exceptions.RequestException as e:
+            logger.error(f'{e.__class__.__name__}: {e}')
+            request_failed = True
 
-        if response.status_code != requests.codes.ok:
-            form.base_fields['stcn_id'].widget = ApiSelectWidget(data_view='stcn_suggest', api_info=api_info)
+        if request_failed or response.status_code != requests.codes.ok:
+            text = f"""
+            <span>
+                <b>{obj.stcn_id}</b>
+                <br/>
+                <small style="color: red">Data could not be fetched from CERL/STCN</small>
+            </span>
+            """
+            form.base_fields['stcn_id'].widget = ApiSelectWidget(data_view='stcn_suggest', api_info=api_info,
+                                                                 choices=[(obj.stcn_id, text)])
             return form
 
         data = response.json()
