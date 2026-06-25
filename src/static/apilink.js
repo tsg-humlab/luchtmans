@@ -7,7 +7,17 @@
         });
     }
 
+    function setAPILinkTitle() {
+        setTimeout(() => {
+            const title_attr = django.jQuery('div:has(> .django-select2-apilink) .select2-selection__rendered').attr('title');
+            const title = django.jQuery(title_attr).text().replace(/^\s*/, '').replace(/\n\s*/g, '\n');
+            django.jQuery('div:has(> .django-select2-apilink) .select2-selection__rendered').attr('title', title);
+        }, 100);
+    }
+
     django.jQuery(document).ready(() => {
+        setAPILinkTitle();
+
         // Set zoom for all maps
         if("L" in window) {  // Leaflet must be loaded
             for(const [fieldName, map] of Object.entries(window.maps)) {
@@ -63,6 +73,8 @@
                     api_duplicate_indicator[0].style.display = result['exists'] == true ? 'inline' : 'none';
                 }
             });
+
+            setAPILinkTitle();
         });
 
         // Fill in button
