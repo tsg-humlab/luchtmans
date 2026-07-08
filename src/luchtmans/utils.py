@@ -34,14 +34,7 @@ class SubqueryMedian(Subquery):
 
 def and_or_to_q(search_string: str, field_name:str, AND: str= 'AND', OR: str= 'OR') -> Q:
     """Convert a search string to an AND and OR queryset"""
-    AND_esc = re.escape(AND)
-    OR_esc = re.escape(OR)
-    search_string = search_string.strip()
-    search_string = re.sub(rf'^(({AND_esc}|{OR_esc})\s+)*', '', search_string)
-    search_string = re.sub(rf'(\s+({AND_esc}|{OR_esc}))*$', '', search_string)
-    search_list = re.split(rf'\s+({AND_esc}|{OR_esc})(?=\s)', search_string)
-    search_list = list(map(str.strip, search_list))
-    print(search_list)
+    search_list = method_name(search_string, AND, OR)
 
     def make_q(term):
         return ~Q(**{f'{field_name}__icontains': term[1:]}) if term.startswith('-') \
@@ -56,3 +49,15 @@ def and_or_to_q(search_string: str, field_name:str, AND: str= 'AND', OR: str= 'O
         elif operator == OR:
             q |= new_q
     return q
+
+
+def method_name(search_string: str, AND: str, OR: str) -> list[str]:
+    AND_esc = re.escape(AND)
+    OR_esc = re.escape(OR)
+    search_string = search_string.strip()
+    search_string = re.sub(rf'^(({AND_esc}|{OR_esc})\s+)*', '', search_string)
+    search_string = re.sub(rf'(\s+({AND_esc}|{OR_esc}))*$', '', search_string)
+    search_list = re.split(rf'\s+({AND_esc}|{OR_esc})(?=\s)', search_string)
+    search_list = list(map(str.strip, search_list))
+    print(search_list)
+    return search_list
