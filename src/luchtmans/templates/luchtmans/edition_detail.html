@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load l10n %}
+{% load render_table from django_tables2 %}
+
+{% block extracss %}
+{% endblock %}
+
+{% block content %}
+
+<div class="container-xl">
+<div class="row">
+    <div class="col">
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <h3 class="float-end">
+                        {% if perms.luchtmans.edition_change %}
+                            <a href="{% url 'admin:luchtmans_edition_change' object.pk %}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="{% translate 'Change' %}">
+                            <i class="bi bi-pencil"></i></a>
+                        {% endif %}
+                        {% if perms.luchtmans.edition_delete %}
+                            <a class="delete-entry" href="{% url 'admin:luchtmans_edition_delete' object.pk %}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="{% translate 'Delete' %}">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        {% endif %}
+                    </h3>
+                    <h1 style="margin-top: 40px; margin-bottom: 40px; font-size: 48px; text-align: left">
+                        Edition <i>{{ object }}</i>
+                    </h1>
+                    <div>
+                        {% for tag in object.tags.all %}
+                            <span class="badge rounded-pill bg-secondary">{{ tag }}</span>
+                        {% endfor %}
+                    </div>  
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <th scope="row">
+                                    {% translate 'Title' %}
+                                </th>
+                                <td>
+                                    {{ object.title }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    {% translate 'Persons' %}
+                                </th>
+                                <td>
+                                    {% for person in object.persons.all %}
+                                        {{ person }}{% if not forloop.last %}; {% endif %}
+                                    {% endfor %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    {% translate 'Edition uncertain' %}
+                                </th>
+                                <td>
+                                    {% if object.edition_uncertain %}
+                                        <i class="bi bi-check-lg"></i>
+                                    {% else %}
+                                        <i class="bi bi-x-lg"></i>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    {% translate 'Years of publication' %}
+                                </th>
+                                <td>
+                                    {{ object.year_of_publication_start|default:"?" }}
+                                    -
+                                    {{ object.year_of_publication_end|default:"?" }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    {% translate 'Places of publication' %}
+                                </th>
+                                <td>
+                                    {% for place in object.places_of_publication.all %}
+                                        {{ place }}{% if not forloop.last %}, {% endif %}
+                                    {% endfor %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    {% translate 'Volumes' %}
+                                </th>
+                                <td>
+                                    {{ object.volumes }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    {% translate 'Languages' %}
+                                </th>
+                                <td>
+                                    {% for language in object.languages.all %}
+                                        {{ language }}{% if not forloop.last %}, {% endif %}
+                                    {% endfor %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    {% translate 'STCN' %}
+                                </th>
+                                <td>
+                                    <a href="https://data.cerl.org/stcn/{{ object.stcn_id }}">{{ object.stcn_id }}
+                                        <i class="bi bi-box-arrow-up-right"></i></a>
+
+                                    {% for stcn_genre in object.stcn_genres.all %}
+                                        {{ stcn_genre }}{% if not forloop.last %}, {% endif %}
+                                    {% endfor %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    {% translate 'Work' %}
+                                </th>
+                                <td>
+                                    {{ object.work }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    {% translate 'Notes' %}
+                                </th>
+                                <td>
+                                    {{ object.notes }}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+{% endblock %}
+
+{% block extrajs %}
+{% endblock %}

@@ -55,11 +55,20 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.gis',
 
     'luchtmans',
 
     'django_extensions',
     'rosetta',
+    'easyaudit',
+    'django_select2',
+    'leaflet',
+    'django_bootstrap5',
+    'django_tables2',
+    'django_filters',
+    'bootstrap_datepicker_plus',
+    'debug_toolbar',
 ]
 
 MIDDLEWARE = [
@@ -71,6 +80,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'easyaudit.middleware.easyaudit.EasyAuditMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'lm_project.urls'
@@ -78,7 +89,7 @@ ROOT_URLCONF = 'lm_project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -105,6 +116,29 @@ DATABASES = {
         "HOST": env("SQL_HOST", default=""),
         "PORT": env("SQL_PORT", default=""),
     }
+}
+
+
+LOG_LEVEL = env('LOG_LEVEL', 'INFO')
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "file": {
+            "level": LOG_LEVEL,
+            "class": "logging.handlers.TimedRotatingFileHandler",
+            "filename": WRITABLE_DIR / 'log' / 'django.log',
+            "when": "midnight",
+            "backupCount": 100,
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["file"],
+            "level": LOG_LEVEL,
+            "propagate": True,
+        },
+    },
 }
 
 
@@ -155,3 +189,22 @@ STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+WIKIDATA_API_KEY = env('WIKIDATA_API_KEY', default="")
+WIKIDATA_LABEL_URL = 'https://www.wikidata.org/w/rest.php/wikibase/v1/entities/items/{}/labels/{}'
+WIKIDATA_URL = 'https://www.wikidata.org/wiki/{}'
+WIKIDATA_SUGGEST_URL = 'https://www.wikidata.org/w/rest.php/wikibase/v1/suggest/items'
+WIKIDATA_STATEMENTS_URL = 'https://www.wikidata.org/w/rest.php/wikibase/v1/entities/items/{}?_fields=statements'
+
+STCN_URL = 'https://data.cerl.org/stcn/{}'
+
+VIAF_URL = 'https://viaf.org/viaf/{}'
+
+LEAFLET_CONFIG = {
+    'DEFAULT_CENTER': (52.155172, 5.387201),
+    'DEFAULT_ZOOM': 6,
+    'MIN_ZOOM': 3,
+    'MAX_ZOOM': 18,
+    'DEFAULT_PRECISION': 6,
+    'RESET_VIEW': False,
+}

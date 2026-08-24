@@ -1,5 +1,9 @@
+import uuid
+
+from django.conf import settings
 from django.db import models
-from django.db.models.signals import post_save, post_delete
+from django.contrib.gis.db import models as gis_models
+from django.db.models.signals import post_save, post_delete, m2m_changed
 from django.utils.translation import gettext_lazy as _
 from django.dispatch import receiver
 
@@ -44,17 +48,80 @@ def post_delete_relation_creator(sender, relation_fields):
     return post_delete_relation
 
 
+def copy_reverse_many_to_many_objects(base_obj, other_obj, many_to_many_fields, reverse_field_name, calling_function):
+    """
+    Takes the many-to-many objects from base_obj en adds the reverse of those objects to the other_obj.
+    """
+    # Prevent recursively calling m2m_changed signal
+    calling_function = globals()[calling_function]
+    m2m_changed.disconnect(calling_function, sender=PersonPersonRelation.types.through)
+
+    for field in many_to_many_fields:
+        base_m2m_objects = getattr(base_obj, field).all()
+        other_m2m_relation = getattr(other_obj, field)
+        other_m2m_relation.clear()
+        for base_m2m_object in base_m2m_objects:
+            reverse_obj = getattr(base_m2m_object, reverse_field_name)
+            other_m2m_relation.add(reverse_obj)
+
+    m2m_changed.connect(calling_function, sender=PersonPersonRelation.types.through)
+
+
+def m2m_changed_relation_creator(sender, relation_fields, relation_type_fields, m2m_relation_name, reverse_field_name='reverse'):
+    @receiver(m2m_changed, sender=sender)
+    def m2m_changed_relation(sender, instance, **kwargs):
+        relation_fields_swapped = {
+            relation_fields[0]: getattr(instance, relation_fields[1]),
+            relation_fields[1]: getattr(instance, relation_fields[0]),
+        }
+        reverse = instance._meta.model.objects.get(**relation_fields_swapped)
+        sender.objects.filter(**{relation_type_fields[0]: reverse}).delete()
+        types_for_reverse = []
+        for type in getattr(instance, m2m_relation_name).all():
+            reverse_type = getattr(type, reverse_field_name)
+            relation_type = reverse_type if reverse_type else type
+            types_for_reverse.append(sender(**{relation_type_fields[0]: reverse,
+                                               relation_type_fields[1]: relation_type}))
+        sender.objects.bulk_create(types_for_reverse)
+
+    return m2m_changed_relation
+
+
+class UUIDModel(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid7, editable=False)
+
+    class Meta:
+        abstract = True
+
+
 class Wikidata(models.Model):
     wikidata_id = models.CharField(max_length=256, blank=True)
 
     class Meta:
         abstract = True
 
+    def wikidata_url(self):
+        return settings.WIKIDATA_URL.format(self.wikidata_id)
+
 
 class GeoLocation(models.Model):
-    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True, editable=False)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True, editable=False)
+    location = gis_models.PointField(null=True)
 
+    class Meta:
+        abstract = True
+
+
+class UniqueNameModel(models.Model):
+    name = models.CharField(_("name"), max_length=256, unique=True)
+
+    class Meta:
+        abstract = True
+
+    def __str__(self):
+        return self.name
+
+
+class Tag(UniqueNameModel, UUIDModel):
     class Meta:
         abstract = True
 
@@ -62,7 +129,23 @@ class GeoLocation(models.Model):
 # # # END Helper classes and functions # # #
 
 
-class Country(Wikidata, GeoLocation):
+class PersonTag(Tag):
+    pass
+
+
+class ItemTag(Tag):
+    pass
+
+
+class EditionTag(Tag):
+    pass
+
+
+class WorkTag(Tag):
+    pass
+
+
+class Country(Wikidata, GeoLocation, UUIDModel):
     name = models.CharField(_("name"), max_length=256)
 
     class Meta:
@@ -74,7 +157,7 @@ class Country(Wikidata, GeoLocation):
         return self.name
 
 
-class Place(Wikidata, GeoLocation):
+class Place(Wikidata, GeoLocation, UUIDModel):
     name = models.CharField(_("name"), max_length=256)
     country = models.ForeignKey(Country, models.PROTECT)
 
@@ -87,9 +170,8 @@ class Place(Wikidata, GeoLocation):
         return self.name
 
 
-class Street(models.Model):
-    new_name = models.CharField(_("new name"), max_length=1024)
-    old_name = models.TextField(_("old name"))
+class Street(Wikidata, GeoLocation, UUIDModel):
+    name = models.CharField(_("name"), max_length=1024)
     place = models.ForeignKey(Place, models.PROTECT)
 
     class Meta:
@@ -97,11 +179,13 @@ class Street(models.Model):
         verbose_name_plural = _("streets")
 
     def __str__(self):
-        return f'{self.new_name} [old: {self.old_name}]'
+        return f'{self.name}'
 
 
-class Address(Wikidata, GeoLocation):
-    house_number = models.CharField(_("house_number"), max_length=256)
+class Address(Wikidata, GeoLocation, UUIDModel):
+    description = models.CharField(_("description"), max_length=256, default='')
+    streetname_old = models.CharField(_("old street name"), max_length=256, blank=True)
+    house_number = models.CharField(_("house number"), max_length=256)
     street = models.ForeignKey(Street, models.PROTECT)
 
     class Meta:
@@ -112,7 +196,7 @@ class Address(Wikidata, GeoLocation):
         return f'{self.street} {self.house_number}, {self.street.place}'
 
 
-class Religion(models.Model):
+class Religion(UUIDModel):
     name = models.CharField(_("name"), max_length=255, unique=True)
 
     class Meta:
@@ -124,7 +208,7 @@ class Religion(models.Model):
         return self.name
 
 
-class Person(Wikidata):
+class Person(Wikidata, UUIDModel):
     """Represents a person."""
 
     class GenderChoices(models.TextChoices):
@@ -154,6 +238,7 @@ class Person(Wikidata):
         through_fields=('person', 'religion'),
         verbose_name=_("religious affiliation")
     )
+    tags = models.ManyToManyField(PersonTag, blank=True)
 
     class Meta:
         verbose_name = _("person")
@@ -163,7 +248,7 @@ class Person(Wikidata):
         return self.short_name
 
 
-class RelationType(models.Model):
+class RelationType(UUIDModel):
     text = models.CharField(_("text"), max_length=255, unique=True)
     reverse = models.ForeignKey("self", blank=True, null=True, on_delete=models.SET_NULL)
 
@@ -184,7 +269,7 @@ def post_save_relation(sender, instance, created, **kwargs):
         reverse.save()
 
 
-class PersonPersonRelation(models.Model):
+class PersonPersonRelation(UUIDModel):
     from_person = models.ForeignKey(Person, on_delete=models.DO_NOTHING, related_name="from_relations")
     to_person = models.ForeignKey(Person, on_delete=models.DO_NOTHING, related_name="to_relations")
     types = models.ManyToManyField(RelationType, blank=True)
@@ -198,11 +283,16 @@ class PersonPersonRelation(models.Model):
         return f'{self.from_person} is related to {self.to_person}'
 
 
+# Signal receivers for handling reverse PersonPersonRelations
 post_save_personpersonrelation = post_save_relation_creator(PersonPersonRelation, ('from_person', 'to_person'))
 post_delete_personpersonrelation = post_delete_relation_creator(PersonPersonRelation, ('from_person', 'to_person'))
+m2m_changed_personpersonrelation = m2m_changed_relation_creator(PersonPersonRelation.types.through,
+                                                                ('from_person', 'to_person'),
+                                                                ('personpersonrelation', 'relationtype'),
+                                                                'types')
 
 
-class PeriodOfResidence(models.Model):
+class PeriodOfResidence(UUIDModel):
     """Model linking Person to Address over a period of time."""
     person = models.ForeignKey(Person, on_delete=models.CASCADE)
     address = models.ForeignKey(Address, on_delete=models.PROTECT)
@@ -219,7 +309,7 @@ class PeriodOfResidence(models.Model):
         return f"{self.person} lived at {self.address}{from_string}{until_string}"
 
 
-class PersonReligion(models.Model):
+class PersonReligion(UUIDModel):
     """Model linking a Person to a Religion during a period of time."""
     person = models.ForeignKey(Person, on_delete=models.CASCADE)
     religion = models.ForeignKey(Religion, models.PROTECT)
@@ -228,3 +318,215 @@ class PersonReligion(models.Model):
 
     def __str__(self):
         return f'{self.person.short_name} was {self.religion.name.lower()}'
+
+
+class Language(UniqueNameModel, UUIDModel):
+
+    class Meta:
+        verbose_name = _("language")
+        verbose_name_plural = _("languages")
+
+
+class GenreParisianCategory(UniqueNameModel, UUIDModel):
+
+    class Meta:
+        verbose_name = _("genre Parisian category")
+        verbose_name_plural = _("genre Parisian categories")
+
+
+class Work(Wikidata, UUIDModel):
+    authors = models.ManyToManyField(
+        Person,
+        through="PersonWorkRelation",
+        through_fields=('work', 'person'),
+        verbose_name=_("authors")
+    )
+    title = models.CharField(_("title"), max_length=256)
+    uncertain = models.BooleanField(_("uncertain"))
+    languages = models.ManyToManyField(
+        Language,
+        blank=True,
+        verbose_name=_("languages"),
+    )
+    viaf_id = models.CharField(_("VIAF identifier"), max_length=256, blank=True)
+    genre_parisian_category = models.ForeignKey(GenreParisianCategory, null=True, blank=True, on_delete=models.PROTECT,
+                                                verbose_name=_("genre Parisian category"))
+    notes = models.TextField(_("notes"), blank=True)
+    tags = models.ManyToManyField(WorkTag, blank=True)
+
+    class Meta:
+        verbose_name = _("work")
+        verbose_name_plural = _("works")
+
+    def __str__(self):
+        return self.title
+
+
+class PersonWorkRelationRole(UniqueNameModel, UUIDModel):
+
+    class Meta:
+        verbose_name = _("person work relation role")
+        verbose_name_plural = _("person work relation roles")
+
+
+class PersonWorkRelation(UUIDModel):
+    person = models.ForeignKey(Person, on_delete=models.CASCADE, verbose_name=_("person"))
+    work = models.ForeignKey(Work, on_delete=models.CASCADE, verbose_name=_("work"))
+    role = models.ForeignKey(PersonWorkRelationRole, on_delete=models.PROTECT, verbose_name=_("role"))
+
+    class Meta:
+        verbose_name = _("person work relation")
+        verbose_name_plural = _("person work relations")
+
+
+class Format(UniqueNameModel, UUIDModel):
+
+    class Meta:
+        verbose_name = _("format")
+        verbose_name_plural = _("formats")
+
+
+class STCNGenre(UniqueNameModel, UUIDModel):
+
+    class Meta:
+        verbose_name = _("STCN genre")
+        verbose_name_plural = _("STCN genres")
+
+
+class Edition(UUIDModel):
+    stcn_id = models.CharField(_("STCN identifier"), max_length=256, blank=True)
+    persons = models.ManyToManyField(
+        Person,
+        blank=True,
+        through="PersonEditionRelation",
+        through_fields=('edition', 'person'),
+        verbose_name=_("authors")
+    )
+    title = models.CharField(_("title"), max_length=256)
+    edition_uncertain = models.BooleanField(_("edition is uncertain"))
+    year_of_publication_start = models.IntegerField(_("year of publication start"), null=True, blank=True)
+    year_of_publication_end = models.IntegerField(_("year of publication end"), null=True, blank=True)
+    places_of_publication = models.ManyToManyField(
+        Place,
+        blank=True,
+        verbose_name=_("places of publication")
+    )
+    volumes = models.CharField(_("volumes"), blank=True)
+    languages = models.ManyToManyField(
+        Language,
+        blank=True,
+        verbose_name=_("languages")
+    )
+    stcn_genres = models.ManyToManyField(
+        STCNGenre,
+        blank=True,
+        verbose_name=_("STCN genres")
+    )
+    notes = models.TextField(_("notes"), blank=True)
+    short_title = models.CharField(_("short title"), max_length=256)
+    work = models.ForeignKey(Work, on_delete=models.PROTECT, verbose_name=_("work"))
+    tags = models.ManyToManyField(EditionTag, blank=True)
+
+    class Meta:
+        verbose_name = _("edition")
+        verbose_name_plural = _("editions")
+
+    def __str__(self):
+        return self.short_title
+
+
+class PersonEditionRelationRole(UniqueNameModel, UUIDModel):
+
+    class Meta:
+        verbose_name = _("person edition relation role")
+        verbose_name_plural = _("person edition relation roles")
+
+
+class PersonEditionRelation(UUIDModel):
+    person = models.ForeignKey(Person, on_delete=models.CASCADE, verbose_name=_("person"))
+    edition = models.ForeignKey(Edition, on_delete=models.CASCADE, verbose_name=_("edition"))
+    role = models.ForeignKey(PersonEditionRelationRole, on_delete=models.PROTECT, verbose_name=_("role"))
+
+    class Meta:
+        verbose_name = _("person edition relation")
+        verbose_name_plural = _("person edition relations")
+
+    def __str__(self):
+        return _('{person} is {role} of {edition}').format(person=self.person, role=self.role, edition=self.edition)
+
+
+class Collection(UUIDModel):
+    short_title = models.CharField(_("short title"), max_length=256)
+    all_headers = models.TextField(_("all headers"), blank=True)
+    client = models.OneToOneField(Person, related_name="collection", on_delete=models.PROTECT, verbose_name=_("client"))
+    notes = models.TextField(_("notes"), blank=True)
+
+    class Meta:
+        verbose_name = _("collection")
+        verbose_name_plural = _("collections")
+
+    def __str__(self):
+        return self.short_title
+
+
+class ItemType(UniqueNameModel, UUIDModel):
+
+    class Meta:
+        verbose_name = _("item type")
+        verbose_name_plural = _("item type")
+
+
+class Page(UUIDModel):
+    RECTO = 'R'
+    VERSO = 'V'
+    RECTO_VERSO_CHOICES = {
+        RECTO: 'Recto',
+        VERSO: 'Verso'
+    }
+    volume = models.IntegerField(_("volume"))
+    folio = models.CharField(_("folio"), max_length=256)
+    recto_verso = models.CharField(_("recto or verso"), max_length=1, choices=RECTO_VERSO_CHOICES)
+
+    class Meta:
+        verbose_name = _("page")
+        verbose_name_plural = _("pages")
+        ordering = ['volume', 'folio', 'recto_verso']
+
+    def __str__(self):
+        return f'{self.volume}_{self.folio}{self.recto_verso}'
+
+
+class Binding(UniqueNameModel, UUIDModel):
+
+    class Meta:
+        verbose_name = _("binding")
+        verbose_name_plural = _("bindings")
+
+
+class Item(UUIDModel):
+    collection = models.ForeignKey(Collection, on_delete=models.PROTECT, verbose_name=_("collection"))
+    transcription_full = models.CharField(_("full transcription"), max_length=256)
+    type = models.ForeignKey(ItemType, on_delete=models.PROTECT, verbose_name=_("type"))
+    non_book = models.BooleanField(_("non book"))
+    transcription_incomplete = models.BooleanField(_("transcription is incomplete"))
+    page = models.ForeignKey(Page, on_delete=models.PROTECT, verbose_name=_("page"))
+    date = models.DateField(_("date"), null=True, blank=True)
+    date_paid = models.DateField(_("date_paid"), null=True, blank=True)
+    editions = models.ManyToManyField(Edition, verbose_name=_("editions"))
+    edition_uncertain = models.BooleanField(_("edition is uncertain"))
+    volumes = models.CharField(_("volumes"), max_length=10, default='1')
+    number_of_copies = models.CharField(_("number of copies"), max_length=10, default='1')
+    binding = models.ManyToManyField(Binding, blank=True, verbose_name=_("bindings"))
+    languages = models.ManyToManyField(Language, blank=True, verbose_name=_("languages"))
+    price = models.CharField(_("price"), max_length=20, blank=True)
+    price_decimal = models.DecimalField(_("decimal price"), max_digits=20, decimal_places=2, blank=True)
+    notes = models.TextField(_("notes"), blank=True)
+    work_in_progress = models.BooleanField(_("work in progress"))
+    tags = models.ManyToManyField(ItemTag, blank=True)
+
+    class Meta:
+        verbose_name = _("item")
+        verbose_name_plural = _("items")
+
+    def __str__(self):
+        return self.transcription_full

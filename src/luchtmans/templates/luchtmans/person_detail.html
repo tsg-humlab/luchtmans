@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load l10n %}
+{% load leaflet_tags %}
+{% load formatting %}
+
+{% block extracss %}
+{% leaflet_css %}
+{% endblock %}
+
+{% block content %}
+
+<div class="container-xl">
+<div class="row">
+    <div class="col">
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <h3 class="float-end">
+                        {% if perms.luchtmans.person_change %}
+                            <a href="{% url 'admin:luchtmans_person_change' object.pk %}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="{% translate 'Change' %}">
+                            <i class="bi bi-pencil"></i></a>
+                        {% endif %}
+                        {% if perms.luchtmans.person_delete %}
+                            <a class="delete-entry" href="{% url 'admin:luchtmans_person_delete' object.pk %}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="{% translate 'Delete' %}">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        {% endif %}
+                    </h3>
+                    <h1 style="margin-top: 40px; margin-bottom: 40px; font-size: 48px; text-align: left">
+                        Person <i>{{ object }}</i>
+                    </h1>
+                    <div>
+                        {% for tag in object.tags.all %}
+                            <span class="badge rounded-pill bg-secondary">{{ tag }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-7">
+                    <table class="table">
+                            <tbody>
+                            <tr>
+                                <th scope="row">
+                                    {% translate 'Short name' %}
+                                </th>
+                                <td>
+                                    {{ object.short_name }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    {% translate 'Name' %}
+                                </th>
+                                <td>
+                                    {{ object.surname }}{% if object.surname and object.first_names %}, {%endif %}
+                                    {{ object.first_names }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    {% translate 'Birth' %}
+                                </th>
+                                <td>
+                                    {{ object.place_of_birth|default:"" }}{% if object.place_of_birth and object.date_of_birth %}, {%endif %}
+                                    {{ object.date_of_birth|str_to_date }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    {% translate 'Death' %}
+                                </th>
+                                <td>
+                                    {{ object.place_of_death|default:"" }}{% if object.place_of_death and object.date_of_death %}, {%endif %}
+                                    {{ object.date_of_death|str_to_date }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    {% translate 'Sex' %}
+                                </th>
+                                <td>
+                                    {{ object.get_sex_display }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    {% translate 'Wikidata' %}
+                                </th>
+                                <td>
+                                    {% if object.wikidata_id %}
+                                        <a href="{{ object.wikidata_url }}">
+                                            {{ object.wikidata_id }} <i class="bi bi-box-arrow-up-right"></i>
+                                        </a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    {% translate 'Residence' %}
+                                </th>
+                                <td>
+                                    <ul>
+                                    {% for period_of_residence in periods_of_residence %}
+                                        <li>
+                                            {{ period_of_residence.start_year }} - {{ period_of_residence.end_year }}:
+                                            {{ period_of_residence.address }}
+                                        </li>
+                                    {% endfor %}
+                                    </ul>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-xl-5">
+                    {% leaflet_map "person_map" %}
+                </div>
+            </div>
+
+            <div class="row">
+                <hr/>
+                <h2>Collections</h2>
+                <p>
+                    {% if object.collection %}
+                        <a href="{% url 'collection_detail' object.collection.pk %}">{{ object.collection.short_title }}</a>
+                        {% if perms.luchtmans.collection_change %}
+                            <a href="{% url 'admin:luchtmans_collection_change' object.collection.pk %}">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                        {% endif %}
+                    {% else %}
+                        <i>{% translate 'No collections' %}</i>
+                    {% endif %}
+                </p>
+            </div>
+
+            <div class="row">
+                <hr/>
+                <h2>Edition (as author)</h2>
+                <ul>
+                    {% for edition in editions %}
+                        <li>
+                            <a href="{% url 'edition_detail' edition.pk %}">{{ edition.work }}</a>
+                            ({% for place in edition.places_of_publication.all %}{{ place }}{% if not forloop.last %}, {% endif %}{% endfor %}, {{ edition.volumes }})
+                            {% if perms.luchtmans.edition_change %}
+                                <a href="{% url 'admin:luchtmans_edition_change' edition.pk %}">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                            {% endif %}
+                        </li>
+                    {% empty %}
+                        <i>{% translate 'No editions' %}</i>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div class="row">
+                <hr/>
+                <h2>Works (as author)</h2>
+                <ul>
+                    {% for work in object.work_set.all %}
+                        <li>
+                            <a href="{% url 'work_detail' work.pk %}">{{ work.title }}</a>
+                            {% if perms.luchtmans.work_change %}
+                                <a href="{% url 'admin:luchtmans_work_change' work.pk %}">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                            {% endif %}
+                        </li>
+                    {% empty %}
+                        <i>{% translate 'No works' %}</i>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+{% endblock %}
+
+{% block extrajs %}
+{% leaflet_js %}
+<script>
+    window.addEventListener("map:init", function (e) {
+        var detail = e.detail;
+        L.marker(
+            [{{ object.place_of_birth.location.y|unlocalize }}, {{ object.place_of_birth.location.x|unlocalize }}],
+            {'title': '{% translate "Place of birth" %}'}
+        ).addTo(detail.map);
+        L.marker(
+            [{{ object.place_of_death.location.y|unlocalize }}, {{ object.place_of_death.location.x|unlocalize }}],
+            {'title': '{% translate "Place of death" %}'}
+        ).addTo(detail.map);
+        {% for period_of_residence in periods_of_residence %}
+            L.marker(
+                [{{ period_of_residence.address.location.y|unlocalize }}, {{ period_of_residence.address.location.x|unlocalize }}],
+                {'title': '{% translate "Residence" %} {{ period_of_residence.start_year }} - {{ period_of_residence.end_year }}'}
+            ).addTo(detail.map);
+        {% endfor %}
+    }, false);
+</script>
+{% endblock %}

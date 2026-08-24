@@ -20,7 +20,13 @@ from django.urls import path, re_path, include
 from django.conf.urls.i18n import i18n_patterns
 
 
-urlpatterns = i18n_patterns(
+urlpatterns = [
+    path('', include('luchtmans.urls')),
+    path("accounts/", include('django.contrib.auth.urls')),
+    path('i18n/', include('django.conf.urls.i18n')),
+]
+
+urlpatterns += i18n_patterns(
     path('admin/', admin.site.urls),
 )
 
@@ -28,3 +34,7 @@ if 'rosetta' in settings.INSTALLED_APPS:
     urlpatterns += [
         re_path(r'^rosetta/', include('rosetta.urls'))
     ]
+
+if 'debug_toolbar' in settings.INSTALLED_APPS:
+    from debug_toolbar.toolbar import debug_toolbar_urls
+    urlpatterns += debug_toolbar_urls()

@@ -14,7 +14,7 @@ services:
         condition: service_started
     restart: unless-stopped
   postgres:
-    image: postgres:15
+    image: postgis/postgis:18-3.6-alpine
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${SQL_USER} -d ${SQL_DATABASE}"]
       interval: 10s
@@ -22,7 +22,7 @@ services:
       start_period: 30s
       timeout: 10s
     volumes:
-      - postgres_data:/var/lib/postgresql/data/
+      - postgres_data:/var/lib/postgresql/
       - postgres_dumps:/postgres_dumps
     environment:
       - POSTGRES_USER=${SQL_USER}
