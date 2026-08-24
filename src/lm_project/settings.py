@@ -37,6 +37,8 @@ CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS')
 
 INTERNAL_IPS = ["127.0.0.1",]
 
+SCRIPT_NAME = env('SCRIPT_NAME', "")
+
 LANGUAGES = [
     ("en", _("English")),
     ("nl", _("Dutch")),
@@ -158,7 +160,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-LOGIN_REDIRECT_URL = "/"
+LOGIN_REDIRECT_URL = "/" if not SCRIPT_NAME else SCRIPT_NAME
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
@@ -175,7 +177,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = 'static/' if not SCRIPT_NAME else f'{SCRIPT_NAME}/static/'
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),

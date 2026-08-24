@@ -14,11 +14,11 @@ server {
         proxy_redirect off;
     }
 
-    location /static/ {
+    location ${SCRIPT_NAME}/static/ {
         alias /app/staticfiles/;
     }
 
-    location /media/ {
+    location ${SCRIPT_NAME}/media/ {
         alias /app/writable/media/;
     }
 }

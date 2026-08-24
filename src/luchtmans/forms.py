@@ -38,7 +38,9 @@ class ApiSelectWidget(HeavySelect2Widget):
                  href_base="{url_template[:-2]}">
                     Show on {api_name}
                 </a>
-                <button class="button fill-button" id="fillbutton_{model_field_name}" data-fill-field-name="{fill_field_name}" 
+                <button class="button fill-button" id="fillbutton_{model_field_name}" 
+                data-fill-field-name="{fill_field_name}"
+                data-script-name="{settings.SCRIPT_NAME}"
                 type="button">Fill in</button>
             </div>
             <div id='api_object_exists_{model_field_name}' style="display: none;" data-django-model="{model.__name__}">
