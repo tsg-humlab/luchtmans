@@ -1,0 +1,396 @@
+html * {
+    font-size-adjust: 0.45; !important
+}
+
+body {
+	background-image: url("../img/paper.png");
+	background-position: left top;
+	background-repeat: repeat;
+	font-size: medium;
+}
+
+a, a:active, a:visited {
+	color: #b82b22;
+}
+
+a:focus, a:hover {
+	color: #b82b22;
+}
+
+.navbar {
+	margin: 0;
+    border-radius: 0;
+    background: #b82b22;
+    color: white;
+    height: 51px;
+}
+
+.navbar-brand {
+	height: 40px;
+    color: white !important;
+}
+
+.navbar-nav > li > a,
+.navbar-nav > li > p > a:active,
+.navbar-nav > li > p > a:visited,
+.navbar-nav > li > p {
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    color: white !important;
+    outline: 0;
+}
+
+a.navbar-img {
+	padding: 4px 15px;
+}
+
+a.navbar-img > img.mini-logo {
+	height: 40px;
+    width: auto;
+    display: inline-block;
+    margin-left: 15px;
+}
+
+.tab-pane p b {
+	color: #b82b22;
+}
+
+ol li, .page-content ul li {
+	margin-bottom: 5px;
+}
+
+.display-lg, .page-content, .panel {
+	margin-bottom: 30px;
+}
+
+.display-lg {
+	position: relative;
+}
+
+.display-lg img {
+    width: 100%;
+    height: auto;
+}
+
+.display-lg .banner {
+	position: absolute;
+	bottom: 10%;
+	left: 0;
+	background-color: rgba(184,43,34,0.8);
+	color: #fff;
+	font-weight: bold;
+	padding: 5px 60px 5px 20px;
+	min-width: 325px;
+}
+
+.display-lg .banner h1, .display-lg .banner h3, .display-lg .banner h4 {
+	width: auto;
+}
+
+.panel {
+	font-size: medium;
+	text-align: justify;
+    text-justify: inter-word;
+}
+
+.panel th {
+    font-weight: 700;
+}
+
+.panel p {
+    font-size: medium;
+}
+
+.panel b {
+	font-weight: bold;
+}
+
+.panel-primary {
+	border-color: #b82b22;
+}
+
+.footer {
+	background-color: #b82b22;
+	min-height: 200px;
+	color: white;
+    font-family: 'Lora', serif;
+    font-size: large;
+    font-weight: 700;
+    padding: 25px;
+    padding-bottom: 0;
+}
+
+.footer p.footer-text {
+	font-size: x-small;
+	font-weight: normal;
+    padding-top: 25px;
+	font-family: 'Raleway', sans-serif;
+}
+
+.footer ul {
+	margin: 25px 0;
+	display: flex;
+    justify-content: space-between;
+}
+
+.footer ul li {
+    vertical-align: middle;
+}
+
+.partner-logo {
+	width: 400px;
+	height: auto;
+}
+
+.partner-logo2 {
+	height: 60px;
+	width: auto;
+}
+
+.page-content {
+	min-height: 325px;
+}
+
+.page-content > h1 {
+	margin-bottom: 30px;
+}
+
+.team .panel {
+	vertical-align: top;
+}
+
+.team .panel .panel-body {
+	display: table-row;
+}
+
+.team .panel .panel-body h2 {
+	margin-top: 0;
+}
+
+.team .panel .panel-body > img, .team .panel .panel-body > div {
+	display: table-cell;
+	vertical-align: top;
+	padding: 0;
+}
+
+.team .panel .panel-body > div {
+	padding: 0 20px;
+}
+
+.team .panel img {
+	max-width: 100px;
+	min-width: 50px;
+	height: auto;
+}
+
+.team .panel .panel-body {
+	padding-left: 20px;
+}
+
+.ds {
+	background-image: url(../img/raster.png);
+    background-attachment: fixed;
+}
+
+.ds > .row > div {
+	background-image: url("../img/paper.png");
+}
+
+.diagonal-stripes {
+	background-size: 10px;
+	background-image: -webkit-linear-gradient(45deg, transparent 90%, rgba(255, 255, 255, .25) 50%);
+	background-image: -moz-linear-gradient(45deg 50%, transparent 90%, rgba(255, 255, 255, 0.25) 50%);
+	background-image: -ms-linear-gradient(45deg, transparent 90%, rgba(255, 255, 255, .25) 50%);
+	background-image: -o-linear-gradient(45deg, transparent 90%, rgba(255, 255, 255, .25) 50%);		
+}
+
+.news-main-image {
+	width: 100%;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	border: 1px solid grey;
+}
+
+textarea {
+    height: 90px;
+    width: 100%;
+}
+
+form {
+    font-size: 13px;
+}
+
+th {
+    text-align: left;
+}
+
+form th {
+    width: 25%;
+}
+
+h1 {
+    text-align: center;
+}
+
+.alert {
+    margin: 0px 15px 15px;
+}
+
+.navbar-default .navbar-nav > li.active > a {
+    background-color: #d93d34;
+}
+
+.navbar-default .navbar-nav > li.active > a:hover {
+    background-color: #d93d34;
+}
+
+.navbar-nav {
+    padding-left: 20px;
+}
+
+/* TABLE SORTING */
+.table-sortable > thead > tr > th {
+  cursor: pointer;
+  position: relative;
+}
+
+.table-sortable > thead > tr > th:after {
+  content: ' ';
+	position: absolute;
+  height: 0;
+  width: 0;
+  right: 10px; /* (right padding / 2) - arrow width */
+  top: 16px; /* ((padding * 2) + line height) - arrow height */
+  /** As pointed out by Dave Everitt in
+   * https://css-tricks.com/snippets/css/css-triangle/
+   * The arrow is not an equilateral triangle.
+   * the height is 86.6% of the width.
+   * Notice the above code does not subract the border
+   * width exactly. It is subtracting
+   * (rounded) border width * 86.6%
+   **/
+}
+
+/* Default sortable indicator */
+.table-sortable > thead > tr > th:after {
+  border-left: 5px solid transparent;
+	border-right: 5px solid transparent;
+	border-top: 5px solid #ccc;
+  border-bottom: 0px solid transparent;
+}
+/* !Default */
+
+/* Default sortable indicator:hover */
+.table-sortable > thead > tr > th:hover:after {
+	border-top: 5px solid #888;
+}
+/* !Default:hover */
+
+/* Ascending sortable indicator */
+.table-sortable > thead > tr > th.asc:after {
+  border-left: 5px solid transparent;
+	border-right: 5px solid transparent;
+  border-top: 0px solid transparent;
+	border-bottom: 5px solid #333;
+}
+.table-sortable > thead > tr > th.asc:hover:after {
+	border-bottom: 5px solid #888;
+}
+/* !Ascending */
+
+/* Descending sortable indicator */
+.table-sortable > thead > tr > th.desc:after {
+  border-left: 5px solid transparent;
+	border-right: 5px solid transparent;
+  border-top: 5px solid #333;
+	border-bottom: 5px solid transparent;
+}
+/* !Descending */
+
+/* END TABLE SORTING */
+
+.select2, input[type="text"], input[type="email"], input[type="password"]{
+  min-width: 100%;
+}
+
+.select2-container {
+  min-width: 100%
+  max-width: 100%;
+}
+
+.select2-selection {
+  outline: 0;
+  max-width: 100%;
+}
+
+.expand-cell {
+    display: none;  // Don't show by default
+}
+.collapse-cell {
+    display: none;
+}
+.collapsed-cell {
+    max-height: 70px;
+    overflow: hidden;
+}
+
+.panel-body {
+    font-size: 13px;
+}
+
+.panel-body td {
+    font-weight: 500;
+}
+
+@media (max-width: 1450px) {
+    .navbar-header {
+        float: none;
+    }
+    .navbar-left,.navbar-right {
+        float: none !important;
+    }
+    .navbar-toggle {
+        display: block;
+    }
+    .navbar-collapse {
+        border-top: 1px solid transparent;
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+        max-width: 320px;
+        float: right;
+    }
+    .navbar-fixed-top {
+		top: 0;
+		border-width: 0 0 1px;
+	}
+    .navbar-collapse.collapse {
+        display: none!important;
+    }
+    .navbar-nav {
+        float: none !important;
+        margin-top: 7.5px;
+        max-width: 300px;
+	}
+
+	.navbar-right {
+	    margin-right: 0px;
+	}
+	.navbar-nav>li {
+        float: none;
+    }
+    .navbar-nav>li>a {
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+    .collapse.in{
+  		display:block !important;
+	}
+}
+
+.helptext {
+    top: 3px;
+    position: relative;
+    color: rgb(153, 153, 153);
+}
+
+.errorlist {
+    color: #b82b22;
+}

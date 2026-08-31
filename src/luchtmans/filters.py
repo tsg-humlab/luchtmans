@@ -8,12 +8,13 @@ from bootstrap_datepicker_plus.widgets import DatePickerInput
 
 from .models import Person, Place, Country, Religion, Collection, Item, Edition, Language, Work, PersonTag, EditionTag, \
     WorkTag, ItemTag
+from .utils import and_or_to_q
 
 
 # Person filter
 class PersonFilter(django_filters.FilterSet):
-    short_name = django_filters.Filter(field_name='short_name', lookup_expr='icontains')
-    surname = django_filters.Filter(field_name='surname', lookup_expr='icontains')
+    short_name = django_filters.Filter(method='short_name_filter')
+    surname = django_filters.Filter(method='short_name_filter')
     sex = django_filters.MultipleChoiceFilter(
         choices=Person.GenderChoices,
         widget=Select2MultipleWidget(attrs={'data-placeholder': "Select multiple"},)
@@ -87,6 +88,12 @@ class PersonFilter(django_filters.FilterSet):
             'tags',
         ]
 
+    def short_name_filter(self, queryset, name, value):
+        return queryset.filter(and_or_to_q(value.strip(), 'short_name'))
+
+    def surname_filter(self, queryset, name, value):
+        return queryset.filter(and_or_to_q(value.strip(), 'surname'))
+
     def related_to_filter(self, queryset, name, value):
         if value:
             first_person_query = Q(to_relations__to_person__in=value)
@@ -102,15 +109,15 @@ class PersonFilter(django_filters.FilterSet):
         return queryset
 
 class CollectionFilter(django_filters.FilterSet):
-    short_title = django_filters.CharFilter(label=mark_safe(_("Short title")), field_name='short_title', lookup_expr='icontains')
-    all_headers = django_filters.CharFilter(label=mark_safe(_("Headers")), field_name='all_headers', lookup_expr='icontains')
+    short_title = django_filters.CharFilter(label=mark_safe(_("Short title")), method='short_title_filter')
+    all_headers = django_filters.CharFilter(label=mark_safe(_("Headers")), method='all_headers_filter')
     client = django_filters.ModelMultipleChoiceFilter(
         label="Client",
         queryset=Person.objects.all(),
         widget=Select2MultipleWidget(attrs={'data-placeholder': "Select multiple"},),
         field_name='client',
     )
-    notes = django_filters.CharFilter(label=mark_safe(_("Notes")), field_name='notes', lookup_expr='icontains')
+    notes = django_filters.CharFilter(label=mark_safe(_("Notes")), method='notes_filter')
 
     class Meta:
         model = Collection
@@ -121,13 +128,24 @@ class CollectionFilter(django_filters.FilterSet):
             'notes',
         ]
 
+    def short_title_filter(self, queryset, name, value):
+        return queryset.filter(and_or_to_q(value.strip(), 'short_title'))
+
+    def all_headers_filter(self, queryset, name, value):
+        return queryset.filter(and_or_to_q(value.strip(), 'all_headers'))
+
+    def notes_filter(self, queryset, name, value):
+        return queryset.filter(and_or_to_q(value.strip(), 'notes'))
+
 
 class EditionFilter(django_filters.FilterSet):
+    short_title = django_filters.Filter(method='short_title_filter')
     persons = django_filters.ModelMultipleChoiceFilter(
         queryset=Person.objects.all(),
         widget=Select2MultipleWidget(attrs={'data-placeholder': "Select multiple"}),
         field_name='persons',
     )
+    title = django_filters.Filter(method='title_filter')
     places_of_publication = django_filters.ModelMultipleChoiceFilter(
         queryset=Place.objects.all(),
         widget=Select2MultipleWidget(attrs={'data-placeholder': "Select multiple"}),
@@ -138,6 +156,8 @@ class EditionFilter(django_filters.FilterSet):
         widget=Select2MultipleWidget(attrs={'data-placeholder': "Select multiple"}),
         field_name='languages',
     )
+    volumes = django_filters.Filter(method='volumes_filter')
+    notes = django_filters.Filter(method='notes_filter')
     tags = django_filters.ModelMultipleChoiceFilter(
         label="Tags",
         queryset=EditionTag.objects.all(),
@@ -163,8 +183,21 @@ class EditionFilter(django_filters.FilterSet):
             'tags',
         ]
 
+    def short_title_filter(self, queryset, name, value):
+        return queryset.filter(and_or_to_q(value.strip(), 'short_title'))
+
+    def title_filter(self, queryset, name, value):
+        return queryset.filter(and_or_to_q(value.strip(), 'title'))
+
+    def volumes_filter(self, queryset, name, value):
+        return queryset.filter(and_or_to_q(value.strip(), 'volumes'))
+
+    def notes_filter(self, queryset, name, value):
+        return queryset.filter(and_or_to_q(value.strip(), 'notes'))
+
 
 class WorkFilter(django_filters.FilterSet):
+    title = django_filters.Filter(method='title_filter')
     authors = django_filters.ModelMultipleChoiceFilter(
         label=mark_safe(_("Authors")),
         queryset=Person.objects.all(),
@@ -176,6 +209,7 @@ class WorkFilter(django_filters.FilterSet):
         widget=Select2MultipleWidget(attrs={'data-placeholder': "Select multiple"}),
         field_name='languages',
     )
+    notes = django_filters.Filter(method='notes_filter')
     tags = django_filters.ModelMultipleChoiceFilter(
         label="Tags",
         queryset=WorkTag.objects.all(),
@@ -193,6 +227,12 @@ class WorkFilter(django_filters.FilterSet):
             'notes',
             'tags',
         ]
+
+    def title_filter(self, queryset, name, value):
+        return queryset.filter(and_or_to_q(value.strip(), 'title'))
+
+    def notes_filter(self, queryset, name, value):
+        return queryset.filter(and_or_to_q(value.strip(), 'notes'))
 
 
 class ItemFilter(django_filters.FilterSet):

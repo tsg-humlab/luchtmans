@@ -83,6 +83,7 @@
             const original_elem_text = elem.innerText;
             const fieldName = elem.id.slice("fillbutton_".length);
             const fillFieldName = elem.getAttribute('data-fill-field-name');
+            const scriptName = elem.getAttribute('data-script-name')
             const id =  django.jQuery('#id_'+fieldName).find(':selected')[0].value;
 
 
@@ -102,7 +103,7 @@
             }
 
             django.jQuery.ajax({
-                url: "/fill_fields/"+fillFieldName+"/?api_id="+id,
+                url: scriptName + "/fill_fields/"+fillFieldName+"/?api_id="+id,
                 beforeSend: function() {
                     elem.innerText = 'Fetching data...';
                 },
