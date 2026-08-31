@@ -50,7 +50,7 @@ def get_STCN_resource(api_id: str) -> tuple[requests.Response, bool]:
         return response, False
     except requests.exceptions.RequestException as e:
         logger.error(f'{e.__class__.__name__}: {e}')
-        return response, True
+        return None, True
 
 
 def and_or_to_q(search_string: str, field_name:str, AND: str= 'AND', OR: str= 'OR') -> Q:
