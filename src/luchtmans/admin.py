@@ -1,7 +1,14 @@
+from typing import Any
+
 import requests
 
 from django.conf import settings
 from django.contrib import admin
+from django.contrib.admin import AdminSite
+from django.contrib.admin.widgets import RelatedFieldWidgetWrapper
+from django.db.models import ManyToOneRel, Model
+from django.forms import ModelForm
+from django.forms.widgets import ChoiceWidget
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 from django.utils import translation, html
@@ -222,6 +229,31 @@ class PersonEditionRelationRoleAdmin(TranslationAdmin):
     search_fields = ['name']
 
 
+class ExtraURLParamsRelatedFieldWidgetWrapper(RelatedFieldWidgetWrapper):
+    def __init__(
+        self,
+        widget: ChoiceWidget,
+        rel: ManyToOneRel,
+        admin_site: AdminSite,
+        can_add_related: bool | None = None,
+        can_change_related: bool = False,
+        can_delete_related: bool = False,
+        can_view_related: bool = False,
+        extra_url_params: None | dict = None
+    ):
+        super().__init__(widget, rel, admin_site, can_add_related, can_change_related, can_delete_related, can_view_related)
+        self.extra_url_params = extra_url_params or {}
+
+    def get_context(self, name, value, attrs):
+        context = super().get_context(name, value, attrs)
+        self.add_extra_url_params(context)
+        return context
+
+    def add_extra_url_params(self, context: dict[str, Any]):
+        extra_url_params_list = [f'{name}={value}' for name, value in self.extra_url_params.items()]
+        context["url_params"] = '&'.join([context["url_params"]] + extra_url_params_list)
+
+
 @admin.register(Edition)
 class EditionAdmin(admin.ModelAdmin):
     list_display = ['title', 'person_list', 'edition_uncertain', 'years', 'place_of_publication_list', 'language_list',
@@ -230,6 +262,23 @@ class EditionAdmin(admin.ModelAdmin):
     list_filter = ['edition_uncertain', 'places_of_publication', 'languages', 'stcn_genres', 'tags']
     autocomplete_fields = ['places_of_publication', 'languages', 'stcn_genres', 'work', 'tags']
     inlines = [PersonInline]
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        self.add_url_extra_params(form, obj)
+        return form
+
+    def add_url_extra_params(self, form: type[ModelForm[Any]], obj: Edition | None):
+        if not obj:
+            return
+        extra_url_params = {
+            'title': obj.title,
+            'languages': ",".join([str(id) for id in obj.languages.values_list('pk', flat=True)])
+        }
+        work_field = form.base_fields['work']
+        work_field.widget = ExtraURLParamsRelatedFieldWidgetWrapper(work_field.widget.widget, work_field.widget.rel,
+                                                                    self.admin_site, True, True, True, True,
+                                                                    extra_url_params)
 
     @admin.display(description=_("persons"))
     def person_list(self, obj):
