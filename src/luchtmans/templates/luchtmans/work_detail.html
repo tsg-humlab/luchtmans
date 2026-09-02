@@ -55,7 +55,7 @@
                                 </th>
                                 <td>
                                     {% for person in object.authors.all %}
-                                        {{ person }}{% if not forloop.last %}; {% endif %}
+                                        <a href="{% url 'person_detail' person.pk %}">{{ person }}</a>{% if not forloop.last %}; {% endif %}
                                     {% endfor %}
                                 </td>
                             </tr>

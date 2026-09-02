@@ -3,6 +3,7 @@ import decimal
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.utils import formats
+from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 from django.utils.html import format_html, format_html_join
 from django.conf import settings
@@ -206,7 +207,10 @@ class ItemsInCollectionTable(ItemTable):
 class EditionTable(UUIDMixin, TagsMixin, tables.Table):
     short_title = tables.Column(linkify=('edition_detail', [A("pk")]))
     uuid = tables.Column(empty_values=(), verbose_name="", orderable=False)
+    persons = tables.TemplateColumn(template_name='luchtmans/components/person_links.html',
+                                    extra_context={'delimiter': ', '})
     stcn_id = tables.Column(verbose_name=_("STCN ID"))
+    work = tables.Column(linkify=('work_detail', [A("work_id")]))
     years_of_publication = tables.Column(empty_values=(), orderable=False)
 
     class Meta:
@@ -235,18 +239,6 @@ class EditionTable(UUIDMixin, TagsMixin, tables.Table):
     def render_stcn_id(self, record):
         return format_html('<a href="{}" title="{}" target="_blank">{} <i class="bi bi-box-arrow-up-right"></i></a>',
                            settings.STCN_URL.format(record.stcn_id), _("Show on data.cerl.org/stcn in a new tab/window"), record.stcn_id)
-
-    def render_persons(self, record):
-        template = """
-            <a href="{}">{}</a>
-            <a href="{}" title="{} \'{}\'"><i class="bi bi-pencil"></i></a>
-        """
-        return format_html(', '.join([
-            format_html(template, reverse_lazy('person_detail', kwargs={'pk': person.pk}), person,
-                        reverse_lazy('admin:luchtmans_person_change', kwargs={'object_id': person.pk}),
-                        _("Change person"), person)
-            for person in record.persons.all()
-        ]))
 
 
 class WorkTable(UUIDMixin, TagsMixin, tables.Table):

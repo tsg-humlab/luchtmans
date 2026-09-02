@@ -55,7 +55,7 @@
                                 </th>
                                 <td>
                                     {% for person in object.persons.all %}
-                                        {{ person }}{% if not forloop.last %}; {% endif %}
+                                        <a href="{% url 'person_detail' person.pk %}">{{ person }}</a>{% if not forloop.last %}; {% endif %}
                                     {% endfor %}
                                 </td>
                             </tr>
@@ -127,7 +127,7 @@
                                     {% translate 'Work' %}
                                 </th>
                                 <td>
-                                    {{ object.work }}
+                                    <a href="{% url 'work_detail' object.work_id %}">{{ object.work }}</a>
                                 </td>
                             </tr>
                             <tr>

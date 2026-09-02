@@ -42,7 +42,8 @@
                                     {% translate 'Client' %}
                                 </th>
                                 <td>
-                                    {{ object.client }} <span class="ms-2 text-secondary">{{ object.client.date_of_birth|str_to_date }} &ndash; {{ object.client.date_of_death|str_to_date }}</span>
+                                    <a href="{% url 'person_detail' object.client_id %}">{{ object.client }}</a>
+                                    <span class="ms-2 text-secondary">{{ object.client.date_of_birth|str_to_date }} &ndash; {{ object.client.date_of_death|str_to_date }}</span>
                                 </td>
                             </tr>
                             <tr>

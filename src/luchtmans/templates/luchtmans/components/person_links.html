@@ -1,0 +1,6 @@
+{% load i18n %}
+{% for person in record.persons.all %}
+    <a href="{% url 'person_detail' person.pk %}">{{ person }}</a>{% if perms.luchtmans.person_change %} <a
+        href="{% url 'admin:luchtmans_person_change' person.pk %}" title="{% translate 'Change person'%} '{{ person }}'">
+        <i class="bi bi-pencil"></i></a>{% endif %}{% if not forloop.last %}{{ delimiter }}{% endif %}
+{% endfor %}
