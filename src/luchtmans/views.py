@@ -222,7 +222,7 @@ class PersonTableView(ListView):
                 .annotate(item_count=Count('collection__item'))
                 .annotate(number_of_editions=Count(Edition.objects
                                                    .filter(work__personworkrelation__person=OuterRef('pk'))
-                                                   .values('pk')))
+                                                   .values('pk')[:1]))
                 .annotate(first_item_year=first_item_year, last_item_year=last_item_year))
 
     def get_context_data(self, **kwargs):
