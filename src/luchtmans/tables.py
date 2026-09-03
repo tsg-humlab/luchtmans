@@ -208,7 +208,7 @@ class EditionTable(UUIDMixin, TagsMixin, tables.Table):
     short_title = tables.Column(linkify=('edition_detail', [A("pk")]))
     uuid = tables.Column(empty_values=(), verbose_name="", orderable=False)
     persons = tables.TemplateColumn(template_name='luchtmans/components/person_links.html',
-                                    extra_context={'delimiter': ', '})
+                                    extra_context={'delimiter': ', '}, orderable=False)
     stcn_id = tables.Column(verbose_name=_("STCN ID"))
     work = tables.Column(linkify=('work_detail', [A("work_id")]))
     years_of_publication = tables.Column(empty_values=(), orderable=False)
