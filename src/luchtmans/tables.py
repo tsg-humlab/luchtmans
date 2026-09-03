@@ -211,7 +211,7 @@ class EditionTable(UUIDMixin, TagsMixin, tables.Table):
                                     extra_context={'delimiter': ', '}, orderable=False)
     stcn_id = tables.Column(verbose_name=_("STCN ID"))
     work = tables.Column(linkify=('work_detail', [A("work_id")]))
-    years_of_publication = tables.Column(empty_values=(), orderable=False)
+    years_of_publication = tables.Column(empty_values=())
 
     class Meta:
         model = Edition
@@ -239,6 +239,10 @@ class EditionTable(UUIDMixin, TagsMixin, tables.Table):
     def render_stcn_id(self, record):
         return format_html('<a href="{}" title="{}" target="_blank">{} <i class="bi bi-box-arrow-up-right"></i></a>',
                            settings.STCN_URL.format(record.stcn_id), _("Show on data.cerl.org/stcn in a new tab/window"), record.stcn_id)
+
+    def order_years_of_publication(self, queryset, is_descending):
+        queryset = queryset.order_by(("-" if is_descending else "") + "year_of_publication_start")
+        return (queryset, True)
 
 
 class WorkTable(UUIDMixin, TagsMixin, tables.Table):
