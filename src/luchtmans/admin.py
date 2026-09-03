@@ -263,6 +263,9 @@ class EditionAdmin(admin.ModelAdmin):
     autocomplete_fields = ['places_of_publication', 'languages', 'stcn_genres', 'work', 'tags']
     inlines = [PersonInline]
 
+    class Media:
+        js = ('update_url_parameters.js','update_url_parameters_edition_form.js')
+
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         self.add_url_extra_params(form, obj)
