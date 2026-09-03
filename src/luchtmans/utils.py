@@ -20,7 +20,10 @@ def get_nested_object(data, path, *args):
 def str_to_date(value):
     """Convert a string to a datetime object if possible. Otherwise return the original value."""
     if re.match(r"^\d{4}-\d{2}-\d{2}$", value):
-        return datetime.datetime.strptime(value, "%Y-%m-%d").date()
+        try:
+            return datetime.datetime.strptime(value, "%Y-%m-%d").date()
+        except ValueError:
+            return value
     return value
 
 

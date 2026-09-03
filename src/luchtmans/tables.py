@@ -36,7 +36,7 @@ class TagsMixin:
 
 
 class PersonTable(UUIDMixin, TagsMixin, tables.Table):
-    short_name = tables.Column(linkify=('person_detail', [A("pk")]))
+    short_name = tables.Column(linkify=('person_detail', [A("pk")]), order_by="surname")
     uuid = tables.Column(empty_values=(), verbose_name="", orderable=False)
     collection = tables.Column(empty_values=(None), verbose_name="Collection")
     item_count = tables.Column(verbose_name="Number of purchases")
