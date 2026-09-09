@@ -587,6 +587,8 @@ class InDBSettings(SingletonModel):
     EDITION_AUTHOR_ROLE = models.ForeignKey(PersonEditionRelationRole, on_delete=models.PROTECT, related_name="indb_author_role", default=None, null=True)
     EDITION_PRODUCER_ROLE = models.ForeignKey(PersonEditionRelationRole, on_delete=models.PROTECT, related_name="indb_producer_role", default=None, null=True)
 
+    class Meta:
+        verbose_name_plural = _("in db settings")
+
     def __str__(self):
-        meta = self.__class__._meta
-        return ", ".join([field.name for field in meta.get_fields() if field not in meta.pk_fields])
+        return "In DB settings singleton"
