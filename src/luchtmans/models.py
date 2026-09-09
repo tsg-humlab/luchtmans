@@ -1,3 +1,4 @@
+import re
 import uuid
 
 from django.conf import settings
@@ -6,6 +7,7 @@ from django.contrib.gis.db import models as gis_models
 from django.db.models.signals import post_save, post_delete, m2m_changed
 from django.utils.translation import gettext_lazy as _
 from django.dispatch import receiver
+from django.core.cache import cache
 
 
 # # # START Helper classes and functions # # #
@@ -247,6 +249,16 @@ class Person(Wikidata, UUIDModel):
     def __str__(self):
         return self.short_name
 
+    @property
+    def year_of_birth(self):
+        if re.match(r"^\d{4}(-\d{2}-\d{2})?$", self.date_of_birth):
+            return self.date_of_birth[:4]
+
+    @property
+    def year_of_death(self):
+        if re.match(r"^\d{4}(-\d{2}-\d{2})?$", self.date_of_death):
+            return self.date_of_death[:4]
+
 
 class RelationType(UUIDModel):
     text = models.CharField(_("text"), max_length=255, unique=True)
@@ -432,7 +444,21 @@ class Edition(UUIDModel):
         verbose_name_plural = _("editions")
 
     def __str__(self):
-        return self.short_title
+        in_db_settings = InDBSettings.load()
+        author = self.persons.filter(personeditionrelation__role=in_db_settings.EDITION_AUTHOR_ROLE).first()
+        if author:
+            year_of_birth, year_of_death = author.year_of_birth, author.year_of_death
+            birth_death_str = f"{year_of_birth or ''}{'-' if year_of_birth or year_of_death else ''}{year_of_death or ''}"
+            person_str = (f"{author.surname}{', '  if author.first_names else ''}{author.first_names}"
+                          f"{', ' if birth_death_str else ''}{birth_death_str}")
+        else:
+            person_str = ""
+
+        producer = self.persons.filter(personeditionrelation__role=in_db_settings.EDITION_PRODUCER_ROLE).first()
+
+        return (f"{person_str} | {self.title} ({producer.surname if producer else 's.n.'}, "
+                f"{self.places_of_publication.first() or 's.l.'}, {self.year_of_publication_start or 's.a.'}"
+                f"{', ' if self.volumes else ''}{self.volumes})")
 
 
 class PersonEditionRelationRole(UniqueNameModel, UUIDModel):
@@ -530,3 +556,37 @@ class Item(UUIDModel):
 
     def __str__(self):
         return self.transcription_full
+
+class SingletonModel(models.Model):
+    class Meta:
+        abstract = True
+
+    def delete(self, *args, **kwargs):
+        pass
+
+    def set_cache(self):
+        cache.set(self.__class__.__name__, self)
+
+    def save(self, *args, **kwargs):
+        self.pk = 1
+        super(SingletonModel, self).save(*args, **kwargs)
+        self.set_cache()
+
+    @classmethod
+    def load(cls):
+        if cache.get(cls.__name__) is None:
+            print("foo")
+            obj, created = cls.objects.get_or_create(pk=1)
+            print(obj, created)
+            if not created:
+                obj.set_cache()
+        return cache.get(cls.__name__)
+
+
+class InDBSettings(SingletonModel):
+    EDITION_AUTHOR_ROLE = models.ForeignKey(PersonEditionRelationRole, on_delete=models.PROTECT, related_name="indb_author_role", default=None, null=True)
+    EDITION_PRODUCER_ROLE = models.ForeignKey(PersonEditionRelationRole, on_delete=models.PROTECT, related_name="indb_producer_role", default=None, null=True)
+
+    def __str__(self):
+        meta = self.__class__._meta
+        return ", ".join([field.name for field in meta.get_fields() if field not in meta.pk_fields])

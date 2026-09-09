@@ -14,7 +14,7 @@ from .models import (Country, Place, Street, Address, Person, PersonPersonRelati
                      Religion, PersonReligion, UniqueNameModel, Language, GenreParisianCategory, Work,
                      PersonWorkRelationRole, PersonWorkRelation, Format, STCNGenre, Edition, PersonEditionRelationRole,
                      PersonEditionRelation, Collection, ItemType, Page, Binding, Item, PersonTag, ItemTag, EditionTag,
-                     WorkTag)
+                     WorkTag, InDBSettings)
 from .forms import ApiSelectWidget, ApiInfo
 
 
@@ -301,3 +301,21 @@ class PersonTagAdmin(admin.ModelAdmin):
 @admin.register(WorkTag)
 class PersonTagAdmin(admin.ModelAdmin):
     search_fields = ['name']
+
+
+class SingletonModelAdmin(admin.ModelAdmin):
+    """
+    Prevents Django admin users deleting the singleton or adding extra rows.
+    """
+    actions = None  # Removes the default delete action.
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def has_add_permission(self, request):
+        return False
+
+
+@admin.register(InDBSettings)
+class InDBSettingsAdmin(SingletonModelAdmin):
+    pass
