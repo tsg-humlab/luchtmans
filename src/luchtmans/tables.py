@@ -40,7 +40,7 @@ class PersonTable(UUIDMixin, TagsMixin, tables.Table):
     uuid = tables.Column(empty_values=(), verbose_name="", orderable=False)
     collection = tables.Column(empty_values=(None), verbose_name="Collection")
     item_count = tables.Column(verbose_name="Number of purchases")
-    number_of_editions = tables.Column(empty_values=(), accessor=A("number_of_editions"))
+    number_of_editions = tables.Column(empty_values=(None), default=0, accessor=A("number_of_editions"))
     roles = tables.Column(empty_values=(None))
     relations = tables.Column(
         verbose_name=_("Relations"),
