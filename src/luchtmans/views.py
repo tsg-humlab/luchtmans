@@ -214,15 +214,18 @@ class PersonTableView(ListView):
 
 
     def get_queryset(self):
+        number_of_editions = (Edition.objects
+                              .filter(work__personworkrelation__person=OuterRef('pk'))
+                              .values('work__personworkrelation__person')
+                              .annotate(count=Count('id'))
+                              .values('count')[:1])
         items_in_collection = Item.objects.filter(collection__client_id=OuterRef('pk'))
         first_item_year = items_in_collection.order_by('date').values("date__year")[:1]
         last_item_year = items_in_collection.order_by('-date').values("date__year")[:1]
         return (Person.objects.distinct()
                 .select_related('collection', 'place_of_birth', 'place_of_death')
                 .annotate(item_count=Count('collection__item'))
-                .annotate(number_of_editions=Count(Edition.objects
-                                                   .filter(work__personworkrelation__person=OuterRef('pk'))
-                                                   .values('pk')[:1]))
+                .annotate(number_of_editions=number_of_editions)
                 .annotate(first_item_year=first_item_year, last_item_year=last_item_year))
 
     def get_context_data(self, **kwargs):
