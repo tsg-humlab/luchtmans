@@ -434,6 +434,9 @@ class Edition(UUIDModel):
     def __str__(self):
         return self.short_title
 
+    def edition_and_work_persons(self):
+        return self.persons.union(self.work.authors.all())
+
 
 class PersonEditionRelationRole(UniqueNameModel, UUIDModel):
 
