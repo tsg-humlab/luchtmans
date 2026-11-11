@@ -1,6 +1,7 @@
 import html
 import requests
 from django.db.models import Count, OuterRef, Subquery, Q, Sum, F, Case, When, Value
+from django.db.models.functions import Lower
 
 from django.views.generic import ListView, DetailView
 from django_select2.views import AutoResponseView
@@ -226,7 +227,8 @@ class PersonTableView(ListView):
                 .select_related('collection', 'place_of_birth', 'place_of_death')
                 .annotate(item_count=Count('collection__item'))
                 .annotate(number_of_editions=number_of_editions)
-                .annotate(first_item_year=first_item_year, last_item_year=last_item_year))
+                .annotate(first_item_year=first_item_year, last_item_year=last_item_year)
+                .order_by(Lower('surname')))
 
     def get_context_data(self, **kwargs):
         context = super(PersonTableView, self).get_context_data(**kwargs)

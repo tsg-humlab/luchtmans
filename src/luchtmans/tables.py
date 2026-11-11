@@ -1,5 +1,6 @@
 import decimal
 
+from django.db.models.functions import Lower
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.utils import formats
@@ -36,7 +37,7 @@ class TagsMixin:
 
 
 class PersonTable(UUIDMixin, TagsMixin, tables.Table):
-    short_name = tables.Column(linkify=('person_detail', [A("pk")]), order_by="surname")
+    short_name = tables.Column(linkify=('person_detail', [A("pk")]))
     uuid = tables.Column(empty_values=(), verbose_name="", orderable=False)
     collection = tables.Column(empty_values=(None), verbose_name="Collection")
     item_count = tables.Column(verbose_name="Number of purchases")
@@ -111,6 +112,12 @@ class PersonTable(UUIDMixin, TagsMixin, tables.Table):
     def render_wikidata_id(self, record):
         return format_html('<a href="{}">{} <i class="bi bi-box-arrow-up-right"></i></a>',
                            settings.WIKIDATA_URL.format(record.wikidata_id), record.wikidata_id)
+
+    def order_short_name(self, queryset, is_descending):
+        if is_descending:
+            return queryset.order_by(Lower('surname').desc()), True
+        else:
+            return queryset.order_by(Lower('surname').asc()), True
 
 
 class CollectionTable(UUIDMixin, tables.Table):
