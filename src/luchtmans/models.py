@@ -446,14 +446,8 @@ class Edition(UUIDModel):
     def __str__(self):
         in_db_settings = InDBSettings.load()
         author = self.persons.filter(personeditionrelation__role=in_db_settings.EDITION_AUTHOR_ROLE).first()
-        if author:
-            year_of_birth, year_of_death = author.year_of_birth, author.year_of_death
-            birth_death_str = f"{year_of_birth or ''}{'-' if year_of_birth or year_of_death else ''}{year_of_death or ''}"
-            person_str = (f"{author.surname}{', '  if author.first_names else ''}{author.first_names}"
-                          f"{', ' if birth_death_str else ''}{birth_death_str}")
-        else:
-            person_str = ""
-
+        person_str = (f"{author.surname}{', '  if author.first_names else ''}{author.first_names}") \
+            if author else _("Anonymous")
         producer = self.persons.filter(personeditionrelation__role=in_db_settings.EDITION_PRODUCER_ROLE).first()
 
         return (f"{person_str} | {self.title} ({producer.surname if producer else 's.n.'}, "
